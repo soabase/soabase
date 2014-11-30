@@ -9,21 +9,15 @@
 
     <artifactId>soabase-zookeeper</artifactId>
 
-    <properties>
-        <curator-version>2.7.0</curator-version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.soabase</groupId>
             <artifactId>soabase-core</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-x-discovery</artifactId>
-            <version>${curator-version}</version>
         </dependency>
     </dependencies>
 </project>

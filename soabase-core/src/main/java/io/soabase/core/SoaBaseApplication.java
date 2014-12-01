@@ -1,6 +1,7 @@
 package io.soabase.core;
 
 import io.dropwizard.Application;
+import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.features.SoaBaseFeatures;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class SoaBaseApplication<T extends SoaBaseConfiguration> extends Application<T> implements Closeable
 {
-    private final AtomicReference<SoaBaseFeatures> features = new AtomicReference<SoaBaseFeatures>();
+    private final AtomicReference<SoaBaseFeatures> features = new AtomicReference<>();
     private final AtomicBoolean isOpen = new AtomicBoolean(true);
 
     private static final String DEFAULT_GROUP_NAME = "default";
@@ -40,12 +41,11 @@ public abstract class SoaBaseApplication<T extends SoaBaseConfiguration> extends
 
         updateInstanceName(configuration);
 
-        SoaDiscovery discovery = configuration.getDiscoveryFactory().build(environment);
-        SoaDynamicAttributes attributes = configuration.getAttributesFactory().build(environment, configuration.getGroupName(), configuration.getInstanceName());
-
+        SoaDiscovery discovery = checkManaged(environment, configuration.getDiscoveryFactory().build(environment));
+        SoaDynamicAttributes attributes = checkManaged(environment, configuration.getAttributesFactory().build(environment, configuration.getGroupName(), configuration.getInstanceName()));
         features.set(new SoaBaseFeatures(discovery, attributes, configuration.getInstanceName(), configuration.getGroupName()));
 
-        soaRun(configuration, environment);
+        soaRun(features.get(), configuration, environment);
     }
 
     @Override
@@ -61,7 +61,7 @@ public abstract class SoaBaseApplication<T extends SoaBaseConfiguration> extends
 
     protected abstract void soaClose();
 
-    protected abstract void soaRun(T configuration, Environment environment);
+    protected abstract void soaRun(SoaBaseFeatures features, T configuration, Environment environment);
 
     protected abstract void soaInitialize(Bootstrap<T> bootstrap);
 
@@ -75,5 +75,14 @@ public abstract class SoaBaseApplication<T extends SoaBaseConfiguration> extends
         {
             configuration.setGroupName(DEFAULT_GROUP_NAME);
         }
+    }
+
+    private static <T> T checkManaged(Environment environment, T obj)
+    {
+        if ( obj instanceof Managed )
+        {
+            environment.lifecycle().manage((Managed)obj);
+        }
+        return obj;
     }
 }

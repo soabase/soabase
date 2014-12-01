@@ -1,19 +1,45 @@
 package io.soabase.sql.attributes;
 
+import com.google.common.io.Resources;
+import io.dropwizard.lifecycle.Managed;
 import io.soabase.core.features.attributes.SoaDynamicAttributeListener;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.StandardAttributesContainer;
 import io.soabase.core.listening.Listenable;
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 // TODO - background update
-public class SqlDynamicAttributes implements SoaDynamicAttributes
+public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
 {
     private final StandardAttributesContainer container;
+    private final SqlSession session;
 
-    public SqlDynamicAttributes(String groupName, String instanceName)
+    public SqlDynamicAttributes(String mybatisConfigUrl, String groupName, String instanceName)
     {
         container = new StandardAttributesContainer(groupName, instanceName);
+
+        try
+        {
+            try ( InputStream stream = Resources.getResource(mybatisConfigUrl).openStream() )
+            {
+                SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(stream);
+                Configuration configuration = sqlSessionFactory.getConfiguration();
+                configuration.addMapper(AttributeEntityMapper.class);
+                session = sqlSessionFactory.openSession();
+            }
+        }
+        catch ( IOException e )
+        {
+            // TODO log
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -104,5 +130,34 @@ public class SqlDynamicAttributes implements SoaDynamicAttributes
     public Listenable<SoaDynamicAttributeListener> getListenable()
     {
         return container.getListenable();
+    }
+
+    @Override
+    public void start() throws Exception
+    {
+        update(true);
+    }
+
+    public SqlSession getSession()
+    {
+        return session;
+    }
+
+    @Override
+    public void stop() throws Exception
+    {
+        if ( session != null )
+        {
+            session.close();
+        }
+    }
+
+    private void update(boolean firstTime)
+    {
+        AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
+        for ( AttributeEntity entity : mapper.selectAll() )
+        {
+            
+        }
     }
 }

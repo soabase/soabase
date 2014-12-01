@@ -10,7 +10,7 @@ public class StandardAttributesContainer
 {
     private final Map<String, Object> overrides = Maps.newConcurrentMap();
     private final Map<AttributeKey, Object> attributes = Maps.newConcurrentMap();
-    private final ListenerContainer<SoaDynamicAttributeListener> listenable = new ListenerContainer<SoaDynamicAttributeListener>();
+    private final ListenerContainer<SoaDynamicAttributeListener> listenable = new ListenerContainer<>();
     private final String groupName;
     private final String instanceName;
 
@@ -20,12 +20,31 @@ public class StandardAttributesContainer
         this.instanceName = instanceName;
     }
 
+    public Object get(AttributeKey key)
+    {
+        return attributes.get(key);
+    }
+
+    public void put(AttributeKey key, Object value)
+    {
+        attributes.put(key, value);
+    }
+
+    public void remove(AttributeKey key)
+    {
+        attributes.remove(key);
+    }
+
     public String getAttribute(String key, String defaultValue)
     {
         Object value = overrides.get(key);
         if ( value == null )
         {
-            value = getValue(key);
+            value = System.getProperty(key, null);
+            if ( value == null )
+            {
+                value = getValue(key);
+            }
         }
         return (value != null) ? value.toString() : defaultValue;
     }
@@ -115,6 +134,10 @@ public class StandardAttributesContainer
     private Number getOverrideNumber(String key)
     {
         Object value = overrides.get(key);
+        if ( value == null )
+        {
+            value = System.getProperty(key, null);
+        }
         return to(value, null);
     }
 

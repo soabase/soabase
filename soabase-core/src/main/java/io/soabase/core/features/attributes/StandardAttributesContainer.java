@@ -1,38 +1,106 @@
 package io.soabase.core.features.attributes;
 
+import com.google.common.base.Function;
+import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.soabase.core.listening.Listenable;
 import io.soabase.core.listening.ListenerContainer;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StandardAttributesContainer
 {
+    public static final String DEFAULT_SCOPE = "";
+
     private final Map<String, Object> overrides = Maps.newConcurrentMap();
     private final Map<AttributeKey, Object> attributes = Maps.newConcurrentMap();
     private final ListenerContainer<SoaDynamicAttributeListener> listenable = new ListenerContainer<>();
-    private final String groupName;
-    private final String instanceName;
+    private final List<String> scopes;
+    private final AtomicBoolean firstTime = new AtomicBoolean(true);
 
-    public StandardAttributesContainer(String groupName, String instanceName)
+    public StandardAttributesContainer(List<String> scopes)
     {
-        this.groupName = groupName;
-        this.instanceName = instanceName;
+        scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");
+        ImmutableList.Builder<String> builder = ImmutableList.builder();
+        builder.addAll(scopes);
+        builder.add(DEFAULT_SCOPE);
+        this.scopes = builder.build();
     }
 
-    public Object get(AttributeKey key)
+    public interface Updater
     {
-        return attributes.get(key);
+        public void put(String key, String scope, Object value);
+
+        public void commit();
     }
 
-    public void put(AttributeKey key, Object value)
+    public Updater newUpdater()
     {
-        attributes.put(key, value);
-    }
+        final Set<AttributeKey> deletingKeys = Sets.newHashSet(attributes.keySet());
+        final boolean notifyListeners = firstTime.compareAndSet(true, false);
+        return new Updater()
+        {
+            @Override
+            public void put(final String key, final String scope, Object value)
+            {
+                AttributeKey attributeKey = new AttributeKey(key, scope);
+                deletingKeys.remove(attributeKey);
 
-    public void remove(AttributeKey key)
-    {
-        attributes.remove(key);
+                final boolean isNew = !attributes.containsKey(attributeKey);
+                if ( isNew || !Objects.equal(value, attributes.get(attributeKey)) )
+                {
+                    attributes.put(attributeKey, value);
+
+                    Function<SoaDynamicAttributeListener, Void> notify = new Function<SoaDynamicAttributeListener, Void>()
+                    {
+                        @Override
+                        public Void apply(SoaDynamicAttributeListener listener)
+                        {
+                            if ( isNew )
+                            {
+                                listener.attributeAdded(key, scope);
+                            }
+                            else
+                            {
+                                listener.attributeChanged(key, scope);
+                            }
+                            return null;
+                        }
+                    };
+                    if ( notifyListeners )
+                    {
+                        listenable.forEach(notify);
+                    }
+                }
+            }
+
+            @Override
+            public void commit()
+            {
+                if ( notifyListeners )
+                {
+                    for ( final AttributeKey attributeKey : deletingKeys )
+                    {
+                        Function<SoaDynamicAttributeListener, Void> notify = new Function<SoaDynamicAttributeListener, Void>()
+                        {
+                            @Override
+                            public Void apply(SoaDynamicAttributeListener listener)
+                            {
+                                listener.attributeRemoved(attributeKey.getKey(), attributeKey.getScope());
+                                return null;
+                            }
+                        };
+                        listenable.forEach(notify);
+                    }
+                }
+            }
+        };
     }
 
     public String getAttribute(String key, String defaultValue)
@@ -119,16 +187,16 @@ public class StandardAttributesContainer
 
     private Object getValue(String key)
     {
-        Object value = attributes.get(new AttributeKey(key, groupName, instanceName));
-        if ( value == null )
+        for ( String scope : scopes )
         {
-            value = attributes.get(new AttributeKey(key, groupName, null));
-            if ( value == null )
+            Object value = attributes.get(new AttributeKey(key, scope));
+            if ( value != null )
             {
-                value = attributes.get(new AttributeKey(key, null, null));
+                return value;
             }
         }
-        return value;
+
+        return null;
     }
 
     private Number getOverrideNumber(String key)

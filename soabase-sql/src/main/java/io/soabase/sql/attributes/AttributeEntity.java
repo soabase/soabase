@@ -1,48 +1,32 @@
 package io.soabase.sql.attributes;
 
+import com.google.common.base.Preconditions;
+import io.soabase.core.features.attributes.StandardAttributesContainer;
 import java.util.UUID;
 
 public class AttributeEntity
 {
-    private String fID;
     private String fKEY;
-    private String fGROUP;
-    private String fINSTANCE;
+    private String fSCOPE;
     private String fVALUE;
     private String fTIMESTAMP;
 
     public AttributeEntity()
     {
+        this("", "");
     }
 
-    public AttributeEntity(String fID, String fKEY, String fGROUP, String fINSTANCE, String fVALUE)
+    public AttributeEntity(String fKEY, String fVALUE)
     {
-        this(fID, fKEY, fGROUP, fINSTANCE, fVALUE, UUID.randomUUID().toString());
+        this(fKEY, StandardAttributesContainer.DEFAULT_SCOPE, fVALUE);
     }
 
-    public AttributeEntity(String fKEY, String fGROUP, String fINSTANCE, String fVALUE)
+    public AttributeEntity(String fKEY, String fSCOPE, String fVALUE)
     {
-        this(UUID.randomUUID().toString(), fKEY, fGROUP, fINSTANCE, fVALUE, UUID.randomUUID().toString());
-    }
-
-    public AttributeEntity(String fID, String fKEY, String fGROUP, String fINSTANCE, String fVALUE, String fTIMESTAMP)
-    {
-        this.fID = fID;
-        this.fKEY = fKEY;
-        this.fGROUP = fGROUP;
-        this.fINSTANCE = fINSTANCE;
+        this.fKEY = Preconditions.checkNotNull(fKEY, "fKEY cannot be null");
+        this.fSCOPE = Preconditions.checkNotNull(fSCOPE, "fSCOPE cannot be null");
         this.fVALUE = fVALUE;
-        this.fTIMESTAMP = fTIMESTAMP;
-    }
-
-    public String getfID()
-    {
-        return fID;
-    }
-
-    public void setfID(String fID)
-    {
-        this.fID = fID;
+        fTIMESTAMP = UUID.randomUUID().toString();
     }
 
     public String getfKEY()
@@ -55,24 +39,14 @@ public class AttributeEntity
         this.fKEY = fKEY;
     }
 
-    public String getfGROUP()
+    public String getfSCOPE()
     {
-        return fGROUP;
+        return fSCOPE;
     }
 
-    public void setfGROUP(String fGROUP)
+    public void setfSCOPE(String fSCOPE)
     {
-        this.fGROUP = fGROUP;
-    }
-
-    public String getfINSTANCE()
-    {
-        return fINSTANCE;
-    }
-
-    public void setfINSTANCE(String fINSTANCE)
-    {
-        this.fINSTANCE = fINSTANCE;
+        this.fSCOPE = fSCOPE;
     }
 
     public String getfVALUE()

@@ -10,12 +10,12 @@ public interface AttributeEntityMapper
     @Select("SELECT * FROM SoaBaseAttributes")
     public List<AttributeEntity> selectAll();
 
-    @Update("CREATE TABLE SoaBaseAttributes (fID VARCHAR(255) NOT NULL, fKEY VARCHAR(255) NOT NULL, fGROUP VARCHAR(255), fINSTANCE VARCHAR(255), fVALUE VARCHAR(65535), fTIMESTAMP VARCHAR(255) NOT NULL, PRIMARY KEY (fID))")
+    @Update("CREATE TABLE SoaBaseAttributes (fKEY VARCHAR(255) NOT NULL, fSCOPE VARCHAR(255) NOT NULL, fVALUE VARCHAR(65535), fTIMESTAMP VARCHAR(255) NOT NULL, PRIMARY KEY (fKEY, fSCOPE))")
     public int createDatabase();
 
-    @Insert("INSERT INTO SoaBaseAttributes (fID, fKEY, fGROUP, fINSTANCE, fVALUE, fTIMESTAMP) VALUES (#{fID}, #{fKEY}, #{fGROUP}, #{fINSTANCE}, #{fVALUE}, #{fTIMESTAMP})")
+    @Insert("INSERT INTO SoaBaseAttributes (fKEY, fSCOPE, fVALUE, fTIMESTAMP) VALUES (#{fKEY}, #{fSCOPE}, #{fVALUE}, #{fTIMESTAMP})")
     public int insert(AttributeEntity attribute);
 
-    @Update("UPDATE SoaBaseAttributes SET fKEY = #{fKEY}, fGROUP = #{fGROUP}, fINSTANCE = #{fINSTANCE}, fVALUE = #{fVALUE} WHERE fID = #{fID} AND fTIMESTAMP = #{fTIMESTAMP}")
+    @Update("UPDATE SoaBaseAttributes SET fVALUE = #{fVALUE} WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE} AND fTIMESTAMP = #{fTIMESTAMP}")
     public int update(AttributeEntity attribute);
 }

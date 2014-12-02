@@ -5,14 +5,22 @@ import com.google.common.base.Preconditions;
 public class AttributeKey
 {
     private final String key;
-    private final String group;
-    private final String instance;
+    private final String scope;
 
-    public AttributeKey(String key, String group, String instance)
+    public AttributeKey(String key, String scope)
     {
         this.key = Preconditions.checkNotNull(key, "key cannot be null");
-        this.group = group;
-        this.instance = instance;
+        this.scope = Preconditions.checkNotNull(scope, "scope cannot be null");
+    }
+
+    public String getKey()
+    {
+        return key;
+    }
+
+    public String getScope()
+    {
+        return scope;
     }
 
     @Override
@@ -29,16 +37,12 @@ public class AttributeKey
 
         AttributeKey that = (AttributeKey)o;
 
-        if ( group != null ? !group.equals(that.group) : that.group != null )
-        {
-            return false;
-        }
-        if ( instance != null ? !instance.equals(that.instance) : that.instance != null )
+        if ( !key.equals(that.key) )
         {
             return false;
         }
         //noinspection RedundantIfStatement
-        if ( !key.equals(that.key) )
+        if ( !scope.equals(that.scope) )
         {
             return false;
         }
@@ -50,8 +54,7 @@ public class AttributeKey
     public int hashCode()
     {
         int result = key.hashCode();
-        result = 31 * result + (group != null ? group.hashCode() : 0);
-        result = 31 * result + (instance != null ? instance.hashCode() : 0);
+        result = 31 * result + scope.hashCode();
         return result;
     }
 
@@ -60,8 +63,7 @@ public class AttributeKey
     {
         return "AttributeKey{" +
             "key='" + key + '\'' +
-            ", group='" + group + '\'' +
-            ", instance='" + instance + '\'' +
+            ", scope='" + scope + '\'' +
             '}';
     }
 }

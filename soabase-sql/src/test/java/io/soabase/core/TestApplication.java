@@ -35,7 +35,7 @@ public class TestApplication extends SoaBaseApplication<SoaBaseConfiguration>
         SqlDynamicAttributes attributes = (SqlDynamicAttributes)features.getAttributes();
         AttributeEntityMapper mapper = attributes.getSession().getMapper(AttributeEntityMapper.class);
         mapper.createDatabase();
-        AttributeEntity attribute = new AttributeEntity("hey", "group", "instance", "my value");
+        AttributeEntity attribute = new AttributeEntity("hey", "", "my value");
         mapper.insert(attribute);
         attribute.setfVALUE("yo yo yo");
         mapper.update(attribute);

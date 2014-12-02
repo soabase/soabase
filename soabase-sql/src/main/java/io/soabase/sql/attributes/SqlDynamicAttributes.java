@@ -13,7 +13,6 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 
 // TODO - background update
 public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
@@ -23,7 +22,7 @@ public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
 
     public SqlDynamicAttributes(String mybatisConfigUrl, String groupName, String instanceName)
     {
-        container = new StandardAttributesContainer(groupName, instanceName);
+        container = null;   // TODO new StandardAttributesContainer(groupName, instanceName);
 
         try
         {
@@ -135,7 +134,7 @@ public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
     @Override
     public void start() throws Exception
     {
-        update(true);
+        update();
     }
 
     public SqlSession getSession()
@@ -152,12 +151,14 @@ public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
         }
     }
 
-    private void update(boolean firstTime)
+    synchronized void update()
     {
+        StandardAttributesContainer.Updater updater = container.newUpdater();
         AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
         for ( AttributeEntity entity : mapper.selectAll() )
         {
-            
+            updater.put(entity.getfKEY(), entity.getfSCOPE(), entity.getfVALUE());
         }
+        updater.commit();
     }
 }

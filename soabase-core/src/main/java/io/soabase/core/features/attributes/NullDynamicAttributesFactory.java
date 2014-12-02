@@ -1,6 +1,7 @@
 package io.soabase.core.features.attributes;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.google.common.collect.Lists;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.listening.Listenable;
 import java.util.Collection;
@@ -16,7 +17,7 @@ public class NullDynamicAttributesFactory implements SoaDynamicAttributesFactory
 
     private static class NullAttributes implements SoaDynamicAttributes
     {
-        private final StandardAttributesContainer container = new StandardAttributesContainer("", "");
+        private final StandardAttributesContainer container = new StandardAttributesContainer(Lists.<String>newArrayList());
 
         @Override
         public String getAttribute(String key)

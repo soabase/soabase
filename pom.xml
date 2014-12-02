@@ -25,7 +25,7 @@
 
         <dropwizard-version>0.8.0-rc1</dropwizard-version>
         <jopt-version>4.6</jopt-version>
-        <airlift-version>0.7</airlift-version>
+        <airlift-version>0.8-SNAPSHOT</airlift-version>
         <curator-version>2.7.0</curator-version>
         <mybatis-version>3.2.8</mybatis-version>
         <hsqldb-version>2.3.2</hsqldb-version>

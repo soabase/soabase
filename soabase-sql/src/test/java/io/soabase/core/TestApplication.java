@@ -2,12 +2,12 @@ package io.soabase.core;
 
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.features.SoaBaseFeatures;
+import io.soabase.core.features.SoaFeatures;
 import io.soabase.sql.attributes.AttributeEntity;
 import io.soabase.sql.attributes.AttributeEntityMapper;
 import io.soabase.sql.attributes.SqlDynamicAttributes;
 
-public class TestApplication extends SoaBaseApplication<SoaBaseConfiguration>
+public class TestApplication extends SoaApplication<SoaConfiguration>
 {
     public static void main(String[] args) throws Exception
     {
@@ -16,11 +16,13 @@ public class TestApplication extends SoaBaseApplication<SoaBaseConfiguration>
                 "-c",
                 "{" +
                     "\"attributes\":{" +
-                    "\"type\": \"sql\"," +
+                    "\"type\": \"fuck\"," +
                     "\"mybatisConfigUrl\": \"test-mybatis.xml\"," +
-                    "}}"
+                    "}}",
+                "-o",
+                "attributes.type=sql"
             };
-        SoaBaseMain.run(TestApplication.class, args);
+        SoaMain.run(TestApplication.class, args);
     }
 
     @Override
@@ -30,7 +32,7 @@ public class TestApplication extends SoaBaseApplication<SoaBaseConfiguration>
     }
 
     @Override
-    protected void soaRun(SoaBaseFeatures features, SoaBaseConfiguration configuration, Environment environment)
+    protected void soaRun(SoaFeatures features, SoaConfiguration configuration, Environment environment)
     {
         SqlDynamicAttributes attributes = (SqlDynamicAttributes)features.getAttributes();
         AttributeEntityMapper mapper = attributes.getSession().getMapper(AttributeEntityMapper.class);
@@ -42,7 +44,7 @@ public class TestApplication extends SoaBaseApplication<SoaBaseConfiguration>
     }
 
     @Override
-    protected void soaInitialize(Bootstrap<SoaBaseConfiguration> bootstrap)
+    protected void soaInitialize(Bootstrap<SoaConfiguration> bootstrap)
     {
 
     }

@@ -2,12 +2,12 @@ package io.soabase.zookeeper;
 
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.SoaBaseApplication;
-import io.soabase.core.SoaBaseConfiguration;
-import io.soabase.core.SoaBaseMain;
-import io.soabase.core.features.SoaBaseFeatures;
+import io.soabase.core.SoaApplication;
+import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaMain;
+import io.soabase.core.features.SoaFeatures;
 
-public class TestApplication extends SoaBaseApplication<SoaBaseConfiguration>
+public class TestApplication extends SoaApplication<SoaConfiguration>
 {
     public static void main(String[] args) throws Exception
     {
@@ -19,7 +19,7 @@ public class TestApplication extends SoaBaseApplication<SoaBaseConfiguration>
                 "\"type\": \"zookeeper\"" +
             "}}"
         };
-        SoaBaseMain.run(TestApplication.class, args);
+        SoaMain.run(TestApplication.class, args);
     }
 
     @Override
@@ -29,13 +29,13 @@ public class TestApplication extends SoaBaseApplication<SoaBaseConfiguration>
     }
 
     @Override
-    protected void soaRun(SoaBaseFeatures features, SoaBaseConfiguration configuration, Environment environment)
+    protected void soaRun(SoaFeatures features, SoaConfiguration configuration, Environment environment)
     {
 
     }
 
     @Override
-    protected void soaInitialize(Bootstrap<SoaBaseConfiguration> bootstrap)
+    protected void soaInitialize(Bootstrap<SoaConfiguration> bootstrap)
     {
 
     }

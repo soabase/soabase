@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SoaBaseConfiguration extends Configuration
+public class SoaConfiguration extends Configuration
 {
     @Valid
     @NotNull

@@ -7,15 +7,15 @@ import java.util.List;
 
 public interface AttributeEntityMapper
 {
-    @Select("SELECT * FROM SoaBaseAttributes")
+    @Select("SELECT * FROM SoaAttributes")
     public List<AttributeEntity> selectAll();
 
-    @Update("CREATE TABLE SoaBaseAttributes (fKEY VARCHAR(255) NOT NULL, fSCOPE VARCHAR(255) NOT NULL, fVALUE VARCHAR(65535), fTIMESTAMP VARCHAR(255) NOT NULL, PRIMARY KEY (fKEY, fSCOPE))")
+    @Update("CREATE TABLE SoaAttributes (fKEY VARCHAR(255) NOT NULL, fSCOPE VARCHAR(255) NOT NULL, fVALUE VARCHAR(65535), fTIMESTAMP VARCHAR(255) NOT NULL, PRIMARY KEY (fKEY, fSCOPE))")
     public int createDatabase();
 
-    @Insert("INSERT INTO SoaBaseAttributes (fKEY, fSCOPE, fVALUE, fTIMESTAMP) VALUES (#{fKEY}, #{fSCOPE}, #{fVALUE}, #{fTIMESTAMP})")
+    @Insert("INSERT INTO SoaAttributes (fKEY, fSCOPE, fVALUE, fTIMESTAMP) VALUES (#{fKEY}, #{fSCOPE}, #{fVALUE}, #{fTIMESTAMP})")
     public int insert(AttributeEntity attribute);
 
-    @Update("UPDATE SoaBaseAttributes SET fVALUE = #{fVALUE} WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE} AND fTIMESTAMP = #{fTIMESTAMP}")
+    @Update("UPDATE SoaAttributes SET fVALUE = #{fVALUE} WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE} AND fTIMESTAMP = #{fTIMESTAMP}")
     public int update(AttributeEntity attribute);
 }

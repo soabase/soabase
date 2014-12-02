@@ -13,16 +13,16 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
-// TODO - background update
 public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
 {
     private final StandardAttributesContainer container;
     private final SqlSession session;
 
-    public SqlDynamicAttributes(String mybatisConfigUrl, String groupName, String instanceName)
+    public SqlDynamicAttributes(String mybatisConfigUrl, List<String> scopes)
     {
-        container = null;   // TODO new StandardAttributesContainer(groupName, instanceName);
+        container = new StandardAttributesContainer(scopes);
 
         try
         {

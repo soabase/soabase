@@ -7,6 +7,7 @@ import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -45,9 +46,9 @@ public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
     }
 
     @Override
-    public SoaDynamicAttributes build(Environment environment, String groupName, String instanceName)
+    public SoaDynamicAttributes build(Environment environment, List<String> scopes)
     {
-        final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(mybatisConfigUrl, groupName, instanceName);
+        final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(mybatisConfigUrl, scopes);
         ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("SoaDynamicAttributes-%d", true).build();
         Runnable command = new Runnable()
         {

@@ -1,6 +1,7 @@
 package io.soabase.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 import io.dropwizard.Configuration;
 import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
@@ -8,6 +9,7 @@ import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SoaBaseConfiguration extends Configuration
@@ -27,9 +29,8 @@ public class SoaBaseConfiguration extends Configuration
     private String instanceName;
 
     @Valid
-    private String groupName;
+    private List<String> scopes = ImmutableList.of();
 
-    @JsonProperty("discovery")
     public SoaDiscoveryFactory getDiscoveryFactory()
     {
         return discoveryFactory;
@@ -77,27 +78,15 @@ public class SoaBaseConfiguration extends Configuration
         this.instanceName = instanceName;
     }
 
-    @JsonProperty("groupName")
-    public String getGroupName()
+    @JsonProperty("additionalScopes")
+    public List<String> getScopes()
     {
-        return groupName;
+        return scopes;
     }
 
-    @JsonProperty("groupName")
-    public void setGroupName(String groupName)
+    @JsonProperty("additionalScopes")
+    public void setScopes(List<String> scopes)
     {
-        this.groupName = groupName;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "SoaBaseConfiguration{" +
-            "discoveryFactory=" + discoveryFactory +
-            ", attributesFactory=" + attributesFactory +
-            ", shutdownWaitMaxMs=" + shutdownWaitMaxMs +
-            ", instanceName='" + instanceName + '\'' +
-            ", groupName='" + groupName + '\'' +
-            "} " + super.toString();
+        this.scopes = ImmutableList.copyOf(scopes);
     }
 }

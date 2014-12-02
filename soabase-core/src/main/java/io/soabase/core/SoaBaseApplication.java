@@ -1,5 +1,6 @@
 package io.soabase.core;
 
+import com.google.common.collect.Lists;
 import io.dropwizard.Application;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
@@ -12,6 +13,7 @@ import io.soabase.core.rest.DynamicAttributeApis;
 import java.io.Closeable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -19,8 +21,6 @@ public abstract class SoaBaseApplication<T extends SoaBaseConfiguration> extends
 {
     private final AtomicReference<SoaBaseFeatures> features = new AtomicReference<>();
     private final AtomicBoolean isOpen = new AtomicBoolean(true);
-
-    private static final String DEFAULT_GROUP_NAME = "default";
 
     public SoaBaseFeatures getFeatures()
     {
@@ -40,10 +40,13 @@ public abstract class SoaBaseApplication<T extends SoaBaseConfiguration> extends
         environment.jersey().register(DynamicAttributeApis.class);
 
         updateInstanceName(configuration);
+        List<String> scopes = Lists.newArrayList();
+        scopes.add(configuration.getInstanceName());
+        scopes.addAll(configuration.getScopes());
 
         SoaDiscovery discovery = checkManaged(environment, configuration.getDiscoveryFactory().build(environment));
-        SoaDynamicAttributes attributes = checkManaged(environment, configuration.getAttributesFactory().build(environment, configuration.getGroupName(), configuration.getInstanceName()));
-        features.set(new SoaBaseFeatures(discovery, attributes, configuration.getInstanceName(), configuration.getGroupName()));
+        SoaDynamicAttributes attributes = checkManaged(environment, configuration.getAttributesFactory().build(environment, scopes));
+        features.set(new SoaBaseFeatures(discovery, attributes, configuration.getInstanceName()));
 
         soaRun(features.get(), configuration, environment);
     }
@@ -70,10 +73,6 @@ public abstract class SoaBaseApplication<T extends SoaBaseConfiguration> extends
         if ( configuration.getInstanceName() == null )
         {
             configuration.setInstanceName(InetAddress.getLocalHost().getHostName());
-        }
-        if ( configuration.getGroupName() == null )
-        {
-            configuration.setGroupName(DEFAULT_GROUP_NAME);
         }
     }
 

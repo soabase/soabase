@@ -3,9 +3,10 @@ package io.soabase.core.features.attributes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.dropwizard.jackson.Discoverable;
 import io.dropwizard.setup.Environment;
+import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = NullDynamicAttributesFactory.class)
 public interface SoaDynamicAttributesFactory extends Discoverable
 {
-    public SoaDynamicAttributes build(Environment environment, String groupName, String instanceName);
+    public SoaDynamicAttributes build(Environment environment, List<String> scopes);
 }

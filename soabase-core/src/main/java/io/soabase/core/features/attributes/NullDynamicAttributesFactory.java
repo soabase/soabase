@@ -5,12 +5,13 @@ import com.google.common.collect.Lists;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.listening.Listenable;
 import java.util.Collection;
+import java.util.List;
 
 @JsonTypeName("default")
 public class NullDynamicAttributesFactory implements SoaDynamicAttributesFactory
 {
     @Override
-    public SoaDynamicAttributes build(Environment environment, String groupName, String instanceName)
+    public SoaDynamicAttributes build(Environment environment, List<String> scopes)
     {
         return new NullAttributes();
     }

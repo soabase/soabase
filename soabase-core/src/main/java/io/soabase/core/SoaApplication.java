@@ -14,7 +14,6 @@ import io.soabase.core.rest.DynamicAttributeApis;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
-import javax.ws.rs.client.Client;
 import java.io.Closeable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -78,8 +77,7 @@ public abstract class SoaApplication<T extends SoaConfiguration> extends Applica
 
         SoaDiscovery discovery = checkManaged(environment, configuration.getDiscoveryFactory().build(environment));
         SoaDynamicAttributes attributes = checkManaged(environment, configuration.getAttributesFactory().build(environment, scopes));
-        Client restClient = checkManaged(environment, configuration.getClientFactory().build(discovery, environment));
-        features.set(new SoaFeatures(configuration.getInstanceName(), discovery, attributes, restClient));
+        features.set(new SoaFeatures(configuration.getInstanceName(), discovery, attributes));
 
         soaRun(features.get(), configuration, environment);
     }

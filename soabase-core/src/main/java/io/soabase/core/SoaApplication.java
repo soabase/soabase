@@ -11,9 +11,14 @@ import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.core.rest.DynamicAttributeApis;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import javax.ws.rs.client.Client;
 import java.io.Closeable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -64,6 +69,8 @@ public abstract class SoaApplication<T extends SoaConfiguration> extends Applica
         environment.jersey().register(DiscoveryApis.class);
         environment.jersey().register(DynamicAttributeApis.class);
 
+        checkCorsFilter(configuration, environment);
+
         updateInstanceName(configuration);
         List<String> scopes = Lists.newArrayList();
         scopes.add(configuration.getInstanceName());
@@ -71,7 +78,8 @@ public abstract class SoaApplication<T extends SoaConfiguration> extends Applica
 
         SoaDiscovery discovery = checkManaged(environment, configuration.getDiscoveryFactory().build(environment));
         SoaDynamicAttributes attributes = checkManaged(environment, configuration.getAttributesFactory().build(environment, scopes));
-        features.set(new SoaFeatures(discovery, attributes, configuration.getInstanceName()));
+        Client restClient = checkManaged(environment, configuration.getClientFactory().build(discovery, environment));
+        features.set(new SoaFeatures(configuration.getInstanceName(), discovery, attributes, restClient));
 
         soaRun(features.get(), configuration, environment);
     }
@@ -92,6 +100,22 @@ public abstract class SoaApplication<T extends SoaConfiguration> extends Applica
     protected abstract void soaRun(SoaFeatures features, T configuration, Environment environment);
 
     protected abstract void soaInitialize(Bootstrap<T> bootstrap);
+
+    private void checkCorsFilter(T configuration, Environment environment)
+    {
+        if ( configuration.isAddCorsFilter() )
+        {
+            // from http://jitterted.com/tidbits/2014/09/12/cors-for-dropwizard-0-7-x/
+
+            FilterRegistration.Dynamic filter = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+            filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+            filter.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,PUT,POST,DELETE,OPTIONS");
+            filter.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
+            filter.setInitParameter(CrossOriginFilter.ACCESS_CONTROL_ALLOW_ORIGIN_HEADER, "*");
+            filter.setInitParameter("allowedHeaders", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin");
+            filter.setInitParameter("allowCredentials", "true");
+        }
+    }
 
     private void updateInstanceName(T configuration) throws UnknownHostException
     {

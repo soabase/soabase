@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableList;
 import io.dropwizard.Configuration;
 import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
+import io.soabase.core.features.client.StandardRestClientFactory;
+import io.soabase.core.features.client.SoaRestClientFactory;
 import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
 import javax.validation.Valid;
@@ -23,6 +25,9 @@ public class SoaConfiguration extends Configuration
     private SoaDynamicAttributesFactory attributesFactory = new NullDynamicAttributesFactory();
 
     @Valid
+    private SoaRestClientFactory clientFactory = new StandardRestClientFactory();
+
+    @Valid
     private int shutdownWaitMaxMs = (int)TimeUnit.SECONDS.toMillis(5);
 
     @Valid
@@ -30,6 +35,9 @@ public class SoaConfiguration extends Configuration
 
     @Valid
     private List<String> scopes = ImmutableList.of();
+
+    @Valid
+    private boolean addCorsFilter = false;
 
     public SoaDiscoveryFactory getDiscoveryFactory()
     {
@@ -88,5 +96,29 @@ public class SoaConfiguration extends Configuration
     public void setScopes(List<String> scopes)
     {
         this.scopes = ImmutableList.copyOf(scopes);
+    }
+
+    @JsonProperty("restClient")
+    public SoaRestClientFactory getClientFactory()
+    {
+        return clientFactory;
+    }
+
+    @JsonProperty("restClient")
+    public void setClientFactory(SoaRestClientFactory clientFactory)
+    {
+        this.clientFactory = clientFactory;
+    }
+
+    @JsonProperty("addCorsFilter")
+    public boolean isAddCorsFilter()
+    {
+        return addCorsFilter;
+    }
+
+    @JsonProperty("addCorsFilter")
+    public void setAddCorsFilter(boolean addCorsFilter)
+    {
+        this.addCorsFilter = addCorsFilter;
     }
 }

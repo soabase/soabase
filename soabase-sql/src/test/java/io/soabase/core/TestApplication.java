@@ -32,8 +32,9 @@ public class TestApplication extends SoaApplication<SoaConfiguration>
     }
 
     @Override
-    protected void soaRun(SoaFeatures features, SoaConfiguration configuration, Environment environment)
+    protected void soaRun(SoaConfiguration configuration, Environment environment)
     {
+        SoaFeatures features = environment.getApplicationContext().getBean(SoaFeatures.class);
         SqlDynamicAttributes attributes = (SqlDynamicAttributes)features.getAttributes();
         AttributeEntityMapper mapper = attributes.getSession().getMapper(AttributeEntityMapper.class);
         mapper.createDatabase();

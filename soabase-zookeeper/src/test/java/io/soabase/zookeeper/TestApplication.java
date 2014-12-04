@@ -5,7 +5,6 @@ import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaApplication;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaMain;
-import io.soabase.core.features.SoaFeatures;
 
 public class TestApplication extends SoaApplication<SoaConfiguration>
 {
@@ -29,7 +28,7 @@ public class TestApplication extends SoaApplication<SoaConfiguration>
     }
 
     @Override
-    protected void soaRun(SoaFeatures features, SoaConfiguration configuration, Environment environment)
+    protected void soaRun(SoaConfiguration configuration, Environment environment)
     {
 
     }

@@ -11,6 +11,7 @@
         <module>soabase-core</module>
         <module>soabase-zookeeper</module>
         <module>soabase-sql</module>
+        <module>soabase-client</module>
     </modules>
 
     <properties>

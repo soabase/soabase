@@ -3,6 +3,7 @@ package io.soabase.core;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import io.dropwizard.Configuration;
+import io.soabase.core.features.SoaFeatures;
 import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
 import io.soabase.core.features.discovery.NullDiscoveryFactory;
@@ -33,6 +34,8 @@ public class SoaConfiguration extends Configuration
 
     @Valid
     private boolean addCorsFilter = false;
+
+    private volatile SoaFeatures features = null;
 
     public SoaDiscoveryFactory getDiscoveryFactory()
     {
@@ -103,5 +106,15 @@ public class SoaConfiguration extends Configuration
     public void setAddCorsFilter(boolean addCorsFilter)
     {
         this.addCorsFilter = addCorsFilter;
+    }
+
+    public SoaFeatures getFeatures()
+    {
+        return features;
+    }
+
+    public void setFeatures(SoaFeatures features)
+    {
+        this.features = features;
     }
 }

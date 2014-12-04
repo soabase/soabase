@@ -17,10 +17,12 @@ public class TestApplication extends SoaApplication<SoaConfiguration>
                 "{" +
                     "\"attributes\":{" +
                     "\"type\": \"fuck\"," +
-                    "\"mybatisConfigUrl\": \"test-mybatis.xml\"," +
+                    "\"mybatisConfigUrl\": \"foo\"," +
                     "}}",
                 "-o",
-                "attributes.type=sql"
+                "attributes.type=sql",
+                "-o",
+                "attributes.mybatisConfigUrl=test-mybatis.xml"
             };
         SoaMain.run(TestApplication.class, args);
     }

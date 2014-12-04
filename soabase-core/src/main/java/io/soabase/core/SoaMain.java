@@ -27,10 +27,10 @@ public class SoaMain
     @Option(name = {"-f", "--config-file"}, description = "Dropwizard config file (yaml or json)")
     public String configFile = null;
 
-    @Option(name = {"-o", "--config-overrides"}, optionEndsValues = true, arity = Integer.MAX_VALUE, description = "List of config overrides in the form: path.to.key=value")
+    @Option(name = {"-o", "--config-overrides"}, description = "List of config overrides in the form: path.to.key=value")
     public List<String> configOverrides = Lists.newArrayList();
 
-    @Option(name = {"-d", "--dropwizard-args"}, optionEndsValues = true, arity = Integer.MAX_VALUE, description = "List of Dropwizard arguments")
+    @Option(name = {"-d", "--dropwizard-args"}, description = "List of Dropwizard arguments")
     public List<String> dropwizardArgs = null;
 
     public static <C extends SoaConfiguration, A extends SoaApplication<C>> SoaApplication<C> runAsync(Class<A> applicationClass, String[] args) throws Exception

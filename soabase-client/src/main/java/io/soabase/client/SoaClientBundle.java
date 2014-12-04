@@ -42,13 +42,14 @@ public class SoaClientBundle<T extends SoaConfiguration & SoaClientAccessor> imp
 
         environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-        HttpClientConfiguration httpClientConfiguration = configuration.getHttpClientConfiguration();
-        HttpClient httpClient = new HttpClientBuilder(environment)
-            .using(httpClientConfiguration)
-            .using(new SoaRetryHandler(httpClientConfiguration.getRetries()))
-            .build(clientName);
+        {
+            HttpClientConfiguration httpClientConfiguration = configuration.getHttpClientConfiguration();
+            HttpClient httpClient = new HttpClientBuilder(environment)
+                .using(httpClientConfiguration)
+                .build(clientName);
 
-        client.set(httpClient);
+            client.set(new WrappedHttpClient(httpClient, features.getDiscovery()));
+        }
 
         AbstractBinder binder = new AbstractBinder()
         {

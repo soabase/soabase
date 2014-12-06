@@ -39,6 +39,7 @@ public abstract class SoaApplication<T extends SoaConfiguration> extends Applica
     @Override
     public final void run(T configuration, Environment environment) throws Exception
     {
+        configuration.lock();
         soaRun(configuration, environment);
     }
 

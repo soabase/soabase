@@ -135,6 +135,7 @@ public class SoaConfiguration extends Configuration
 
     public <T> void putNamed(T o, String name)
     {
+        Preconditions.checkState(!locked.get(), "Configuration has been locked and cannot be modified");
         o = Preconditions.checkNotNull(o, "o cannot be null");
         Object old = named.putIfAbsent(name, o);
         Preconditions.checkArgument(old == null, "Named value already set for: " + name);

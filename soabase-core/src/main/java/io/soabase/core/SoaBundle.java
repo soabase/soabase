@@ -34,10 +34,9 @@ public class SoaBundle<T extends SoaConfiguration> implements ConfiguredBundle<T
         scopes.addAll(configuration.getScopes());
 
         SoaDiscovery discovery = checkManaged(environment, configuration.getDiscoveryFactory().build(configuration, environment));
-        SoaDynamicAttributes attributes = checkManaged(environment, configuration.getAttributesFactory().build(environment, scopes));
+        SoaDynamicAttributes attributes = checkManaged(environment, configuration.getAttributesFactory().build(configuration, environment, scopes));
         configuration.setDiscovery(discovery);
         configuration.setAttributes(attributes);
-        configuration.lock();
 
         AbstractBinder binder = new AbstractBinder()
         {

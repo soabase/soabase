@@ -1,13 +1,11 @@
 package io.soabase.client;
 
-import com.google.common.base.Preconditions;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.client.HttpClientConfiguration;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaConfiguration;
-import io.soabase.core.features.SoaFeatures;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
@@ -16,7 +14,7 @@ import javax.servlet.DispatcherType;
 import java.io.IOException;
 import java.util.EnumSet;
 
-public class SoaClientBundle<T extends SoaConfiguration & SoaClientAccessor> implements ConfiguredBundle<T>
+public class SoaClientBundle<T extends SoaConfiguration & SoaClientConfigurationAccessor> implements ConfiguredBundle<T>
 {
     public static final String HOST_SUBSTITUTION_TOKEN = "$";
     private final String clientName;

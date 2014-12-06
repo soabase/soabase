@@ -2,11 +2,13 @@ package io.soabase.sql.attributes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.google.common.base.Preconditions;
 import io.dropwizard.setup.Environment;
+import io.soabase.core.SoaConfiguration;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
+import org.apache.ibatis.session.SqlSession;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -15,23 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
 {
     @Valid
-    @NotNull
-    private String mybatisConfigUrl;
-
-    @Valid
     private int refreshPeriodSeconds = 30;
-
-    @JsonProperty("mybatisConfigUrl")
-    public String getMybatisConfigUrl()
-    {
-        return mybatisConfigUrl;
-    }
-
-    @JsonProperty("mybatisConfigUrl")
-    public void setMybatisConfigUrl(String mybatisConfigUrl)
-    {
-        this.mybatisConfigUrl = mybatisConfigUrl;
-    }
 
     @JsonProperty("refreshPeriodSeconds")
     public int getRefreshPeriodSeconds()
@@ -46,9 +32,11 @@ public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
     }
 
     @Override
-    public SoaDynamicAttributes build(Environment environment, List<String> scopes)
+    public SoaDynamicAttributes build(SoaConfiguration configuration, Environment environment, List<String> scopes)
     {
-        final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(mybatisConfigUrl, scopes);
+        SqlSession sqlSession = Preconditions.checkNotNull(SoaSqlBundle.getSqlSession(configuration), "SoaSqlBundle has not been added or initialized");
+
+        final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(sqlSession, scopes);
         ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("SoaDynamicAttributes-%d", true).build();
         Runnable command = new Runnable()
         {

@@ -3,6 +3,7 @@ package io.soabase.core.features.attributes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.common.collect.Lists;
 import io.dropwizard.setup.Environment;
+import io.soabase.core.SoaConfiguration;
 import io.soabase.core.listening.Listenable;
 import java.util.Collection;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public class NullDynamicAttributesFactory implements SoaDynamicAttributesFactory
 {
     @Override
-    public SoaDynamicAttributes build(Environment environment, List<String> scopes)
+    public SoaDynamicAttributes build(SoaConfiguration configuration, Environment environment, List<String> scopes)
     {
         return new NullAttributes();
     }

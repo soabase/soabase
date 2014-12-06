@@ -21,10 +21,11 @@ abstract class RetryLoop<T>
         boolean done = false;
         while ( !done )
         {
+            SoaDiscoveryInstance instance = hostToInstance(client, originalHost);
             try
             {
                 ++count;
-                response = execute(original, context, hostToInstance(client, originalHost));
+                response = execute(original, context, instance);
                 if ( client.isRetry500s() )
                 {
                     int status = response.getStatusLine().getStatusCode();
@@ -37,7 +38,7 @@ abstract class RetryLoop<T>
             }
             catch ( IOException e )
             {
-                client.getDiscovery().noteError(null);
+                client.getDiscovery().noteError(null, null);    // TODO
                 if ( !client.getRetryHandler().retryRequest(e, count, context) )
                 {
                     throw e;

@@ -4,5 +4,5 @@ public interface SoaDiscovery
 {
     public SoaDiscoveryInstance getInstance(String serviceName);
 
-    void noteError(SoaDiscoveryInstance service);
+    void noteError(String serviceName, SoaDiscoveryInstance errorInstance);
 }

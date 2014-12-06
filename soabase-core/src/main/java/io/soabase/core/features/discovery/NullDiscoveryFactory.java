@@ -18,7 +18,7 @@ public class NullDiscoveryFactory implements SoaDiscoveryFactory
             }
 
             @Override
-            public void noteError(SoaDiscoveryInstance service)
+            public void noteError(String serviceName, SoaDiscoveryInstance errorInstance)
             {
                 // NOP
             }

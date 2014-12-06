@@ -2,10 +2,6 @@ package io.soabase.core;
 
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.features.SoaFeatures;
-import io.soabase.sql.attributes.AttributeEntity;
-import io.soabase.sql.attributes.AttributeEntityMapper;
-import io.soabase.sql.attributes.SqlDynamicAttributes;
 
 public class TestApplication extends SoaApplication<SoaConfiguration>
 {
@@ -36,6 +32,7 @@ public class TestApplication extends SoaApplication<SoaConfiguration>
     @Override
     protected void soaRun(SoaConfiguration configuration, Environment environment)
     {
+/*
         SoaFeatures features = environment.getApplicationContext().getBean(SoaFeatures.class);
         SqlDynamicAttributes attributes = (SqlDynamicAttributes)features.getAttributes();
         AttributeEntityMapper mapper = attributes.getSession().getMapper(AttributeEntityMapper.class);
@@ -44,6 +41,7 @@ public class TestApplication extends SoaApplication<SoaConfiguration>
         mapper.insert(attribute);
         attribute.setfVALUE("yo yo yo");
         mapper.update(attribute);
+*/
     }
 
     @Override

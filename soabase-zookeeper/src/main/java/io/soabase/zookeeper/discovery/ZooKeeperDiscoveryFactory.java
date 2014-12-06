@@ -1,35 +1,20 @@
 package io.soabase.zookeeper.discovery;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.google.common.base.Preconditions;
 import io.dropwizard.setup.Environment;
+import io.soabase.core.SoaConfiguration;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import org.apache.curator.framework.CuratorFramework;
 
 @JsonTypeName("zookeeper")
 public class ZooKeeperDiscoveryFactory implements SoaDiscoveryFactory
 {
-    @Valid
-    @NotNull
-    private String connectionString;
-
     @Override
-    public SoaDiscovery build(Environment environment)
+    public SoaDiscovery build(SoaConfiguration configuration, Environment environment)
     {
-        return new ZooKeeperDiscovery(this);
-    }
-
-    @JsonProperty("connectionString")
-    public String getConnectionString()
-    {
-        return connectionString;
-    }
-
-    @JsonProperty("connectionString")
-    public void setConnectionString(String connectionString)
-    {
-        this.connectionString = connectionString;
+        CuratorFramework curatorFramework = Preconditions.checkNotNull(CuratorBundle.getCuratorFramework(configuration), "CuratorBundle has not been added or initialized");
+        return new ZooKeeperDiscovery(curatorFramework, this);
     }
 }

@@ -1,6 +1,6 @@
 package io.soabase.core.rest;
 
-import io.soabase.core.features.SoaFeatures;
+import io.soabase.core.SoaConfiguration;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -8,12 +8,12 @@ import javax.ws.rs.Path;
 @Path("/soa/discovery")
 public class DiscoveryApis
 {
-    private final SoaFeatures features;
+    private final SoaConfiguration configuration;
 
     @Inject
-    public DiscoveryApis(SoaFeatures features)
+    public DiscoveryApis(SoaConfiguration configuration)
     {
-        this.features = features;
+        this.configuration = configuration;
     }
 
     @GET

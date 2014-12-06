@@ -15,14 +15,12 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import javax.servlet.DispatcherType;
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SoaClientBundle<T extends SoaConfiguration & SoaClientAccessor> implements ConfiguredBundle<T>
 {
     public static final String HOST_SUBSTITUTION_TOKEN = "$";
     private final String clientName;
     private final boolean retry500s;
-    private final AtomicReference<HttpClient> client = new AtomicReference<>();
 
     public SoaClientBundle(String clientName)
     {
@@ -35,24 +33,23 @@ public class SoaClientBundle<T extends SoaConfiguration & SoaClientAccessor> imp
         this.retry500s = retry500s;
     }
 
-    public HttpClient getClient()
-    {
-        return client.get();
-    }
-
     @Override
     public void initialize(Bootstrap<?> bootstrap)
     {
         // NOP
     }
 
+    public static HttpClient getClient(SoaConfiguration configuration, String clientName)
+    {
+        return configuration.getNamed(HttpClient.class, toKey(clientName));
+    }
+
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        SoaFeatures features = Preconditions.checkNotNull(configuration.getFeatures(), "features have not been set yet. Check execution order.");
-
         environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
+        final HttpClient client;
         {
             HttpRequestRetryHandler nullRetry = new HttpRequestRetryHandler()
             {
@@ -69,7 +66,8 @@ public class SoaClientBundle<T extends SoaConfiguration & SoaClientAccessor> imp
                 .using(nullRetry)   // Apache's retry mechanism does not allow changing hosts. Do retries manually
                 .build(clientName);
 
-            client.set(new WrappedHttpClient(httpClient, features.getDiscovery(), httpClientConfiguration.getRetries(), retry500s));
+            client = new WrappedHttpClient(httpClient, configuration.getDiscovery(), httpClientConfiguration.getRetries(), retry500s);
+            configuration.putNamed(client, toKey(clientName));
         }
 
         AbstractBinder binder = new AbstractBinder()
@@ -77,9 +75,14 @@ public class SoaClientBundle<T extends SoaConfiguration & SoaClientAccessor> imp
             @Override
             protected void configure()
             {
-                bind(client.get()).named(clientName).to(HttpClient.class);
+                bind(client).named(clientName).to(HttpClient.class);
             }
         };
         environment.jersey().register(binder);
+    }
+
+    private static String toKey(String clientName)
+    {
+        return SoaClientBundle.class.getName() + "." + clientName;
     }
 }

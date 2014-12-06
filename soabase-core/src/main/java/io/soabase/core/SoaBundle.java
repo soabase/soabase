@@ -5,7 +5,6 @@ import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.features.SoaFeatures;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.rest.DiscoveryApis;
@@ -22,7 +21,7 @@ import java.util.List;
 public class SoaBundle<T extends SoaConfiguration> implements ConfiguredBundle<T>
 {
     @Override
-    public void run(T configuration, Environment environment) throws Exception
+    public void run(final T configuration, Environment environment) throws Exception
     {
         environment.jersey().register(DiscoveryApis.class);
         environment.jersey().register(DynamicAttributeApis.class);
@@ -34,17 +33,18 @@ public class SoaBundle<T extends SoaConfiguration> implements ConfiguredBundle<T
         scopes.add(configuration.getInstanceName());
         scopes.addAll(configuration.getScopes());
 
-        SoaDiscovery discovery = checkManaged(environment, configuration.getDiscoveryFactory().build(environment));
+        SoaDiscovery discovery = checkManaged(environment, configuration.getDiscoveryFactory().build(configuration, environment));
         SoaDynamicAttributes attributes = checkManaged(environment, configuration.getAttributesFactory().build(environment, scopes));
-        final SoaFeatures features = new SoaFeatures(configuration.getInstanceName(), discovery, attributes);
-        configuration.setFeatures(features);
+        configuration.setDiscovery(discovery);
+        configuration.setAttributes(attributes);
+        configuration.lock();
 
         AbstractBinder binder = new AbstractBinder()
         {
             @Override
             protected void configure()
             {
-                bind(features).to(SoaFeatures.class);
+                bind(configuration).to(SoaConfiguration.class);
             }
         };
         environment.jersey().register(binder);

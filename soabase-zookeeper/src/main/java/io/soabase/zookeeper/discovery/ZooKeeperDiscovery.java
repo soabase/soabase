@@ -11,8 +11,6 @@ import io.dropwizard.lifecycle.Managed;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
@@ -23,14 +21,11 @@ import java.util.concurrent.TimeUnit;
 // TODO
 public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void>> implements SoaDiscovery, Managed, RemovalListener<String, ServiceProvider<Void>>
 {
-    private final CuratorFramework curator;
     private final ServiceDiscovery<Void> discovery;
     private final LoadingCache<String, ServiceProvider<Void>> providers;
 
-    public ZooKeeperDiscovery(ZooKeeperDiscoveryFactory factory)
+    public ZooKeeperDiscovery(CuratorFramework curator, ZooKeeperDiscoveryFactory factory)
     {
-        // TODO
-
         providers = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)  // TODO config
             .removalListener(this)
@@ -38,7 +33,6 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
 
         try
         {
-            curator = CuratorFrameworkFactory.newClient(factory.getConnectionString(), new RetryOneTime(1));
             discovery = ServiceDiscoveryBuilder
                 .builder(Void.class)
                 .basePath("/")  // TODO
@@ -138,7 +132,6 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     @Override
     public void start() throws Exception
     {
-        curator.start();
         discovery.start();
     }
 
@@ -146,8 +139,6 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     public void stop() throws Exception
     {
         providers.invalidateAll();
-
         CloseableUtils.closeQuietly(discovery);
-        CloseableUtils.closeQuietly(curator);
     }
 }

@@ -4,17 +4,14 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.features.SoaFeatures;
 import java.io.Closeable;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class SoaApplication<T extends SoaConfiguration> extends Application<T> implements Closeable
 {
-    private final AtomicReference<SoaFeatures> features = new AtomicReference<>();
     private final AtomicBoolean isOpen = new AtomicBoolean(true);
 
     @Override

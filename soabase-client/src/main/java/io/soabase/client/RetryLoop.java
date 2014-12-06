@@ -1,28 +1,21 @@
 package io.soabase.client;
 
+import com.google.common.base.Preconditions;
+import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import java.io.IOException;
 
 abstract class RetryLoop<T>
 {
-    private final HttpRequestRetryHandler retryHandler;
-    private final T original;
-    private final HttpContext context;
-    private final boolean retry500s;
-
-    RetryLoop(HttpRequestRetryHandler retryHandler, T original, HttpContext context, boolean retry500s)
+    HttpResponse run(WrappedHttpClient client, T original, HttpContext context, String originalHost) throws IOException
     {
-        this.retryHandler = retryHandler;
-        this.original = original;
-        this.context = (context != null) ? context : new BasicHttpContext();
-        this.retry500s = retry500s;
-    }
+        if ( context == null )
+        {
+            context = new BasicHttpContext();
+        }
 
-    HttpResponse run() throws IOException
-    {
         HttpResponse response = null;
         int count = 0;
         boolean done = false;
@@ -31,8 +24,8 @@ abstract class RetryLoop<T>
             try
             {
                 ++count;
-                response = execute(original, context);
-                if ( retry500s )
+                response = execute(original, context, hostToInstance(client, originalHost));
+                if ( client.isRetry500s() )
                 {
                     int status = response.getStatusLine().getStatusCode();
                     if ( (status >= 500) && (status <= 599) )
@@ -44,7 +37,8 @@ abstract class RetryLoop<T>
             }
             catch ( IOException e )
             {
-                if ( !retryHandler.retryRequest(e, count, context) )
+                client.getDiscovery().noteError(null);
+                if ( !client.getRetryHandler().retryRequest(e, count, context) )
                 {
                     throw e;
                 }
@@ -53,5 +47,19 @@ abstract class RetryLoop<T>
         return response;
     }
 
-    protected abstract HttpResponse execute(T original, HttpContext context) throws IOException;
+    protected RetryLoop()
+    {
+    }
+
+    protected abstract HttpResponse execute(T original, HttpContext context, SoaDiscoveryInstance instance) throws IOException;
+
+    private SoaDiscoveryInstance hostToInstance(WrappedHttpClient client, String host)
+    {
+        if ( host.startsWith(SoaClientBundle.HOST_SUBSTITUTION_TOKEN) && (host.length() > SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length()) )
+        {
+            String serviceName = host.substring(SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length());
+            return Preconditions.checkNotNull(client.getDiscovery().getInstance(serviceName), "No instance found for " + serviceName);
+        }
+        return null;
+    }
 }

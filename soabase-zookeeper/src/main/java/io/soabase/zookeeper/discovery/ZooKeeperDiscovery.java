@@ -11,4 +11,10 @@ public class ZooKeeperDiscovery implements SoaDiscovery
     {
         return null;
     }
+
+    @Override
+    public void noteError(SoaDiscoveryInstance service)
+    {
+        
+    }
 }

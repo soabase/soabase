@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SoaClientBundle<T extends SoaConfiguration & SoaClientAccessor> implements ConfiguredBundle<T>
 {
+    public static final String HOST_SUBSTITUTION_TOKEN = "$";
     private final String clientName;
     private final boolean retry500s;
     private final AtomicReference<HttpClient> client = new AtomicReference<>();

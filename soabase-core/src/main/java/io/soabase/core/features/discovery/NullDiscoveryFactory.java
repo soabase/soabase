@@ -16,6 +16,12 @@ public class NullDiscoveryFactory implements SoaDiscoveryFactory
             {
                 return null;
             }
+
+            @Override
+            public void noteError(SoaDiscoveryInstance service)
+            {
+                // NOP
+            }
         };
     }
 }

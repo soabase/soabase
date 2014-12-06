@@ -1,6 +1,5 @@
 package io.soabase.client;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
@@ -26,8 +25,6 @@ class WrappedHttpClient implements HttpClient
     private final SoaDiscovery discovery;
     private final boolean retry500s;
     private final HttpRequestRetryHandler retryHandler;
-
-    public static final String HOST_SUBSTITUTION_TOKEN = "$";
 
     public WrappedHttpClient(HttpClient implementation, SoaDiscovery discovery, int retries, boolean retry500s)
     {
@@ -58,14 +55,14 @@ class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpUriRequest request, HttpContext context) throws IOException
     {
-        return new RetryLoop<HttpUriRequest>(retryHandler, request, context, retry500s) {
+        return new RetryLoop<HttpUriRequest>() {
             @Override
-            protected HttpResponse execute(HttpUriRequest originalRequest, HttpContext context) throws IOException
+            protected HttpResponse execute(HttpUriRequest originalRequest, HttpContext context, SoaDiscoveryInstance instance) throws IOException
             {
-                HttpUriRequest request = filterRequest(originalRequest);
+                HttpUriRequest request = filterRequest(originalRequest, instance);
                 return implementation.execute(request, context);
             }
-        }.run();
+        }.run(this, request, context, request.getURI().getHost());
     }
 
     @Override
@@ -77,48 +74,61 @@ class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpHost target, final HttpRequest request, HttpContext context) throws IOException
     {
-        return new RetryLoop<HttpHost>(retryHandler, target, context, retry500s) {
+        return new RetryLoop<HttpHost>() {
             @Override
-            protected HttpResponse execute(HttpHost original, HttpContext context) throws IOException
+            protected HttpResponse execute(HttpHost original, HttpContext context, SoaDiscoveryInstance instance) throws IOException
             {
-                HttpHost target = filterTarget(original);
+                HttpHost target = filterTarget(original, instance);
                 return implementation.execute(target, request, context);
             }
-        }.run();
+        }.run(this, target, context, target.getHostName());
     }
 
     @Override
     public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler) throws IOException
     {
-        request = filterRequest(request);
+        // TODO
         return implementation.execute(request, responseHandler);
     }
 
     @Override
     public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler, HttpContext context) throws IOException
     {
-        request = filterRequest(request);
+        // TODO
         return implementation.execute(request, responseHandler, context);
     }
 
     @Override
     public <T> T execute(HttpHost target, HttpRequest request, ResponseHandler<? extends T> responseHandler) throws IOException
     {
-        target = filterTarget(target);
+        // TODO
         return implementation.execute(target, request, responseHandler);
     }
 
     @Override
     public <T> T execute(HttpHost target, HttpRequest request, ResponseHandler<? extends T> responseHandler, HttpContext context) throws IOException
     {
-        target = filterTarget(target);
+        // TODO
         return implementation.execute(target, request, responseHandler, context);
     }
 
-    private HttpHost filterTarget(HttpHost target)
+    SoaDiscovery getDiscovery()
     {
-        String host = target.getHostName();
-        SoaDiscoveryInstance instance = hostToInstance(host);
+        return discovery;
+    }
+
+    boolean isRetry500s()
+    {
+        return retry500s;
+    }
+
+    HttpRequestRetryHandler getRetryHandler()
+    {
+        return retryHandler;
+    }
+
+    private HttpHost filterTarget(HttpHost target, SoaDiscoveryInstance instance)
+    {
         if ( instance != null )
         {
             String scheme = instance.isForceSsl() ? "https" : target.getSchemeName();
@@ -127,34 +137,22 @@ class WrappedHttpClient implements HttpClient
         return target;
     }
 
-    private HttpUriRequest filterRequest(HttpUriRequest request)
+    private HttpUriRequest filterRequest(HttpUriRequest request, SoaDiscoveryInstance instance)
     {
-        URI uri = request.getURI();
-        String host = uri.getHost();
-        SoaDiscoveryInstance instance = hostToInstance(host);
         if ( instance != null )
         {
             try
             {
+                URI uri = request.getURI();
                 String scheme = instance.isForceSsl() ? "https" : uri.getScheme();
                 uri = new URI(scheme, uri.getUserInfo(), instance.getHost(), instance.getPort(), uri.getRawPath(), uri.getRawQuery(), uri.getRawFragment());
+                request = new WrappedHttpUriRequest(request, uri);
             }
             catch ( URISyntaxException e )
             {
                 throw new RuntimeException(e);
             }
-            request = new WrappedHttpUriRequest(request, uri);
         }
         return request;
-    }
-
-    private SoaDiscoveryInstance hostToInstance(String host)
-    {
-        if ( host.startsWith(HOST_SUBSTITUTION_TOKEN) && (host.length() > 1) )
-        {
-            String serviceName = host.substring(1);
-            return Preconditions.checkNotNull(discovery.getInstance(serviceName), "No instance found for " + serviceName);
-        }
-        return null;
     }
 }

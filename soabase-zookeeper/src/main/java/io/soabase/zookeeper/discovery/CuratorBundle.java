@@ -53,7 +53,7 @@ public class CuratorBundle<T extends Configuration> implements ConfiguredBundle<
         environment.lifecycle().manage(managed);
 
         SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
-        soaConfiguration.putNamed(curator, CuratorBundle.class.getName());
+        soaConfiguration.putNamed(curator, curatorConfiguration.getCuratorName());
     }
 
     @Override

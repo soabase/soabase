@@ -50,7 +50,7 @@ public class TestApplication extends Application<TestConfiguration>
     @Override
     public void run(TestConfiguration configuration, Environment environment) throws Exception
     {
-        SqlSession sqlSession = SqlBundle.getSqlSession(configuration.getSoaConfiguration());
+        SqlSession sqlSession = configuration.getSoaConfiguration().getNamed(SqlSession.class, SoaFeatures.DEFAULT_NAME);
         AttributeEntityMapper mapper = sqlSession.getMapper(AttributeEntityMapper.class);
         mapper.createTable();
         AttributeEntity attribute = new AttributeEntity("hey", "", "my value");

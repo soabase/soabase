@@ -11,12 +11,14 @@ import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaCli;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaFeatures;
 import io.soabase.example.mocks.MockDatabase;
 import io.soabase.example.mocks.MockZooKeeper;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
+import org.apache.ibatis.session.SqlSession;
 import java.io.Closeable;
 import java.util.List;
 
@@ -70,17 +72,20 @@ public class ExampleApp extends Application<ExampleConfiguration> implements Man
         MockZooKeeper mockZooKeeper = new MockZooKeeper();
         closeables.add(mockZooKeeper);
 
-        arguments = new String[]
+        if ( arguments.length == 0 )
         {
-            "-o",
-            "curator.connectionString=" + mockZooKeeper.getConnectionString(),
-            "-o",
-            "discovery.type=zookeeper",
-            "-o",
-            "attributes.type=sql",
-            "-o",
-            "sql.mybatisConfigUrl=test-mybatis.xml"
-        };
+            arguments = new String[]
+            {
+                "-o",
+                "curator.connectionString=" + mockZooKeeper.getConnectionString(),
+                "-o",
+                "discovery.type=zookeeper",
+                "-o",
+                "attributes.type=sql",
+                "-o",
+                "sql.mybatisConfigUrl=test-mybatis.xml"
+            };
+        }
 
         super.run(SoaCli.parseArgs(arguments));
     }
@@ -88,7 +93,7 @@ public class ExampleApp extends Application<ExampleConfiguration> implements Man
     @Override
     public void run(ExampleConfiguration configuration, Environment environment) throws Exception
     {
-        closeables.add(new MockDatabase(SqlBundle.getSqlSession(configuration.getSoaConfiguration())));
+        closeables.add(new MockDatabase(configuration.getSoaConfiguration().getNamed(SqlSession.class, SoaFeatures.DEFAULT_NAME)));
         environment.lifecycle().manage(this);
     }
 

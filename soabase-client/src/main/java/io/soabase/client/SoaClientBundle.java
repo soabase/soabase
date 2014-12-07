@@ -46,11 +46,6 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
         // NOP
     }
 
-    public static HttpClient getClient(SoaConfiguration configuration, String clientName)
-    {
-        return configuration.getNamed(HttpClient.class, toKey(clientName));
-    }
-
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
@@ -75,7 +70,7 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
 
             SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
             client = new WrappedHttpClient(httpClient, soaConfiguration.getDiscovery(), httpClientConfiguration.getRetries(), retry500s);
-            soaConfiguration.putNamed(client, toKey(clientName));
+            soaConfiguration.putNamed(client, clientName);
         }
 
         AbstractBinder binder = new AbstractBinder()
@@ -87,10 +82,5 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
             }
         };
         environment.jersey().register(binder);
-    }
-
-    private static String toKey(String clientName)
-    {
-        return SoaClientBundle.class.getName() + "." + clientName;
     }
 }

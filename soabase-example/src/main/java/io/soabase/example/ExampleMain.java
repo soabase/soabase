@@ -4,7 +4,7 @@ public class ExampleMain
 {
     public static void main(String[] args) throws Exception
     {
-        // args are manually constructed in ExampleApp
-        new ExampleApp().run();
+        // args are manually constructed in ExampleApp if args length is 0
+        new ExampleApp().run(args);
     }
 }

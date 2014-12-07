@@ -3,8 +3,11 @@ package io.soabase.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.base.Function;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.airlift.airline.Command;
 import io.airlift.airline.Help;
@@ -12,10 +15,16 @@ import io.airlift.airline.HelpOption;
 import io.airlift.airline.Option;
 import io.airlift.airline.SingleCommand;
 import io.dropwizard.Application;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +45,10 @@ public class SoaCli
     @Option(name = {"-o", "--config-overrides"}, description = "List of config overrides in the form: path.to.key=value")
     public List<String> configOverrides = Lists.newArrayList();
 
-    @Option(name = {"-d", "--dropwizard-args"}, description = "List of Dropwizard arguments. If present, you _must_ include the server command. Use " + CONFIG_SUBSTITUTION + " to have the config file location substituted.")
+    @Option(name = {"--config-overrides-file"}, description = "File containing config overrides, 1 per line, in the form: path.to.key=value (i.e. a properties file with comments, etc.)")
+    public String configOverridesFile = null;
+
+    @Option(name = {"-d", "--dropwizard-args"}, description = "List of Dropwizard arguments. If present, you _must_ include the \"server\" command. Use " + CONFIG_SUBSTITUTION + " to have the config file location substituted.")
     public List<String> dropwizardArgs = null;
 
     public static final String CONFIG_SUBSTITUTION = "$CONFIG";
@@ -46,7 +58,7 @@ public class SoaCli
         SoaCli soaCli = SingleCommand.singleCommand(SoaCli.class).parse(args);
         if ( soaCli.helpOption.showHelpIfRequested() )
         {
-            return null;
+            System.exit(0);
         }
 
         File configFile = getConfigFile(soaCli);
@@ -64,11 +76,16 @@ public class SoaCli
         }
         else
         {
-            int index = soaCli.dropwizardArgs.indexOf(CONFIG_SUBSTITUTION);
-            if ( index >= 0 )
+            final String configFileCanonicalPath = configFile.getCanonicalPath();
+            soaCli.dropwizardArgs = Lists.newArrayList(Iterables.transform(soaCli.dropwizardArgs, new Function<String, String>()
             {
-                soaCli.dropwizardArgs.set(index, configFile.getCanonicalPath());
-            }
+                @Nullable
+                @Override
+                public String apply(String str)
+                {
+                    return str.equals(CONFIG_SUBSTITUTION) ? configFileCanonicalPath : str;
+                }
+            }));
         }
 
         return soaCli.dropwizardArgs.toArray(new String[soaCli.dropwizardArgs.size()]);
@@ -93,7 +110,7 @@ public class SoaCli
     {
         boolean hasConfigFile = (soaCli.configFile != null);
         boolean hasConfigStr = (soaCli.configStr != null);
-        boolean hasOverrides = (soaCli.configOverrides.size() > 0);
+        boolean hasOverrides = (soaCli.configOverrides.size() > 0) || (soaCli.configOverridesFile != null);
 
         if ( !hasConfigFile && !hasConfigStr && !hasOverrides )
         {
@@ -127,6 +144,18 @@ public class SoaCli
             node = mapper.createObjectNode();
         }
 
+        Map<String, String> overrides = Maps.newHashMap();
+        if ( soaCli.configOverridesFile != null )
+        {
+            Properties properties = new Properties();
+            try ( InputStream in = new BufferedInputStream(new FileInputStream(soaCli.configOverridesFile)) )
+            {
+                properties.load(in);
+            }
+            //noinspection unchecked
+            overrides.putAll((Map)properties);
+        }
+
         for ( String override : soaCli.configOverrides )
         {
             List<String> parts = Splitter.on('=').limit(2).trimResults().splitToList(override);
@@ -135,16 +164,20 @@ public class SoaCli
                 Help.help(soaCli.helpOption.commandMetadata);
                 throw new IllegalArgumentException("Badly formed config override: " + override);
             }
+            overrides.put(parts.get(0), parts.get(1));
+        }
 
+        for ( Map.Entry<String, String> entry : overrides.entrySet() )
+        {
             ObjectNode work = node;
-            List<String> fieldList = Splitter.on('.').trimResults().splitToList(parts.get(0));
+            List<String> fieldList = Splitter.on('.').trimResults().splitToList(entry.getKey());
             for ( int i = 0; i < fieldList.size(); ++i )
             {
                 String field = fieldList.get(i);
                 boolean isLast = (i + 1) == fieldList.size();
                 if ( isLast )
                 {
-                    work.put(field, parts.get(1));
+                    work.put(field, entry.getValue());
                 }
                 else
                 {

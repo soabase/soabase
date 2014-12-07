@@ -54,10 +54,26 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             protected void configure()
             {
                 bind(configuration).to(Configuration.class);
-                bind(soaConfiguration).to(SoaConfiguration.class);
+                bind(soaConfiguration).to(SoaFeatures.class);
             }
         };
         environment.jersey().register(binder);
+
+        Managed managed = new Managed()
+        {
+            @Override
+            public void start() throws Exception
+            {
+                soaConfiguration.lock();
+            }
+
+            @Override
+            public void stop() throws Exception
+            {
+                // NOP
+            }
+        };
+        environment.lifecycle().manage(managed);
     }
 
     @Override

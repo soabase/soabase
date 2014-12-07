@@ -14,11 +14,12 @@ import io.soabase.core.features.discovery.SoaDiscoveryFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class SoaConfiguration extends Configuration
+public class SoaConfiguration extends Configuration implements SoaFeatures
 {
     @Valid
     @NotNull
@@ -43,7 +44,7 @@ public class SoaConfiguration extends Configuration
     private final AtomicBoolean locked = new AtomicBoolean(false);
     private volatile SoaDiscovery discovery;
     private volatile SoaDynamicAttributes attributes;
-    private final ConcurrentMap<String, Object> named = Maps.newConcurrentMap();
+    private final ConcurrentMap<Class<?>, ConcurrentMap<String, Object>> named = Maps.newConcurrentMap();
 
     public SoaDiscoveryFactory getDiscoveryFactory()
     {
@@ -129,16 +130,22 @@ public class SoaConfiguration extends Configuration
 
     public <T> T getNamed(Class<T> clazz, String name)
     {
-        Object o = named.get(name);
+        Map<String, Object> map = named.get(clazz);
+        Object o = map.get(name);
         return (o != null) ? clazz.cast(o) : null;
     }
 
     public <T> void putNamed(T o, String name)
     {
         Preconditions.checkState(!locked.get(), "Configuration has been locked and cannot be modified");
-        o = Preconditions.checkNotNull(o, "o cannot be null");
-        Object old = named.putIfAbsent(name, o);
-        Preconditions.checkArgument(old == null, "Named value already set for: " + name);
+        o = Preconditions.checkNotNull(o, "object cannot be null");
+
+        ConcurrentMap<String, Object> newMap = Maps.newConcurrentMap();
+        ConcurrentMap<String, Object> oldMap = named.putIfAbsent(o.getClass(), newMap);
+        ConcurrentMap<String, Object> useMap = (oldMap != null) ? oldMap : newMap;
+
+        Object old = useMap.putIfAbsent(name, o);
+        Preconditions.checkArgument(old == null, "Named value already set for: " + name + " and " + o.getClass().getName());
     }
 
     public SoaDiscovery getDiscovery()

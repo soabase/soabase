@@ -8,13 +8,13 @@ import io.dropwizard.setup.Environment;
 import io.soabase.core.CheckedConfigurationAccessor;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaFeatures;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class SqlBundle<T extends io.dropwizard.Configuration> implements ConfiguredBundle<T>
@@ -22,11 +22,6 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
     private final ConfigurationAccessor<T, SqlConfiguration> sqlAccessor;
     private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    public static SqlSession getSqlSession(SoaConfiguration configuration)
-    {
-        return configuration.getNamed(SqlSession.class, SqlBundle.class.getName());
-    }
 
     public SqlBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SqlConfiguration> sqlAccessor)
     {
@@ -48,7 +43,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
                 final SqlSession session = sqlSessionFactory.openSession();
 
                 SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
-                soaConfiguration.putNamed(session, SqlBundle.class.getName());
+                soaConfiguration.putNamed(session, sqlConfiguration.getSessionName());
                 Managed managed = new Managed()
                 {
                     @Override

@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.common.base.Preconditions;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
 import org.apache.ibatis.session.SqlSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +20,10 @@ public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
 {
     @Valid
     private int refreshPeriodSeconds = 30;
+
+    @Valid
+    @NotNull
+    private String sessionName = SoaFeatures.DEFAULT_NAME;
 
     @JsonProperty("refreshPeriodSeconds")
     public int getRefreshPeriodSeconds()
@@ -31,10 +37,22 @@ public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
         this.refreshPeriodSeconds = refreshPeriodSeconds;
     }
 
+    @JsonProperty("name")
+    public String getSessionName()
+    {
+        return sessionName;
+    }
+
+    @JsonProperty("name")
+    public void setSessionName(String sessionName)
+    {
+        this.sessionName = sessionName;
+    }
+
     @Override
     public SoaDynamicAttributes build(SoaConfiguration configuration, Environment environment, List<String> scopes)
     {
-        SqlSession sqlSession = Preconditions.checkNotNull(SqlBundle.getSqlSession(configuration), "SoaSqlBundle has not been added or initialized");
+        SqlSession sqlSession = Preconditions.checkNotNull(configuration.getNamed(SqlSession.class, sessionName), "SoaSqlBundle has not been added or initialized");
 
         final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(sqlSession, scopes);
         ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("SoaDynamicAttributes-%d", true).build();

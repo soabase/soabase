@@ -12,6 +12,8 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -19,6 +21,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
 {
     private final ConfigurationAccessor<T, SqlConfiguration> sqlAccessor;
     private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public static SqlSession getSqlSession(SoaConfiguration configuration)
     {
@@ -63,9 +66,9 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
                 environment.lifecycle().manage(managed);
             }
         }
-        catch ( IOException e )
+        catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could not initialize MyBatis", e);
             throw new RuntimeException(e);
         }
     }

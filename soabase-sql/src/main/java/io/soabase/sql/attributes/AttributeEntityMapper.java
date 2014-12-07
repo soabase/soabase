@@ -11,7 +11,7 @@ public interface AttributeEntityMapper
     public List<AttributeEntity> selectAll();
 
     @Update("CREATE TABLE SoaAttributes (fKEY VARCHAR(255) NOT NULL, fSCOPE VARCHAR(255) NOT NULL, fVALUE VARCHAR(65535), fTIMESTAMP VARCHAR(255) NOT NULL, PRIMARY KEY (fKEY, fSCOPE))")
-    public int createDatabase();
+    public int createTable();
 
     @Insert("INSERT INTO SoaAttributes (fKEY, fSCOPE, fVALUE, fTIMESTAMP) VALUES (#{fKEY}, #{fSCOPE}, #{fVALUE}, #{fTIMESTAMP})")
     public int insert(AttributeEntity attribute);

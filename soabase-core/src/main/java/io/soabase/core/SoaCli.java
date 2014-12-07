@@ -36,8 +36,10 @@ public class SoaCli
     @Option(name = {"-o", "--config-overrides"}, description = "List of config overrides in the form: path.to.key=value")
     public List<String> configOverrides = Lists.newArrayList();
 
-    @Option(name = {"-d", "--dropwizard-args"}, description = "List of Dropwizard arguments")
+    @Option(name = {"-d", "--dropwizard-args"}, description = "List of Dropwizard arguments. If present, you _must_ include the server command. Use " + CONFIG_SUBSTITUTION + " to have the config file location substituted.")
     public List<String> dropwizardArgs = null;
+
+    public static final String CONFIG_SUBSTITUTION = "$CONFIG";
 
     public static String[] parseArgs(String[] args) throws IOException
     {
@@ -58,6 +60,14 @@ public class SoaCli
             else
             {
                 soaCli.dropwizardArgs = Lists.newArrayList("server");
+            }
+        }
+        else
+        {
+            int index = soaCli.dropwizardArgs.indexOf(CONFIG_SUBSTITUTION);
+            if ( index >= 0 )
+            {
+                soaCli.dropwizardArgs.set(index, configFile.getCanonicalPath());
             }
         }
 

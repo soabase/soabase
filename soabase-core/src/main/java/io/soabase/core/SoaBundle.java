@@ -31,7 +31,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     @Override
     public void run(final T configuration, Environment environment) throws Exception
     {
-        SoaConfiguration soaConfiguration = configurationAccessor.accessConfiguration(configuration);
+        final SoaConfiguration soaConfiguration = configurationAccessor.accessConfiguration(configuration);
 
         environment.jersey().register(DiscoveryApis.class);
         environment.jersey().register(DynamicAttributeApis.class);
@@ -54,6 +54,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             protected void configure()
             {
                 bind(configuration).to(Configuration.class);
+                bind(soaConfiguration).to(SoaConfiguration.class);
             }
         };
         environment.jersey().register(binder);

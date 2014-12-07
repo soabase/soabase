@@ -12,6 +12,7 @@
         <module>soabase-zookeeper</module>
         <module>soabase-sql</module>
         <module>soabase-client</module>
+        <module>soabase-example</module>
     </modules>
 
     <properties>
@@ -35,6 +36,30 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>io.soabase</groupId>
+                <artifactId>soabase-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.soabase</groupId>
+                <artifactId>soabase-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.soabase</groupId>
+                <artifactId>soabase-sql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.soabase</groupId>
+                <artifactId>soabase-zookeeper</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-core</artifactId>
                 <version>${dropwizard-version}</version>
@@ -47,12 +72,6 @@
             </dependency>
 
             <dependency>
-                <groupId>io.soabase</groupId>
-                <artifactId>soabase-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>io.airlift</groupId>
                 <artifactId>airline</artifactId>
                 <version>${airlift-version}</version>
@@ -61,6 +80,12 @@
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-x-discovery</artifactId>
+                <version>${curator-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-test</artifactId>
                 <version>${curator-version}</version>
             </dependency>
 

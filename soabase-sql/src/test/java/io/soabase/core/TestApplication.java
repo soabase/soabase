@@ -52,7 +52,7 @@ public class TestApplication extends Application<TestConfiguration>
     {
         SqlSession sqlSession = SqlBundle.getSqlSession(configuration.getSoaConfiguration());
         AttributeEntityMapper mapper = sqlSession.getMapper(AttributeEntityMapper.class);
-        mapper.createDatabase();
+        mapper.createTable();
         AttributeEntity attribute = new AttributeEntity("hey", "", "my value");
         mapper.insert(attribute);
         attribute.setfVALUE("yo yo yo");

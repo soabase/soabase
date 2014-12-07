@@ -34,7 +34,7 @@ public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
     @Override
     public SoaDynamicAttributes build(SoaConfiguration configuration, Environment environment, List<String> scopes)
     {
-        SqlSession sqlSession = Preconditions.checkNotNull(SoaSqlBundle.getSqlSession(configuration), "SoaSqlBundle has not been added or initialized");
+        SqlSession sqlSession = Preconditions.checkNotNull(SqlBundle.getSqlSession(configuration), "SoaSqlBundle has not been added or initialized");
 
         final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(sqlSession, scopes);
         ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("SoaDynamicAttributes-%d", true).build();

@@ -1,6 +1,7 @@
 package io.soabase.core;
 
 import com.google.common.collect.Lists;
+import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
@@ -18,32 +19,41 @@ import java.net.UnknownHostException;
 import java.util.EnumSet;
 import java.util.List;
 
-public class SoaBundle<T extends SoaConfiguration> implements ConfiguredBundle<T>
+public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
+    private final ConfigurationAccessor<T> configurationAccessor;
+
+    public SoaBundle(ConfigurationAccessor<T> configurationAccessor)
+    {
+        this.configurationAccessor = new CheckedConfigurationAccessor<>(configurationAccessor);
+    }
+
     @Override
     public void run(final T configuration, Environment environment) throws Exception
     {
+        SoaConfiguration soaConfiguration = configurationAccessor.accessConfiguration(configuration, SoaConfiguration.class);
+
         environment.jersey().register(DiscoveryApis.class);
         environment.jersey().register(DynamicAttributeApis.class);
 
-        checkCorsFilter(configuration, environment);
+        checkCorsFilter(soaConfiguration, environment);
 
-        updateInstanceName(configuration);
+        updateInstanceName(soaConfiguration);
         List<String> scopes = Lists.newArrayList();
-        scopes.add(configuration.getInstanceName());
-        scopes.addAll(configuration.getScopes());
+        scopes.add(soaConfiguration.getInstanceName());
+        scopes.addAll(soaConfiguration.getScopes());
 
-        SoaDiscovery discovery = checkManaged(environment, configuration.getDiscoveryFactory().build(configuration, environment));
-        SoaDynamicAttributes attributes = checkManaged(environment, configuration.getAttributesFactory().build(configuration, environment, scopes));
-        configuration.setDiscovery(discovery);
-        configuration.setAttributes(attributes);
+        SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(soaConfiguration, environment));
+        SoaDynamicAttributes attributes = checkManaged(environment, soaConfiguration.getAttributesFactory().build(soaConfiguration, environment, scopes));
+        soaConfiguration.setDiscovery(discovery);
+        soaConfiguration.setAttributes(attributes);
 
         AbstractBinder binder = new AbstractBinder()
         {
             @Override
             protected void configure()
             {
-                bind(configuration).to(SoaConfiguration.class);
+                bind(configuration).to(Configuration.class);
             }
         };
         environment.jersey().register(binder);
@@ -55,7 +65,7 @@ public class SoaBundle<T extends SoaConfiguration> implements ConfiguredBundle<T
         // NOP
     }
 
-    private void checkCorsFilter(T configuration, Environment environment)
+    private void checkCorsFilter(SoaConfiguration configuration, Environment environment)
     {
         if ( configuration.isAddCorsFilter() )
         {
@@ -71,7 +81,7 @@ public class SoaBundle<T extends SoaConfiguration> implements ConfiguredBundle<T
         }
     }
 
-    private void updateInstanceName(T configuration) throws UnknownHostException
+    private void updateInstanceName(SoaConfiguration configuration) throws UnknownHostException
     {
         if ( configuration.getInstanceName() == null )
         {

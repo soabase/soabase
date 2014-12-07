@@ -1,23 +1,35 @@
 package io.soabase.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.soabase.sql.attributes.SoaSqlConfiguration;
-import io.soabase.sql.attributes.SoaSqlConfigurationAccessor;
+import io.dropwizard.Configuration;
+import io.soabase.sql.attributes.SqlConfiguration;
 
-public class TestConfiguration extends SoaConfiguration implements SoaSqlConfigurationAccessor
+public class TestConfiguration extends Configuration
 {
-    private SoaSqlConfiguration soaSqlConfiguration = new SoaSqlConfiguration();
+    private SoaConfiguration soaConfiguration = new SoaConfiguration();
+    private SqlConfiguration sqlConfiguration = new SqlConfiguration();
 
-    @Override
     @JsonProperty("sql")
-    public SoaSqlConfiguration getSqlConfiguration()
+    public SqlConfiguration getSqlConfiguration()
     {
-        return soaSqlConfiguration;
+        return sqlConfiguration;
     }
 
     @JsonProperty("sql")
-    public void setSqlConfiguration(SoaSqlConfiguration soaSqlConfiguration)
+    public void setSqlConfiguration(SqlConfiguration sqlConfiguration)
     {
-        this.soaSqlConfiguration = soaSqlConfiguration;
+        this.sqlConfiguration = sqlConfiguration;
+    }
+
+    @JsonProperty("soa")
+    public SoaConfiguration getSoaConfiguration()
+    {
+        return soaConfiguration;
+    }
+
+    @JsonProperty("soa")
+    public void setSoaConfiguration(SoaConfiguration soaConfiguration)
+    {
+        this.soaConfiguration = soaConfiguration;
     }
 }

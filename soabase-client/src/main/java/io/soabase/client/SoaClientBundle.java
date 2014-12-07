@@ -1,10 +1,14 @@
 package io.soabase.client;
 
+import com.google.common.base.Preconditions;
+import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.client.HttpClientConfiguration;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.soabase.core.CheckedConfigurationAccessor;
+import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaConfiguration;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -14,20 +18,23 @@ import javax.servlet.DispatcherType;
 import java.io.IOException;
 import java.util.EnumSet;
 
-public class SoaClientBundle<T extends SoaConfiguration & SoaClientConfigurationAccessor> implements ConfiguredBundle<T>
+public class SoaClientBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     public static final String HOST_SUBSTITUTION_TOKEN = "$";
+
     private final String clientName;
     private final boolean retry500s;
+    private final ConfigurationAccessor<T> accessor;
 
-    public SoaClientBundle(String clientName)
+    public SoaClientBundle(ConfigurationAccessor<T> accessor, String clientName)
     {
-        this(clientName, true);
+        this(accessor, clientName, true);
     }
 
-    public SoaClientBundle(String clientName, boolean retry500s)
+    public SoaClientBundle(ConfigurationAccessor<T> accessor, String clientName, boolean retry500s)
     {
-        this.clientName = clientName;
+        this.accessor = new CheckedConfigurationAccessor<>(accessor);
+        this.clientName = Preconditions.checkNotNull(clientName, "clientName cannot be null");
         this.retry500s = retry500s;
     }
 
@@ -58,14 +65,15 @@ public class SoaClientBundle<T extends SoaConfiguration & SoaClientConfiguration
                 }
             };
 
-            HttpClientConfiguration httpClientConfiguration = configuration.getHttpClientConfiguration();
+            HttpClientConfiguration httpClientConfiguration = accessor.accessConfiguration(configuration, HttpClientConfiguration.class);
             HttpClient httpClient = new HttpClientBuilder(environment)
                 .using(httpClientConfiguration)
                 .using(nullRetry)   // Apache's retry mechanism does not allow changing hosts. Do retries manually
                 .build(clientName);
 
-            client = new WrappedHttpClient(httpClient, configuration.getDiscovery(), httpClientConfiguration.getRetries(), retry500s);
-            configuration.putNamed(client, toKey(clientName));
+            SoaConfiguration soaConfiguration = accessor.accessConfiguration(configuration, SoaConfiguration.class);
+            client = new WrappedHttpClient(httpClient, soaConfiguration.getDiscovery(), httpClientConfiguration.getRetries(), retry500s);
+            soaConfiguration.putNamed(client, toKey(clientName));
         }
 
         AbstractBinder binder = new AbstractBinder()

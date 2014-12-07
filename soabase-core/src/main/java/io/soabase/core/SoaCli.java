@@ -5,18 +5,24 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.airlift.airline.Command;
 import io.airlift.airline.Help;
 import io.airlift.airline.HelpOption;
 import io.airlift.airline.Option;
 import io.airlift.airline.SingleCommand;
+import io.dropwizard.Application;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Command(name = "soa", description = "Base application library for Java Service Oriented Applications")
-public class SoaMain
+public class SoaCli
 {
     @Inject
     public HelpOption helpOption;
@@ -33,61 +39,51 @@ public class SoaMain
     @Option(name = {"-d", "--dropwizard-args"}, description = "List of Dropwizard arguments")
     public List<String> dropwizardArgs = null;
 
-    public static <C extends SoaConfiguration, A extends SoaApplication<C>> SoaApplication<C> runAsync(Class<A> applicationClass, String[] args) throws Exception
+    public static String[] parseArgs(String[] args) throws IOException
     {
-        BuiltApplication<C> builtApplication = buildApplication(applicationClass, args);
-        builtApplication.application.runAsync(builtApplication.arguments);
-        return builtApplication.application;
-    }
-
-    public static <C extends SoaConfiguration, A extends SoaApplication<C>> void run(Class<A> applicationClass, String[] args) throws Exception
-    {
-        BuiltApplication<C> builtApplication = buildApplication(applicationClass, args);
-        builtApplication.application.run(builtApplication.arguments);
-    }
-
-    private static class BuiltApplication<C extends SoaConfiguration>
-    {
-        final SoaApplication<C> application;
-        final String[] arguments;
-
-        public BuiltApplication(SoaApplication<C> application, SoaMain soaMain)
-        {
-            this.application = application;
-            this.arguments = soaMain.dropwizardArgs.toArray(new String[soaMain.dropwizardArgs.size()]);
-        }
-    }
-
-    private static <C extends SoaConfiguration, A extends SoaApplication<C>> BuiltApplication<C> buildApplication(Class<A> applicationClass, String[] args) throws Exception
-    {
-        SoaMain soaMain = SingleCommand.singleCommand(SoaMain.class).parse(args);
-        if ( soaMain.helpOption.showHelpIfRequested() )
+        SoaCli soaCli = SingleCommand.singleCommand(SoaCli.class).parse(args);
+        if ( soaCli.helpOption.showHelpIfRequested() )
         {
             return null;
         }
 
-        File configFile = getConfigFile(soaMain);
+        File configFile = getConfigFile(soaCli);
 
-        if ( soaMain.dropwizardArgs == null )
+        if ( soaCli.dropwizardArgs == null )
         {
             if ( configFile != null )
             {
-                soaMain.dropwizardArgs = Lists.newArrayList("server", configFile.getCanonicalPath());
+                soaCli.dropwizardArgs = Lists.newArrayList("server", configFile.getCanonicalPath());
             }
             else
             {
-                soaMain.dropwizardArgs = Lists.newArrayList("server");
+                soaCli.dropwizardArgs = Lists.newArrayList("server");
             }
         }
 
-        return new BuiltApplication<>(applicationClass.newInstance(), soaMain);
+        return soaCli.dropwizardArgs.toArray(new String[soaCli.dropwizardArgs.size()]);
     }
 
-    private static File getConfigFile(SoaMain soaMain) throws IOException
+    public static Future<Void> runAsync(final Application<?> application, final String[] args) throws Exception
     {
-        boolean hasConfigFile = (soaMain.configFile != null);
-        boolean hasConfigStr = (soaMain.configStr != null);
-        boolean hasOverrides = (soaMain.configOverrides.size() > 0);
+        ExecutorService service = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("SoaApplication-%d").build());
+        Callable<Void> callable = new Callable<Void>()
+        {
+            @Override
+            public Void call() throws Exception
+            {
+                application.run(args);
+                return null;
+            }
+        };
+        return service.submit(callable);
+    }
+
+    private static File getConfigFile(SoaCli soaCli) throws IOException
+    {
+        boolean hasConfigFile = (soaCli.configFile != null);
+        boolean hasConfigStr = (soaCli.configStr != null);
+        boolean hasOverrides = (soaCli.configOverrides.size() > 0);
 
         if ( !hasConfigFile && !hasConfigStr && !hasOverrides )
         {
@@ -96,13 +92,13 @@ public class SoaMain
 
         if ( hasConfigFile && hasConfigStr )
         {
-            Help.help(soaMain.helpOption.commandMetadata);
+            Help.help(soaCli.helpOption.commandMetadata);
             throw new IllegalStateException("You cannot have both config string and config file");
         }
 
         if ( hasConfigFile && !hasOverrides )
         {
-            return new File(soaMain.configFile);    // simple case - just a file
+            return new File(soaCli.configFile);    // simple case - just a file
         }
 
         YAMLFactory yamlFactory = new YAMLFactory();
@@ -110,23 +106,23 @@ public class SoaMain
         ObjectNode node;
         if ( hasConfigStr )
         {
-            node = mapper.readTree(yamlFactory.createParser(soaMain.configStr));
+            node = mapper.readTree(yamlFactory.createParser(soaCli.configStr));
         }
         else if ( hasConfigFile )
         {
-            node = mapper.readTree(yamlFactory.createParser(new File(soaMain.configFile)));
+            node = mapper.readTree(yamlFactory.createParser(new File(soaCli.configFile)));
         }
         else
         {
             node = mapper.createObjectNode();
         }
 
-        for ( String override : soaMain.configOverrides )
+        for ( String override : soaCli.configOverrides )
         {
             List<String> parts = Splitter.on('=').limit(2).trimResults().splitToList(override);
             if ( parts.size() != 2 )
             {
-                Help.help(soaMain.helpOption.commandMetadata);
+                Help.help(soaCli.helpOption.commandMetadata);
                 throw new IllegalArgumentException("Badly formed config override: " + override);
             }
 

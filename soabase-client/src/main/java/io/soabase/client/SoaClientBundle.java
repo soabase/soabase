@@ -24,16 +24,18 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
 
     private final String clientName;
     private final boolean retry500s;
-    private final ConfigurationAccessor<T> accessor;
+    private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
+    private final ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor;
 
-    public SoaClientBundle(ConfigurationAccessor<T> accessor, String clientName)
+    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor, String clientName)
     {
-        this(accessor, clientName, true);
+        this(soaAccessor, clientAccessor, clientName, true);
     }
 
-    public SoaClientBundle(ConfigurationAccessor<T> accessor, String clientName, boolean retry500s)
+    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor, String clientName, boolean retry500s)
     {
-        this.accessor = new CheckedConfigurationAccessor<>(accessor);
+        this.soaAccessor = new CheckedConfigurationAccessor<>(soaAccessor);
+        this.clientAccessor = new CheckedConfigurationAccessor<>(clientAccessor);
         this.clientName = Preconditions.checkNotNull(clientName, "clientName cannot be null");
         this.retry500s = retry500s;
     }
@@ -65,13 +67,13 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
                 }
             };
 
-            HttpClientConfiguration httpClientConfiguration = accessor.accessConfiguration(configuration, HttpClientConfiguration.class);
+            HttpClientConfiguration httpClientConfiguration = clientAccessor.accessConfiguration(configuration);
             HttpClient httpClient = new HttpClientBuilder(environment)
                 .using(httpClientConfiguration)
                 .using(nullRetry)   // Apache's retry mechanism does not allow changing hosts. Do retries manually
                 .build(clientName);
 
-            SoaConfiguration soaConfiguration = accessor.accessConfiguration(configuration, SoaConfiguration.class);
+            SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
             client = new WrappedHttpClient(httpClient, soaConfiguration.getDiscovery(), httpClientConfiguration.getRetries(), retry500s);
             soaConfiguration.putNamed(client, toKey(clientName));
         }

@@ -21,9 +21,9 @@ import java.util.List;
 
 public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
-    private final ConfigurationAccessor<T> configurationAccessor;
+    private final ConfigurationAccessor<T, SoaConfiguration> configurationAccessor;
 
-    public SoaBundle(ConfigurationAccessor<T> configurationAccessor)
+    public SoaBundle(ConfigurationAccessor<T, SoaConfiguration> configurationAccessor)
     {
         this.configurationAccessor = new CheckedConfigurationAccessor<>(configurationAccessor);
     }
@@ -31,7 +31,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     @Override
     public void run(final T configuration, Environment environment) throws Exception
     {
-        SoaConfiguration soaConfiguration = configurationAccessor.accessConfiguration(configuration, SoaConfiguration.class);
+        SoaConfiguration soaConfiguration = configurationAccessor.accessConfiguration(configuration);
 
         environment.jersey().register(DiscoveryApis.class);
         environment.jersey().register(DynamicAttributeApis.class);

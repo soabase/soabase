@@ -15,22 +15,24 @@ import org.apache.curator.utils.CloseableUtils;
 
 public class CuratorBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
-    private final ConfigurationAccessor<T> accessor;
+    private final ConfigurationAccessor<T, CuratorConfiguration> curatorAccessor;
+    private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
 
     public static CuratorFramework getCuratorFramework(SoaConfiguration configuration)
     {
         return configuration.getNamed(CuratorFramework.class, CuratorBundle.class.getName());
     }
 
-    public CuratorBundle(ConfigurationAccessor<T> accessor)
+    public CuratorBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, CuratorConfiguration> curatorAccessor)
     {
-        this.accessor = new CheckedConfigurationAccessor<>(accessor);
+        this.soaAccessor = new CheckedConfigurationAccessor<>(soaAccessor);
+        this.curatorAccessor = new CheckedConfigurationAccessor<>(curatorAccessor);
     }
 
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        CuratorConfiguration curatorConfiguration = accessor.accessConfiguration(configuration, CuratorConfiguration.class);
+        CuratorConfiguration curatorConfiguration = curatorAccessor.accessConfiguration(configuration);
         // TODO more config
         final CuratorFramework curator = CuratorFrameworkFactory.newClient(curatorConfiguration.getConnectionString(), new RetryOneTime(1));
 
@@ -50,7 +52,7 @@ public class CuratorBundle<T extends Configuration> implements ConfiguredBundle<
         };
         environment.lifecycle().manage(managed);
 
-        SoaConfiguration soaConfiguration = accessor.accessConfiguration(configuration, SoaConfiguration.class);
+        SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
         soaConfiguration.putNamed(curator, CuratorBundle.class.getName());
     }
 

@@ -27,24 +27,24 @@ public class TestApplication extends Application<TestConfiguration>
     @Override
     public void initialize(Bootstrap<TestConfiguration> bootstrap)
     {
-        ConfigurationAccessor<TestConfiguration> accessor = new ConfigurationAccessor<TestConfiguration>()
+        ConfigurationAccessor<TestConfiguration, SoaConfiguration> soaAccessor = new ConfigurationAccessor<TestConfiguration, SoaConfiguration>()
         {
             @Override
-            public <T> T accessConfiguration(TestConfiguration configuration, Class<T> clazz)
+            public SoaConfiguration accessConfiguration(TestConfiguration configuration)
             {
-                if ( clazz.equals(SqlConfiguration.class) )
-                {
-                    return clazz.cast(configuration.getSqlConfiguration());
-                }
-                if ( clazz.equals(SoaConfiguration.class) )
-                {
-                    return clazz.cast(configuration.getSoaConfiguration());
-                }
-                return null;
+                return configuration.getSoaConfiguration();
             }
         };
-        bootstrap.addBundle(new SqlBundle<>(accessor));
-        bootstrap.addBundle(new SoaBundle<>(accessor));
+        ConfigurationAccessor<TestConfiguration, SqlConfiguration> sqlAccessor = new ConfigurationAccessor<TestConfiguration, SqlConfiguration>()
+        {
+            @Override
+            public SqlConfiguration accessConfiguration(TestConfiguration configuration)
+            {
+                return configuration.getSqlConfiguration();
+            }
+        };
+        bootstrap.addBundle(new SqlBundle<>(soaAccessor, sqlAccessor));
+        bootstrap.addBundle(new SoaBundle<>(soaAccessor));
     }
 
     @Override

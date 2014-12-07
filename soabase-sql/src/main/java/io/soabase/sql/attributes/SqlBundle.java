@@ -17,22 +17,24 @@ import java.io.InputStream;
 
 public class SqlBundle<T extends io.dropwizard.Configuration> implements ConfiguredBundle<T>
 {
-    private final ConfigurationAccessor<T> accessor;
+    private final ConfigurationAccessor<T, SqlConfiguration> sqlAccessor;
+    private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
 
     public static SqlSession getSqlSession(SoaConfiguration configuration)
     {
         return configuration.getNamed(SqlSession.class, SqlBundle.class.getName());
     }
 
-    public SqlBundle(ConfigurationAccessor<T> accessor)
+    public SqlBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SqlConfiguration> sqlAccessor)
     {
-        this.accessor = new CheckedConfigurationAccessor<>(accessor);
+        this.soaAccessor = new CheckedConfigurationAccessor<>(soaAccessor);
+        this.sqlAccessor = new CheckedConfigurationAccessor<>(sqlAccessor);
     }
 
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        SqlConfiguration sqlConfiguration = accessor.accessConfiguration(configuration, SqlConfiguration.class);
+        SqlConfiguration sqlConfiguration = sqlAccessor.accessConfiguration(configuration);
         try
         {
             try ( InputStream stream = Resources.getResource(sqlConfiguration.getMybatisConfigUrl()).openStream() )
@@ -42,7 +44,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
                 mybatisConfiguration.addMapper(AttributeEntityMapper.class);
                 final SqlSession session = sqlSessionFactory.openSession();
 
-                SoaConfiguration soaConfiguration = accessor.accessConfiguration(configuration, SoaConfiguration.class);
+                SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
                 soaConfiguration.putNamed(session, SqlBundle.class.getName());
                 Managed managed = new Managed()
                 {

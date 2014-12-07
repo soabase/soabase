@@ -1,0 +1,8 @@
+* Jersey for Admin
+* Admin console
+* Hystrix?
+* Archaius?
+* Eureka?
+* Example App
+* Tests
+* javadoc/doc

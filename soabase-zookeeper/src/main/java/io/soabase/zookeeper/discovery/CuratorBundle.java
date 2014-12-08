@@ -18,11 +18,6 @@ public class CuratorBundle<T extends Configuration> implements ConfiguredBundle<
     private final ConfigurationAccessor<T, CuratorConfiguration> curatorAccessor;
     private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
 
-    public static CuratorFramework getCuratorFramework(SoaConfiguration configuration)
-    {
-        return configuration.getNamed(CuratorFramework.class, CuratorBundle.class.getName());
-    }
-
     public CuratorBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, CuratorConfiguration> curatorAccessor)
     {
         this.soaAccessor = new CheckedConfigurationAccessor<>(soaAccessor);
@@ -53,7 +48,7 @@ public class CuratorBundle<T extends Configuration> implements ConfiguredBundle<
         environment.lifecycle().manage(managed);
 
         SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
-        soaConfiguration.putNamed(curator, curatorConfiguration.getCuratorName());
+        soaConfiguration.putNamed(curator, CuratorFramework.class, curatorConfiguration.getCuratorName());
     }
 
     @Override

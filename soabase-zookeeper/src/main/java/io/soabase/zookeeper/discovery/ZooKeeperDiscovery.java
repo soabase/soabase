@@ -15,7 +15,9 @@ import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
+import org.apache.curator.x.discovery.ServiceInstanceBuilder;
 import org.apache.curator.x.discovery.ServiceProvider;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 // TODO
@@ -25,7 +27,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     private final LoadingCache<String, ServiceProvider<Void>> providers;
     private final ServiceInstance<Void> us;
 
-    public ZooKeeperDiscovery(CuratorFramework curator, ZooKeeperDiscoveryFactory factory)
+    public ZooKeeperDiscovery(CuratorFramework curator, int mainPort, ZooKeeperDiscoveryFactory factory)
     {
         providers = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)  // TODO config
@@ -34,7 +36,15 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
 
         try
         {
-            us = ServiceInstance.<Void>builder().build();     // TODO
+            // TODO
+            ServiceInstanceBuilder<Void> builder = ServiceInstance.<Void>builder()
+                .name(factory.getThisServiceName())
+                .port(mainPort);
+            if ( factory.getBindAddress() != null )
+            {
+                builder = builder.address(factory.getBindAddress());
+            }
+            us = builder.build();
 
             discovery = ServiceDiscoveryBuilder
                 .builder(Void.class)
@@ -62,6 +72,13 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     public void onRemoval(RemovalNotification<String, ServiceProvider<Void>> notification)
     {
         CloseableUtils.closeQuietly(notification.getValue());
+    }
+
+    @Override
+    public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
+    {
+        // TODO
+        return null;
     }
 
     @Override

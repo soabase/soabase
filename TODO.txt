@@ -7,3 +7,7 @@
 * Tests
 * javadoc/doc
 * TODO comments
+* Make sure Dropwizard can support JAR contained config files
+* Figure out why config isn't validating
+* Support arrays in overrides
+* Support Jersey client

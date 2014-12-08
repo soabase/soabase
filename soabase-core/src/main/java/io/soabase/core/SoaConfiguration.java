@@ -168,23 +168,27 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     public <T> T getNamed(Class<T> clazz, String name)
     {
         Map<String, Object> map = named.get(clazz);
-        Object o = map.get(name);
+        Object o = (map != null) ? map.get(name) : null;
         return (o != null) ? clazz.cast(o) : null;
     }
 
-    public <T> void putNamed(T o, String name)
+    public <T> void putNamed(T o, Class<T> clazz, String name)
     {
         Preconditions.checkState(!locked.get(), "Configuration has been locked and cannot be modified");
+
+        clazz = Preconditions.checkNotNull(clazz, "clazz cannot be null");
+        name = Preconditions.checkNotNull(name, "name cannot be null");
         o = Preconditions.checkNotNull(o, "object cannot be null");
 
         ConcurrentMap<String, Object> newMap = Maps.newConcurrentMap();
-        ConcurrentMap<String, Object> oldMap = named.putIfAbsent(o.getClass(), newMap);
+        ConcurrentMap<String, Object> oldMap = named.putIfAbsent(clazz, newMap);
         ConcurrentMap<String, Object> useMap = (oldMap != null) ? oldMap : newMap;
 
         Object old = useMap.putIfAbsent(name, o);
-        Preconditions.checkArgument(old == null, "Named value already set for: " + name + " and " + o.getClass().getName());
+        Preconditions.checkArgument(old == null, "Named value already set for: " + name + " and " + clazz.getName());
     }
 
+    @Override
     public SoaDiscovery getDiscovery()
     {
         return discovery;
@@ -196,6 +200,7 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
         this.discovery = discovery;
     }
 
+    @Override
     public SoaDynamicAttributes getAttributes()
     {
         return attributes;

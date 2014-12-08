@@ -1,17 +1,25 @@
 package io.soabase.core.features.discovery;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.google.common.collect.ImmutableSet;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaConfiguration;
+import java.util.Collection;
 
 @JsonTypeName("default")
 public class NullDiscoveryFactory implements SoaDiscoveryFactory
 {
     @Override
-    public SoaDiscovery build(SoaConfiguration configuration, Environment environment)
+    public SoaDiscovery build(int mainPort, SoaConfiguration configuration, Environment environment)
     {
         return new SoaDiscovery()
         {
+            @Override
+            public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
+            {
+                return ImmutableSet.of();
+            }
+
             @Override
             public SoaDiscoveryInstance getInstance(String serviceName)
             {

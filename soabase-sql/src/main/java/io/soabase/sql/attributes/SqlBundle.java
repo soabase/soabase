@@ -8,7 +8,6 @@ import io.dropwizard.setup.Environment;
 import io.soabase.core.CheckedConfigurationAccessor;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaConfiguration;
-import io.soabase.core.SoaFeatures;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -43,7 +42,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
                 final SqlSession session = sqlSessionFactory.openSession();
 
                 SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
-                soaConfiguration.putNamed(session, sqlConfiguration.getSessionName());
+                soaConfiguration.putNamed(session, SqlSession.class, sqlConfiguration.getSessionName());
                 Managed managed = new Managed()
                 {
                     @Override

@@ -1,0 +1,17 @@
+{
+  "server": {
+    "applicationConnectors": [
+      {
+        "type": "http",
+        "port": 7777
+      }
+    ],
+
+    "adminConnectors": [
+      {
+        "type": "http",
+        "port": 7776
+      }
+    ]
+  }
+}

@@ -10,6 +10,7 @@ import io.dropwizard.setup.Environment;
 import io.soabase.core.CheckedConfigurationAccessor;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaFeatures;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
@@ -26,6 +27,11 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     private final boolean retry500s;
     private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
     private final ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor;
+
+    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor)
+    {
+        this(soaAccessor, clientAccessor, SoaFeatures.DEFAULT_NAME, true);
+    }
 
     public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor, String clientName)
     {
@@ -70,7 +76,7 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
 
             SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
             client = new WrappedHttpClient(httpClient, soaConfiguration.getDiscovery(), httpClientConfiguration.getRetries(), retry500s);
-            soaConfiguration.putNamed(client, clientName);
+            soaConfiguration.putNamed(client, HttpClient.class, clientName);
         }
 
         AbstractBinder binder = new AbstractBinder()

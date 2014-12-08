@@ -3,7 +3,13 @@ package io.soabase.core;
 import com.google.common.collect.Lists;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
+import io.dropwizard.jetty.ConnectorFactory;
+import io.dropwizard.jetty.HttpConnectorFactory;
 import io.dropwizard.lifecycle.Managed;
+import io.dropwizard.server.AbstractServerFactory;
+import io.dropwizard.server.DefaultServerFactory;
+import io.dropwizard.server.ServerFactory;
+import io.dropwizard.server.SimpleServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
@@ -47,7 +53,9 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         scopes.add(soaConfiguration.getInstanceName());
         scopes.addAll(soaConfiguration.getScopes());
 
-        SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(soaConfiguration, environment));
+        int mainPort = getMainPort(configuration);
+
+        SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(mainPort, soaConfiguration, environment));
         SoaDynamicAttributes attributes = checkManaged(environment, soaConfiguration.getAttributesFactory().build(soaConfiguration, environment, scopes));
         soaConfiguration.setDiscovery(discovery);
         soaConfiguration.setAttributes(attributes);
@@ -86,6 +94,44 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     public void initialize(Bootstrap<?> bootstrap)
     {
         // NOP
+    }
+
+    private int getMainPort(T configuration)
+    {
+        if ( SoaMainPortAccessor.class.isAssignableFrom(configuration.getClass()) )
+        {
+            return ((SoaMainPortAccessor)configuration).getMainPort(configuration);
+        }
+
+        ServerFactory serverFactory = configuration.getServerFactory();
+        if ( SoaMainPortAccessor.class.isAssignableFrom(serverFactory.getClass()) )
+        {
+            return ((SoaMainPortAccessor)serverFactory).getMainPort(configuration);
+        }
+
+        if ( DefaultServerFactory.class.isAssignableFrom(serverFactory.getClass()) )
+        {
+            List<ConnectorFactory> applicationConnectors = ((DefaultServerFactory)serverFactory).getApplicationConnectors();
+            if ( applicationConnectors.size() > 0 )
+            {
+                ConnectorFactory connectorFactory = applicationConnectors.get(0);
+                if ( HttpConnectorFactory.class.isAssignableFrom(connectorFactory.getClass()) )
+                {
+                    return ((HttpConnectorFactory)connectorFactory).getPort();
+                }
+            }
+        }
+
+        if ( SimpleServerFactory.class.isAssignableFrom(serverFactory.getClass()) )
+        {
+            ConnectorFactory connectorFactory = ((SimpleServerFactory)serverFactory).getConnector();
+            if ( HttpConnectorFactory.class.isAssignableFrom(connectorFactory.getClass()) )
+            {
+                return ((HttpConnectorFactory)connectorFactory).getPort();
+            }
+        }
+
+        throw new RuntimeException("Cannot determine the main server port");
     }
 
     private void startDiscoveryHealth(SoaDiscovery discovery, SoaConfiguration soaConfiguration, Environment environment)

@@ -11,3 +11,4 @@
 * Figure out why config isn't validating
 * Support arrays in overrides
 * Support Jersey client
+* Logging

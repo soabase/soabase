@@ -11,6 +11,8 @@ abstract class RetryLoop<T>
 {
     HttpResponse run(WrappedHttpClient client, T original, HttpContext context, String originalHost) throws IOException
     {
+        originalHost = Preconditions.checkNotNull(originalHost, "Request URI's host cannot be null");
+
         if ( context == null )
         {
             context = new BasicHttpContext();

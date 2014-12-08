@@ -12,3 +12,6 @@
 * Support arrays in overrides
 * Support Jersey client
 * Logging
+* Guice and Spring
+* Don't deploy ExampleApp
+* Don't register Discovery until mnaged is started

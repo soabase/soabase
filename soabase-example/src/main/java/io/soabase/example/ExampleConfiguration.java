@@ -2,6 +2,7 @@ package io.soabase.example;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import io.dropwizard.client.HttpClientConfiguration;
 import io.soabase.client.SoaClientConfiguration;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
@@ -13,6 +14,11 @@ public class ExampleConfiguration extends Configuration
     private CuratorConfiguration curatorConfiguration = new CuratorConfiguration();
     private ZooKeeperDiscoveryFactory discoveryFactory = new ZooKeeperDiscoveryFactory();
     private SoaClientConfiguration clientConfiguration = new SoaClientConfiguration();
+
+    public ExampleConfiguration()
+    {
+        clientConfiguration.setHttpClientConfiguration(new HttpClientConfiguration());
+    }
 
     @JsonProperty("soa")
     public SoaConfiguration getSoaConfiguration()

@@ -179,6 +179,7 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
         clazz = Preconditions.checkNotNull(clazz, "clazz cannot be null");
         name = Preconditions.checkNotNull(name, "name cannot be null");
         o = Preconditions.checkNotNull(o, "object cannot be null");
+        Preconditions.checkArgument(name.length() > 0, "name cannot be the empty string");
 
         ConcurrentMap<String, Object> newMap = Maps.newConcurrentMap();
         ConcurrentMap<String, Object> oldMap = named.putIfAbsent(clazz, newMap);

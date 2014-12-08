@@ -23,7 +23,7 @@ import java.util.EnumSet;
 
 public class SoaClientBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
-    public static final String HOST_SUBSTITUTION_TOKEN = "$";
+    public static final String HOST_SUBSTITUTION_TOKEN = "00000.";
 
     private final String clientName;
     private final boolean retry500s;
@@ -104,7 +104,9 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
 
         // TODO - retries, discovery, etc.
 
-        JerseyClientBuilder builder = new JerseyClientBuilder(environment).using(clientConfiguration.getJerseyClientConfiguration());
+        JerseyClientBuilder builder = new JerseyClientBuilder(environment)
+            .using(clientConfiguration.getJerseyClientConfiguration())
+            .using(new JerseyRetryConnectorProvider());
         builder = updateJerseyClientBuilder(configuration, environment, builder);
         Client client = builder.build(clientName);
         SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);

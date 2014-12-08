@@ -77,7 +77,7 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
                 "-o",
                 "soa.discovery.name=" + getClass().getSimpleName(),
                 "-o",
-                "soa.discovery.bindAddress=localHost"
+                "soa.discovery.bindAddress=localhost"
             };
         }
 

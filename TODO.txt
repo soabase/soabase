@@ -6,4 +6,4 @@
 * Example App
 * Tests
 * javadoc/doc
-* Integrate Dropwizard Healthchecks with Discovery
+* TODO comments

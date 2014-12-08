@@ -23,6 +23,18 @@ public class NullDiscoveryFactory implements SoaDiscoveryFactory
             {
                 // NOP
             }
+
+            @Override
+            public void addThisInstance()
+            {
+                // NOP
+            }
+
+            @Override
+            public void removeThisInstance()
+            {
+                // NOP
+            }
         };
     }
 }

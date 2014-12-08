@@ -23,6 +23,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
 {
     private final ServiceDiscovery<Void> discovery;
     private final LoadingCache<String, ServiceProvider<Void>> providers;
+    private final ServiceInstance<Void> us;
 
     public ZooKeeperDiscovery(CuratorFramework curator, ZooKeeperDiscoveryFactory factory)
     {
@@ -33,11 +34,12 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
 
         try
         {
+            us = ServiceInstance.<Void>builder().build();     // TODO
+
             discovery = ServiceDiscoveryBuilder
                 .builder(Void.class)
                 .basePath("/")  // TODO
                 .client(curator)
-                .thisInstance(ServiceInstance.<Void>builder().build())  // TODO
                 .build();
         }
         catch ( Exception e )
@@ -60,6 +62,34 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     public void onRemoval(RemovalNotification<String, ServiceProvider<Void>> notification)
     {
         CloseableUtils.closeQuietly(notification.getValue());
+    }
+
+    @Override
+    public void addThisInstance()
+    {
+        try
+        {
+            discovery.registerService(us);
+        }
+        catch ( Exception e )
+        {
+            // TODO logging
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void removeThisInstance()
+    {
+        try
+        {
+            discovery.unregisterService(us);
+        }
+        catch ( Exception e )
+        {
+            // TODO logging
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

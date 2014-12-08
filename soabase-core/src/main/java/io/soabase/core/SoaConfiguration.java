@@ -8,9 +8,11 @@ import io.dropwizard.Configuration;
 import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
+import io.soabase.core.features.discovery.DefaultDiscoveryHealthFactory;
 import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
+import io.soabase.core.features.discovery.SoaDiscoveryHealthFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -24,6 +26,10 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     @Valid
     @NotNull
     private volatile SoaDiscoveryFactory discoveryFactory = new NullDiscoveryFactory();
+
+    @Valid
+    @NotNull
+    private volatile SoaDiscoveryHealthFactory discoveryHealthFactory = new DefaultDiscoveryHealthFactory();
 
     @Valid
     @NotNull
@@ -41,11 +47,29 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     @Valid
     private volatile boolean addCorsFilter = false;
 
+    @Valid
+    private volatile int discoveryHealthCheckPeriodMs = (int)TimeUnit.SECONDS.toMillis(10);
+
     private final AtomicBoolean locked = new AtomicBoolean(false);
+
     private volatile SoaDiscovery discovery;
     private volatile SoaDynamicAttributes attributes;
     private final ConcurrentMap<Class<?>, ConcurrentMap<String, Object>> named = Maps.newConcurrentMap();
 
+    @JsonProperty("checkPeriodMs")
+    public int getDiscoveryHealthCheckPeriodMs()
+    {
+        return discoveryHealthCheckPeriodMs;
+    }
+
+    @JsonProperty("checkPeriodMs")
+    public void setDiscoveryHealthCheckPeriodMs(int discoveryHealthCheckPeriodMs)
+    {
+        Preconditions.checkState(!locked.get(), "Configuration has been locked and cannot be modified");
+        this.discoveryHealthCheckPeriodMs = discoveryHealthCheckPeriodMs;
+    }
+
+    @JsonProperty("discovery")
     public SoaDiscoveryFactory getDiscoveryFactory()
     {
         return discoveryFactory;
@@ -121,6 +145,19 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     {
         Preconditions.checkState(!locked.get(), "Configuration has been locked and cannot be modified");
         this.addCorsFilter = addCorsFilter;
+    }
+
+    @JsonProperty("discoveryHealth")
+    public SoaDiscoveryHealthFactory getDiscoveryHealthFactory()
+    {
+        return discoveryHealthFactory;
+    }
+
+    @JsonProperty("discoveryHealth")
+    public void setDiscoveryHealthFactory(SoaDiscoveryHealthFactory discoveryHealthFactory)
+    {
+        Preconditions.checkState(!locked.get(), "Configuration has been locked and cannot be modified");
+        this.discoveryHealthFactory = discoveryHealthFactory;
     }
 
     public void lock()

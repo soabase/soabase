@@ -7,7 +7,9 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
+import io.soabase.core.features.discovery.HealthCheckIntegration;
 import io.soabase.core.features.discovery.SoaDiscovery;
+import io.soabase.core.features.discovery.SoaDiscoveryHealth;
 import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.core.rest.DynamicAttributeApis;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
@@ -18,6 +20,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
@@ -47,6 +51,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         SoaDynamicAttributes attributes = checkManaged(environment, soaConfiguration.getAttributesFactory().build(soaConfiguration, environment, scopes));
         soaConfiguration.setDiscovery(discovery);
         soaConfiguration.setAttributes(attributes);
+
+        startDiscoveryHealth(discovery, soaConfiguration, environment);
 
         AbstractBinder binder = new AbstractBinder()
         {
@@ -80,6 +86,13 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     public void initialize(Bootstrap<?> bootstrap)
     {
         // NOP
+    }
+
+    private void startDiscoveryHealth(SoaDiscovery discovery, SoaConfiguration soaConfiguration, Environment environment)
+    {
+        SoaDiscoveryHealth discoveryHealth = checkManaged(environment, soaConfiguration.getDiscoveryHealthFactory().build(soaConfiguration, environment));
+        ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("DiscoveryHealthChecker-%d").build();
+        service.scheduleAtFixedRate(new HealthCheckIntegration(environment.healthChecks(), discovery, discoveryHealth), soaConfiguration.getDiscoveryHealthCheckPeriodMs(), soaConfiguration.getDiscoveryHealthCheckPeriodMs(), TimeUnit.MILLISECONDS);
     }
 
     private void checkCorsFilter(SoaConfiguration configuration, Environment environment)

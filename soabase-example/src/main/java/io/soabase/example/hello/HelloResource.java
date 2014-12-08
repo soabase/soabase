@@ -28,7 +28,7 @@ public class HelloResource
     @GET
     public String getHello() throws Exception
     {
-        URI uri = new URIBuilder().setScheme("http").setHost(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "GoodbyeApp").setPath("/goodbye").build();
+        URI uri = new URIBuilder().setHost(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "GoodbyeApp").setPath("/goodbye").build();
         HttpGet get = new HttpGet(uri);
         HttpResponse response = client.execute(get);
         String value = CharStreams.toString(new InputStreamReader(response.getEntity().getContent()));

@@ -1,6 +1,7 @@
-package io.soabase.client;
+package io.soabase.client.apache;
 
 import com.google.common.base.Preconditions;
+import io.soabase.client.Common;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.BasicHttpContext;
@@ -23,7 +24,7 @@ abstract class RetryLoop<T>
         boolean done = false;
         while ( !done )
         {
-            SoaDiscoveryInstance instance = hostToInstance(client, originalHost);
+            SoaDiscoveryInstance instance = Common.hostToInstance(client.getDiscovery(), originalHost);
             try
             {
                 ++count;
@@ -33,6 +34,7 @@ abstract class RetryLoop<T>
                     int status = response.getStatusLine().getStatusCode();
                     if ( (status >= 500) && (status <= 599) )
                     {
+                        // TODO logging
                         throw new IOException("Bad status: " + status);
                     }
                 }
@@ -55,14 +57,4 @@ abstract class RetryLoop<T>
     }
 
     protected abstract HttpResponse execute(T original, HttpContext context, SoaDiscoveryInstance instance) throws IOException;
-
-    private SoaDiscoveryInstance hostToInstance(WrappedHttpClient client, String host)
-    {
-        if ( host.startsWith(SoaClientBundle.HOST_SUBSTITUTION_TOKEN) && (host.length() > SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length()) )
-        {
-            String serviceName = host.substring(SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length());
-            return Preconditions.checkNotNull(client.getDiscovery().getInstance(serviceName), "No instance found for " + serviceName);
-        }
-        return null;
-    }
 }

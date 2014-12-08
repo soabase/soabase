@@ -1,6 +1,7 @@
-package io.soabase.client;
+package io.soabase.client.apache;
 
 import com.google.common.collect.Lists;
+import io.soabase.client.Common;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import org.apache.http.HttpHost;
@@ -19,7 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 @SuppressWarnings("deprecation")
-class WrappedHttpClient implements HttpClient
+public class WrappedHttpClient implements HttpClient
 {
     private final HttpClient implementation;
     private final SoaDiscovery discovery;
@@ -139,19 +140,10 @@ class WrappedHttpClient implements HttpClient
 
     private HttpUriRequest filterRequest(HttpUriRequest request, SoaDiscoveryInstance instance)
     {
-        if ( instance != null )
+        URI filteredUri = Common.filterUri(request.getURI(), instance);
+        if ( filteredUri != null )
         {
-            try
-            {
-                URI uri = request.getURI();
-                String scheme = instance.isForceSsl() ? "https" : uri.getScheme();
-                uri = new URI(scheme, uri.getUserInfo(), instance.getHost(), instance.getPort(), uri.getRawPath(), uri.getRawQuery(), uri.getRawFragment());
-                request = new WrappedHttpUriRequest(request, uri);
-            }
-            catch ( URISyntaxException e )
-            {
-                throw new RuntimeException(e);
-            }
+            request = new WrappedHttpUriRequest(request, filteredUri);
         }
         return request;
     }

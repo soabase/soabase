@@ -8,6 +8,8 @@ import io.dropwizard.client.HttpClientConfiguration;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.soabase.client.apache.WrappedHttpClient;
+import io.soabase.client.jersey.JerseyRetryConnectorProvider;
 import io.soabase.core.CheckedConfigurationAccessor;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaConfiguration;
@@ -104,12 +106,12 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
 
         // TODO - retries, discovery, etc.
 
+        SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
         JerseyClientBuilder builder = new JerseyClientBuilder(environment)
             .using(clientConfiguration.getJerseyClientConfiguration())
-            .using(new JerseyRetryConnectorProvider());
+            .using(new JerseyRetryConnectorProvider(soaConfiguration.getDiscovery()));
         builder = updateJerseyClientBuilder(configuration, environment, builder);
         Client client = builder.build(clientName);
-        SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
         soaConfiguration.putNamed(client, Client.class, clientName);
 
         return client;

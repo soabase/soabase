@@ -62,6 +62,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
         }
         catch ( Exception e )
         {
+            // TODO logging
             log.error("Could not initialize MyBatis", e);
             throw new RuntimeException(e);
         }

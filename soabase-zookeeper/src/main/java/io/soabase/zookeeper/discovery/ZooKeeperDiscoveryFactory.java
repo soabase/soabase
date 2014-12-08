@@ -10,7 +10,9 @@ import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
 import org.apache.curator.framework.CuratorFramework;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @JsonTypeName("zookeeper")
 public class ZooKeeperDiscoveryFactory implements SoaDiscoveryFactory
@@ -20,6 +22,7 @@ public class ZooKeeperDiscoveryFactory implements SoaDiscoveryFactory
     private String thisServiceName;
 
     @Valid
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Service Names can only contain letters and numbers")
     private String bindAddress;
 
     @JsonProperty("name")

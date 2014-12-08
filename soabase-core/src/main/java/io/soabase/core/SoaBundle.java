@@ -131,6 +131,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             }
         }
 
+        // TODO logging
         throw new RuntimeException("Cannot determine the main server port");
     }
 

@@ -120,6 +120,7 @@ public class SoaCli
         if ( hasConfigFile && hasConfigStr )
         {
             Help.help(soaCli.helpOption.commandMetadata);
+            // TODO logging
             throw new IllegalStateException("You cannot have both config string and config file");
         }
 
@@ -162,6 +163,7 @@ public class SoaCli
             if ( parts.size() != 2 )
             {
                 Help.help(soaCli.helpOption.commandMetadata);
+                // TODO logging
                 throw new IllegalArgumentException("Badly formed config override: " + override);
             }
             overrides.put(parts.get(0), parts.get(1));

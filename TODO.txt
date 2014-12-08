@@ -13,5 +13,5 @@
 * Support Jersey client
 * Logging
 * Guice and Spring
-* Don't deploy ExampleApp
-* Don't register Discovery until mnaged is started
+- Don't deploy ExampleApp - config added to pom. Needs to be tested.
+* Don't register Discovery until managed is started

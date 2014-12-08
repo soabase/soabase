@@ -1,4 +1,4 @@
-package io.soabase.client;
+package io.soabase.client.apache;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderIterator;

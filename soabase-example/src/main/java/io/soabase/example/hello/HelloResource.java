@@ -8,6 +8,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import java.io.InputStreamReader;
@@ -17,18 +18,19 @@ import java.net.URI;
 public class HelloResource
 {
     private final SoaFeatures features;
+    private final HttpClient client;
 
     @Inject
-    public HelloResource(SoaFeatures features)
+    public HelloResource(SoaFeatures features, @Named(SoaFeatures.DEFAULT_NAME) HttpClient client)
     {
         this.features = features;
+        this.client = client;
     }
 
     @GET
     public String getHello() throws Exception
     {
         SoaDiscoveryInstance instance = features.getDiscovery().getInstance("GoodbyeApp");
-        HttpClient client = features.getNamed(HttpClient.class, SoaFeatures.DEFAULT_NAME);
         URI uri = new URIBuilder().setScheme("http").setHost(instance.getHost()).setPort(instance.getPort()).setPath("/goodbye").build();
         HttpGet get = new HttpGet(uri);
         HttpResponse response = client.execute(get);

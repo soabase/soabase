@@ -3,11 +3,11 @@ package io.soabase.example;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import io.dropwizard.Application;
-import io.dropwizard.client.HttpClientConfiguration;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.client.SoaClientBundle;
+import io.soabase.client.SoaClientConfiguration;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaCli;
@@ -46,10 +46,10 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
                 return configuration.getCuratorConfiguration();
             }
         };
-        ConfigurationAccessor<ExampleConfiguration, HttpClientConfiguration> clientAccessor = new ConfigurationAccessor<ExampleConfiguration, HttpClientConfiguration>()
+        ConfigurationAccessor<ExampleConfiguration, SoaClientConfiguration> clientAccessor = new ConfigurationAccessor<ExampleConfiguration, SoaClientConfiguration>()
         {
             @Override
-            public HttpClientConfiguration accessConfiguration(ExampleConfiguration configuration)
+            public SoaClientConfiguration accessConfiguration(ExampleConfiguration configuration)
             {
                 return configuration.getClientConfiguration();
             }

@@ -5,6 +5,7 @@ import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.client.HttpClientConfiguration;
+import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.CheckedConfigurationAccessor;
@@ -16,6 +17,7 @@ import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import javax.servlet.DispatcherType;
+import javax.ws.rs.client.Client;
 import java.io.IOException;
 import java.util.EnumSet;
 
@@ -26,19 +28,19 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     private final String clientName;
     private final boolean retry500s;
     private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
-    private final ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor;
+    private final ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor;
 
-    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor)
+    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor)
     {
         this(soaAccessor, clientAccessor, SoaFeatures.DEFAULT_NAME, true);
     }
 
-    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor, String clientName)
+    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor, String clientName)
     {
         this(soaAccessor, clientAccessor, clientName, true);
     }
 
-    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, HttpClientConfiguration> clientAccessor, String clientName, boolean retry500s)
+    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor, String clientName, boolean retry500s)
     {
         this.soaAccessor = new CheckedConfigurationAccessor<>(soaAccessor);
         this.clientAccessor = new CheckedConfigurationAccessor<>(clientAccessor);
@@ -57,36 +59,86 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     {
         environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-        final HttpClient client;
-        {
-            HttpRequestRetryHandler nullRetry = new HttpRequestRetryHandler()
-            {
-                @Override
-                public boolean retryRequest(IOException exception, int executionCount, HttpContext context)
-                {
-                    return false;
-                }
-            };
-
-            HttpClientConfiguration httpClientConfiguration = clientAccessor.accessConfiguration(configuration);
-            HttpClient httpClient = new HttpClientBuilder(environment)
-                .using(httpClientConfiguration)
-                .using(nullRetry)   // Apache's retry mechanism does not allow changing hosts. Do retries manually
-                .build(clientName);
-
-            SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
-            client = new WrappedHttpClient(httpClient, soaConfiguration.getDiscovery(), httpClientConfiguration.getRetries(), retry500s);
-            soaConfiguration.putNamed(client, HttpClient.class, clientName);
-        }
+        SoaClientConfiguration clientConfiguration = clientAccessor.accessConfiguration(configuration);
+        final HttpClient httpClient = buildHttpClient(configuration, clientConfiguration, environment);
+        final Client jerseyClient = buildJerseyClient(configuration, clientConfiguration, environment);
 
         AbstractBinder binder = new AbstractBinder()
         {
             @Override
             protected void configure()
             {
-                bind(client).named(clientName).to(HttpClient.class);
+                if ( httpClient != null )
+                {
+                    bind(httpClient).named(clientName).to(HttpClient.class);
+                }
+                if ( jerseyClient != null )
+                {
+                    bind(jerseyClient).named(clientName).to(Client.class);
+                }
             }
         };
         environment.jersey().register(binder);
+    }
+
+    // protected so users can override
+    @SuppressWarnings("UnusedParameters")
+    protected JerseyClientBuilder updateJerseyClientBuilder(T configuration, Environment environment, JerseyClientBuilder builder)
+    {
+        return builder;
+    }
+
+    // protected so users can override
+    @SuppressWarnings("UnusedParameters")
+    protected HttpClientBuilder updateHttpClientBuilder(T configuration, Environment environment, HttpClientBuilder httpClientBuilder)
+    {
+        return httpClientBuilder;
+    }
+
+    private Client buildJerseyClient(T configuration, SoaClientConfiguration clientConfiguration, Environment environment)
+    {
+        if ( clientConfiguration.getJerseyClientConfiguration() == null )
+        {
+            return null;
+        }
+
+        // TODO - retries, discovery, etc.
+
+        JerseyClientBuilder builder = new JerseyClientBuilder(environment).using(clientConfiguration.getJerseyClientConfiguration());
+        builder = updateJerseyClientBuilder(configuration, environment, builder);
+        Client client = builder.build(clientName);
+        SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
+        soaConfiguration.putNamed(client, Client.class, clientName);
+
+        return client;
+    }
+
+    private HttpClient buildHttpClient(T configuration, SoaClientConfiguration clientConfiguration, Environment environment)
+    {
+        if ( clientConfiguration.getHttpClientConfiguration() == null )
+        {
+            return null;
+        }
+
+        HttpRequestRetryHandler nullRetry = new HttpRequestRetryHandler()
+        {
+            @Override
+            public boolean retryRequest(IOException exception, int executionCount, HttpContext context)
+            {
+                return false;
+            }
+        };
+
+        HttpClientConfiguration httpClientConfiguration = clientConfiguration.getHttpClientConfiguration();
+        HttpClientBuilder httpClientBuilder = new HttpClientBuilder(environment)
+            .using(httpClientConfiguration)
+            .using(nullRetry);  // Apache's retry mechanism does not allow changing hosts. Do retries manually
+        httpClientBuilder = updateHttpClientBuilder(configuration, environment, httpClientBuilder);
+        HttpClient httpClient = httpClientBuilder.build(clientName);
+
+        SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
+        HttpClient client = new WrappedHttpClient(httpClient, soaConfiguration.getDiscovery(), httpClientConfiguration.getRetries(), retry500s);
+        soaConfiguration.putNamed(client, HttpClient.class, clientName);
+        return client;
     }
 }

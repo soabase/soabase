@@ -5,7 +5,7 @@ import io.soabase.core.features.discovery.SoaDiscovery;
 
 public interface SoaFeatures
 {
-    public static final String DEFAULT_NAME = "";
+    public static final String DEFAULT_NAME = "default";
 
     public <T> T getNamed(Class<T> clazz, String name);
 

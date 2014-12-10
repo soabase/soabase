@@ -1,38 +1,33 @@
 package io.soabase.client.apache;
 
-import com.google.common.collect.Lists;
 import io.soabase.client.Common;
+import io.soabase.client.retry.Retry;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 @SuppressWarnings("deprecation")
 public class WrappedHttpClient implements HttpClient
 {
     private final HttpClient implementation;
     private final SoaDiscovery discovery;
-    private final boolean retry500s;
-    private final HttpRequestRetryHandler retryHandler;
+    private final Retry retry;
 
-    public WrappedHttpClient(HttpClient implementation, SoaDiscovery discovery, int retries, boolean retry500s)
+    public WrappedHttpClient(HttpClient implementation, SoaDiscovery discovery, Retry retry)
     {
         this.implementation = implementation;
         this.discovery = discovery;
-        this.retry500s = retry500s;
-        retryHandler = new DefaultHttpRequestRetryHandler(retries, false, Lists.<Class<? extends IOException>>newArrayList()){};
+        this.retry = retry;
     }
 
     @Override
@@ -118,14 +113,9 @@ public class WrappedHttpClient implements HttpClient
         return discovery;
     }
 
-    boolean isRetry500s()
+    Retry getRetry()
     {
-        return retry500s;
-    }
-
-    HttpRequestRetryHandler getRetryHandler()
-    {
-        return retryHandler;
+        return retry;
     }
 
     private HttpHost filterTarget(HttpHost target, SoaDiscoveryInstance instance)

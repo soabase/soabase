@@ -6,10 +6,15 @@ import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.client.HttpClientConfiguration;
 import io.dropwizard.client.JerseyClientBuilder;
+import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.client.apache.WrappedHttpClient;
 import io.soabase.client.jersey.JerseyRetryConnectorProvider;
+import io.soabase.client.retry.DefaultRetryHandler;
+import io.soabase.client.retry.Retry;
+import io.soabase.client.retry.RetryExecutor;
+import io.soabase.client.retry.RetryHandler;
 import io.soabase.core.CheckedConfigurationAccessor;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaConfiguration;
@@ -32,6 +37,8 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
     private final ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor;
 
+    private volatile RetryHandler retryHandler = new DefaultRetryHandler();
+
     public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor)
     {
         this(soaAccessor, clientAccessor, SoaFeatures.DEFAULT_NAME, true);
@@ -50,6 +57,16 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
         this.retry500s = retry500s;
     }
 
+    public RetryHandler getRetryHandler()
+    {
+        return retryHandler;
+    }
+
+    public void setRetryHandler(RetryHandler retryHandler)
+    {
+        this.retryHandler = retryHandler;
+    }
+
     @Override
     public void initialize(Bootstrap<?> bootstrap)
     {
@@ -62,8 +79,12 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
         environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         SoaClientConfiguration clientConfiguration = clientAccessor.accessConfiguration(configuration);
-        final HttpClient httpClient = buildHttpClient(configuration, clientConfiguration, environment);
-        final Client jerseyClient = buildJerseyClient(configuration, clientConfiguration, environment);
+
+        RetryExecutor retryExecutor = new RetryExecutor(environment.lifecycle().executorService("RetryHandler-%d"));
+        Retry retry = new Retry(retryHandler, clientConfiguration.getMaxRetries(), retry500s, retryExecutor);
+
+        final HttpClient httpClient = buildHttpClient(configuration, clientConfiguration, environment, retry);
+        final Client jerseyClient = buildJerseyClient(configuration, clientConfiguration, environment, retry);
 
         AbstractBinder binder = new AbstractBinder()
         {
@@ -97,9 +118,10 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
         return httpClientBuilder;
     }
 
-    private Client buildJerseyClient(T configuration, SoaClientConfiguration clientConfiguration, Environment environment)
+    private Client buildJerseyClient(T configuration, SoaClientConfiguration clientConfiguration, Environment environment, Retry retry)
     {
-        if ( clientConfiguration.getJerseyClientConfiguration() == null )
+        JerseyClientConfiguration jerseyClientConfiguration = clientConfiguration.getJerseyClientConfiguration();
+        if ( jerseyClientConfiguration == null )
         {
             return null;
         }
@@ -108,8 +130,8 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
 
         SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
         JerseyClientBuilder builder = new JerseyClientBuilder(environment)
-            .using(clientConfiguration.getJerseyClientConfiguration())
-            .using(new JerseyRetryConnectorProvider(soaConfiguration.getDiscovery()));
+            .using(jerseyClientConfiguration)
+            .using(new JerseyRetryConnectorProvider(soaConfiguration.getDiscovery(), retry));
         builder = updateJerseyClientBuilder(configuration, environment, builder);
         Client client = builder.build(clientName);
         soaConfiguration.putNamed(client, Client.class, clientName);
@@ -117,7 +139,7 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
         return client;
     }
 
-    private HttpClient buildHttpClient(T configuration, SoaClientConfiguration clientConfiguration, Environment environment)
+    private HttpClient buildHttpClient(T configuration, SoaClientConfiguration clientConfiguration, Environment environment, Retry retry)
     {
         if ( clientConfiguration.getHttpClientConfiguration() == null )
         {
@@ -141,7 +163,7 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
         HttpClient httpClient = httpClientBuilder.build(clientName);
 
         SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
-        HttpClient client = new WrappedHttpClient(httpClient, soaConfiguration.getDiscovery(), httpClientConfiguration.getRetries(), retry500s);
+        HttpClient client = new WrappedHttpClient(httpClient, soaConfiguration.getDiscovery(), retry);
         soaConfiguration.putNamed(client, HttpClient.class, clientName);
         return client;
     }

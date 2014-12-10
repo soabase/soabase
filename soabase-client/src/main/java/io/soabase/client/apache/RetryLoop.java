@@ -29,21 +29,15 @@ abstract class RetryLoop<T>
             {
                 ++count;
                 response = execute(original, context, instance);
-                if ( client.isRetry500s() )
+                if ( !client.getRetry().shouldBeRetried(null, null, 0, 0, null) )   // TODO
                 {
-                    int status = response.getStatusLine().getStatusCode();
-                    if ( (status >= 500) && (status <= 599) )
-                    {
-                        // TODO logging
-                        throw new IOException("Bad status: " + status);
-                    }
+                    done = true;
                 }
-                done = true;
             }
             catch ( IOException e )
             {
                 client.getDiscovery().noteError(null, null);    // TODO
-                if ( !client.getRetryHandler().retryRequest(e, count, context) )
+                if ( !client.getRetry().shouldBeRetried(null, null, 0, 0, null) )   // TODO
                 {
                     throw e;
                 }

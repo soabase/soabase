@@ -10,6 +10,7 @@ public class Common
 {
     public static SoaDiscoveryInstance hostToInstance(SoaDiscovery discovery, String host)
     {
+        host = Preconditions.checkNotNull(host, "Request URI's host cannot be null");
         if ( host.startsWith(SoaClientBundle.HOST_SUBSTITUTION_TOKEN) && (host.length() > SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length()) )
         {
             String serviceName = host.substring(SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length());

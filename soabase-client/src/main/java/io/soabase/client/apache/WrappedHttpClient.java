@@ -15,6 +15,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 @SuppressWarnings("deprecation")
 public class WrappedHttpClient implements HttpClient
@@ -51,14 +52,31 @@ public class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpUriRequest request, HttpContext context) throws IOException
     {
-        return new RetryLoop<HttpUriRequest>() {
-            @Override
-            protected HttpResponse execute(HttpUriRequest originalRequest, HttpContext context, SoaDiscoveryInstance instance) throws IOException
+        String originalHost = request.getURI().getHost();
+        for ( int retryCount = 0; /* no check */; ++retryCount )
+        {
+            SoaDiscoveryInstance instance = Common.hostToInstance(discovery, originalHost);
+            URI filteredUri = Common.filterUri(request.getURI(), instance);
+            if ( filteredUri != null )
             {
-                HttpUriRequest request = filterRequest(originalRequest, instance);
-                return implementation.execute(request, context);
+                request = new WrappedHttpUriRequest(request, filteredUri);
             }
-        }.run(this, request, context, request.getURI().getHost());
+            try
+            {
+                HttpResponse response = implementation.execute(request, context);
+                if ( !retry.shouldBeRetried(request.getURI(), request.getMethod(), retryCount, response.getStatusLine().getStatusCode(), null) )
+                {
+                    return response;
+                }
+            }
+            catch ( IOException e )
+            {
+                if ( !retry.shouldBeRetried(request.getURI(), request.getMethod(), retryCount, 0, null) )
+                {
+                    throw e;
+                }
+            }
+        }
     }
 
     @Override
@@ -70,14 +88,41 @@ public class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpHost target, final HttpRequest request, HttpContext context) throws IOException
     {
-        return new RetryLoop<HttpHost>() {
-            @Override
-            protected HttpResponse execute(HttpHost original, HttpContext context, SoaDiscoveryInstance instance) throws IOException
+        String originalHost = target.getHostName();
+        for ( int retryCount = 0; /* no check */; ++retryCount )
+        {
+            URI uri;
+            try
             {
-                HttpHost target = filterTarget(original, instance);
-                return implementation.execute(target, request, context);
+                uri = new URI(target.toURI());
             }
-        }.run(this, target, context, target.getHostName());
+            catch ( URISyntaxException e )
+            {
+                // TODO logging
+                throw new IOException(e);
+            }
+            try
+            {
+                SoaDiscoveryInstance instance = Common.hostToInstance(discovery, originalHost);
+                URI filteredUri = Common.filterUri(uri, instance);
+                if ( filteredUri != null )
+                {
+                    target = new HttpHost(filteredUri.getHost(), filteredUri.getPort(), filteredUri.getScheme());
+                }
+                HttpResponse response = implementation.execute(target, request, context);
+                if ( !retry.shouldBeRetried(uri, request.getRequestLine().getMethod(), retryCount, response.getStatusLine().getStatusCode(), null) )
+                {
+                    return response;
+                }
+            }
+            catch ( IOException e )
+            {
+                if ( !retry.shouldBeRetried(uri, request.getRequestLine().getMethod(), retryCount, 0, null) )
+                {
+                    throw e;
+                }
+            }
+        }
     }
 
     @Override
@@ -116,25 +161,5 @@ public class WrappedHttpClient implements HttpClient
     Retry getRetry()
     {
         return retry;
-    }
-
-    private HttpHost filterTarget(HttpHost target, SoaDiscoveryInstance instance)
-    {
-        if ( instance != null )
-        {
-            String scheme = instance.isForceSsl() ? "https" : target.getSchemeName();
-            target = new HttpHost(instance.getHost(), instance.getPort(), scheme);
-        }
-        return target;
-    }
-
-    private HttpUriRequest filterRequest(HttpUriRequest request, SoaDiscoveryInstance instance)
-    {
-        URI filteredUri = Common.filterUri(request.getURI(), instance);
-        if ( filteredUri != null )
-        {
-            request = new WrappedHttpUriRequest(request, filteredUri);
-        }
-        return request;
     }
 }

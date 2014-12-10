@@ -1,7 +1,8 @@
 package io.soabase.client.apache;
 
 import io.soabase.client.Common;
-import io.soabase.client.retry.Retry;
+import io.soabase.client.retry.RetryComponents;
+import io.soabase.client.retry.RetryContext;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import org.apache.http.HttpHost;
@@ -22,13 +23,13 @@ public class WrappedHttpClient implements HttpClient
 {
     private final HttpClient implementation;
     private final SoaDiscovery discovery;
-    private final Retry retry;
+    private final RetryComponents retryComponents;
 
-    public WrappedHttpClient(HttpClient implementation, SoaDiscovery discovery, Retry retry)
+    public WrappedHttpClient(HttpClient implementation, SoaDiscovery discovery, RetryComponents retryComponents)
     {
         this.implementation = implementation;
         this.discovery = discovery;
-        this.retry = retry;
+        this.retryComponents = retryComponents;
     }
 
     @Override
@@ -52,10 +53,12 @@ public class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpUriRequest request, HttpContext context) throws IOException
     {
-        String originalHost = request.getURI().getHost();
+        RetryContext retryContext = new RetryContext(retryComponents, request.getURI(), request.getMethod());
         for ( int retryCount = 0; /* no check */; ++retryCount )
         {
-            SoaDiscoveryInstance instance = Common.hostToInstance(discovery, originalHost);
+            SoaDiscoveryInstance instance = Common.hostToInstance(discovery, retryContext.getOriginalHost());
+            retryContext.setInstance(instance);
+
             URI filteredUri = Common.filterUri(request.getURI(), instance);
             if ( filteredUri != null )
             {
@@ -64,14 +67,14 @@ public class WrappedHttpClient implements HttpClient
             try
             {
                 HttpResponse response = implementation.execute(request, context);
-                if ( !retry.shouldBeRetried(request.getURI(), request.getMethod(), retryCount, response.getStatusLine().getStatusCode(), null) )
+                if ( !retryContext.shouldBeRetried(retryCount, response.getStatusLine().getStatusCode(), null) )
                 {
                     return response;
                 }
             }
             catch ( IOException e )
             {
-                if ( !retry.shouldBeRetried(request.getURI(), request.getMethod(), retryCount, 0, null) )
+                if ( !retryContext.shouldBeRetried(retryCount, 0, e) )
                 {
                     throw e;
                 }
@@ -88,36 +91,39 @@ public class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpHost target, final HttpRequest request, HttpContext context) throws IOException
     {
-        String originalHost = target.getHostName();
+        URI uri;
+        try
+        {
+            uri = new URI(target.toURI());
+        }
+        catch ( URISyntaxException e )
+        {
+            // TODO logging
+            throw new IOException(e);
+        }
+
+        RetryContext retryContext = new RetryContext(retryComponents, uri, request.getRequestLine().getMethod());
         for ( int retryCount = 0; /* no check */; ++retryCount )
         {
-            URI uri;
             try
             {
-                uri = new URI(target.toURI());
-            }
-            catch ( URISyntaxException e )
-            {
-                // TODO logging
-                throw new IOException(e);
-            }
-            try
-            {
-                SoaDiscoveryInstance instance = Common.hostToInstance(discovery, originalHost);
+                SoaDiscoveryInstance instance = Common.hostToInstance(discovery, retryContext.getOriginalHost());
+                retryContext.setInstance(instance);
+
                 URI filteredUri = Common.filterUri(uri, instance);
                 if ( filteredUri != null )
                 {
                     target = new HttpHost(filteredUri.getHost(), filteredUri.getPort(), filteredUri.getScheme());
                 }
                 HttpResponse response = implementation.execute(target, request, context);
-                if ( !retry.shouldBeRetried(uri, request.getRequestLine().getMethod(), retryCount, response.getStatusLine().getStatusCode(), null) )
+                if ( !retryContext.shouldBeRetried(retryCount, response.getStatusLine().getStatusCode(), null) )
                 {
                     return response;
                 }
             }
             catch ( IOException e )
             {
-                if ( !retry.shouldBeRetried(uri, request.getRequestLine().getMethod(), retryCount, 0, null) )
+                if ( !retryContext.shouldBeRetried(retryCount, 0, e) )
                 {
                     throw e;
                 }
@@ -158,8 +164,8 @@ public class WrappedHttpClient implements HttpClient
         return discovery;
     }
 
-    Retry getRetry()
+    RetryComponents getRetryComponents()
     {
-        return retry;
+        return retryComponents;
     }
 }

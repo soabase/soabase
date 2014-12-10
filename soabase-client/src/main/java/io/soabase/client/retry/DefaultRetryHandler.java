@@ -1,11 +1,11 @@
 package io.soabase.client.retry;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.soabase.client.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.net.URI;
 
 @JsonTypeName("default")
 public class DefaultRetryHandler implements RetryHandler
@@ -13,26 +13,35 @@ public class DefaultRetryHandler implements RetryHandler
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
-    public boolean shouldBeRetried(URI uri, String method, int retryCount, int maxRetries, int statusCode, Throwable exception, boolean retry500s)
+    public boolean shouldBeRetried(RetryContext retryContext, int retryCount, int statusCode, Throwable exception)
     {
-        if ( retryCount >= maxRetries )
+        if ( retryCount >= retryContext.getComponents().getRetries() )
         {
-            log.warn(String.format("Retries exceeded. retryCount: %d - maxRetries: %d", retryCount, maxRetries));
+            log.warn(String.format("Retries exceeded. retryCount: %d - maxRetries: %d", retryCount, retryContext.getComponents().getRetries()));
             return false;
         }
 
-        if ( (statusCode != 0) && retry500s )
+        if ( (statusCode != 0) && retryContext.getComponents().isRetry500s() )
         {
             if ( (statusCode >= 500) && (statusCode <= 599) )
             {
                 exception = new IOException("Internal Server Error: " + statusCode);
             }
         }
-        return shouldBeRetried(uri, exception, method);
+        boolean shouldBeRetried = shouldBeRetried(retryContext, exception);
+        if ( shouldBeRetried )
+        {
+            String serviceName = Common.hostToServiceName(retryContext.getOriginalHost());
+            if ( (serviceName != null) && (retryContext.getInstance() != null) )
+            {
+                retryContext.getComponents().getDiscovery().noteError(serviceName, retryContext.getInstance());
+            }
+        }
+        return shouldBeRetried;
     }
 
     @SuppressWarnings("SimplifiableIfStatement")
-    private boolean shouldBeRetried(URI uri, Throwable exception, String method)
+    private boolean shouldBeRetried(RetryContext retryContext, Throwable exception)
     {
         if ( exception == null )
         {
@@ -44,18 +53,18 @@ public class DefaultRetryHandler implements RetryHandler
         {
             retry = true;
         }
-        else if ( isIdempotentMethod(method) )
+        else if ( isIdempotentMethod(retryContext.getMethod()) )
         {
             retry = true;
         }
 
         if ( retry && (exception instanceof IOException) )
         {
-            log.info(String.format("Retrying request due to exception %s. request: %s", exception.getClass().getSimpleName(), uri));
+            log.info(String.format("Retrying request due to exception %s. request: %s", exception.getClass().getSimpleName(), retryContext.getOriginalUri()));
             return true;
         }
 
-        return shouldBeRetried(uri, exception.getCause(), method);
+        return shouldBeRetried(retryContext, exception.getCause());
     }
 
     private boolean isIdempotentMethod(String method)

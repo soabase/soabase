@@ -8,12 +8,21 @@ import java.net.URISyntaxException;
 
 public class Common
 {
-    public static SoaDiscoveryInstance hostToInstance(SoaDiscovery discovery, String host)
+    public static String hostToServiceName(String host)
     {
         host = Preconditions.checkNotNull(host, "Request URI's host cannot be null");
         if ( host.startsWith(SoaClientBundle.HOST_SUBSTITUTION_TOKEN) && (host.length() > SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length()) )
         {
-            String serviceName = host.substring(SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length());
+            return host.substring(SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length());
+        }
+        return null;
+    }
+
+    public static SoaDiscoveryInstance hostToInstance(SoaDiscovery discovery, String host)
+    {
+        String serviceName = hostToServiceName(host);
+        if ( serviceName != null )
+        {
             return Preconditions.checkNotNull(discovery.getInstance(serviceName), "No instance found for " + serviceName);
         }
         return null;

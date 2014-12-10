@@ -17,6 +17,9 @@ public class SoaClientConfiguration
     @Valid
     private int maxRetries = 3;
 
+    @Valid
+    private boolean retry500s = true;
+
     @JsonProperty("maxRetries")
     @Min(0)
     public int getMaxRetries()
@@ -53,5 +56,17 @@ public class SoaClientConfiguration
     public void setJerseyClientConfiguration(JerseyClientConfiguration jerseyClientConfiguration)
     {
         this.jerseyClientConfiguration = jerseyClientConfiguration;
+    }
+
+    @JsonProperty("retry500s")
+    public boolean isRetry500s()
+    {
+        return retry500s;
+    }
+
+    @JsonProperty("retry500s")
+    public void setRetry500s(boolean retry500s)
+    {
+        this.retry500s = retry500s;
     }
 }

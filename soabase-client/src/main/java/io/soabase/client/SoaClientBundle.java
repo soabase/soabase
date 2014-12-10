@@ -33,7 +33,6 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     public static final String HOST_SUBSTITUTION_TOKEN = "00000.";
 
     private final String clientName;
-    private final boolean retry500s;
     private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
     private final ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor;
 
@@ -41,20 +40,14 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
 
     public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor)
     {
-        this(soaAccessor, clientAccessor, SoaFeatures.DEFAULT_NAME, true);
+        this(soaAccessor, clientAccessor, SoaFeatures.DEFAULT_NAME);
     }
 
     public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor, String clientName)
     {
-        this(soaAccessor, clientAccessor, clientName, true);
-    }
-
-    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor, String clientName, boolean retry500s)
-    {
         this.soaAccessor = new CheckedConfigurationAccessor<>(soaAccessor);
         this.clientAccessor = new CheckedConfigurationAccessor<>(clientAccessor);
         this.clientName = Preconditions.checkNotNull(clientName, "clientName cannot be null");
-        this.retry500s = retry500s;
     }
 
     public RetryHandler getRetryHandler()
@@ -82,7 +75,7 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
         SoaClientConfiguration clientConfiguration = clientAccessor.accessConfiguration(configuration);
 
         RetryExecutor retryExecutor = new RetryExecutor(environment.lifecycle().executorService("RetryHandler-%d"));
-        RetryComponents retryComponents = new RetryComponents(retryHandler, soaConfiguration.getDiscovery(), clientConfiguration.getMaxRetries(), retry500s, retryExecutor);
+        RetryComponents retryComponents = new RetryComponents(retryHandler, soaConfiguration.getDiscovery(), clientConfiguration.getMaxRetries(), clientConfiguration.isRetry500s(), retryExecutor);
 
         final HttpClient httpClient = buildHttpClient(configuration, soaConfiguration, clientConfiguration, environment, retryComponents);
         final Client jerseyClient = buildJerseyClient(configuration, soaConfiguration, clientConfiguration, environment, retryComponents);

@@ -5,6 +5,7 @@ import io.soabase.client.retry.RetryComponents;
 import io.soabase.client.retry.RetryContext;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -14,7 +15,10 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.Args;
+import org.apache.http.util.EntityUtils;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -89,12 +93,12 @@ public class WrappedHttpClient implements HttpClient
     }
 
     @Override
-    public HttpResponse execute(HttpHost target, final HttpRequest request, HttpContext context) throws IOException
+    public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context) throws IOException
     {
         URI uri;
         try
         {
-            uri = new URI(target.toURI());
+            uri = new URI(request.getRequestLine().getUri());
         }
         catch ( URISyntaxException e )
         {
@@ -113,7 +117,8 @@ public class WrappedHttpClient implements HttpClient
                 URI filteredUri = Common.filterUri(uri, instance);
                 if ( filteredUri != null )
                 {
-                    target = new HttpHost(filteredUri.getHost(), filteredUri.getPort(), filteredUri.getScheme());
+                    target = toHost(filteredUri);
+                    request = new WrappedHttpRequest(request, filteredUri);
                 }
                 HttpResponse response = implementation.execute(target, request, context);
                 if ( !retryContext.shouldBeRetried(retryCount, response.getStatusLine().getStatusCode(), null) )
@@ -134,38 +139,66 @@ public class WrappedHttpClient implements HttpClient
     @Override
     public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler) throws IOException
     {
-        // TODO
-        return implementation.execute(request, responseHandler);
+        return internalExecute(request, null, null, responseHandler, null);
     }
 
     @Override
     public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler, HttpContext context) throws IOException
     {
-        // TODO
-        return implementation.execute(request, responseHandler, context);
+        return internalExecute(request, null, null, responseHandler, context);
     }
 
     @Override
     public <T> T execute(HttpHost target, HttpRequest request, ResponseHandler<? extends T> responseHandler) throws IOException
     {
-        // TODO
-        return implementation.execute(target, request, responseHandler);
+        return internalExecute(null, target, request, responseHandler, null);
     }
 
     @Override
     public <T> T execute(HttpHost target, HttpRequest request, ResponseHandler<? extends T> responseHandler, HttpContext context) throws IOException
     {
-        // TODO
-        return implementation.execute(target, request, responseHandler, context);
+        return internalExecute(null, target, request, responseHandler, context);
     }
 
-    SoaDiscovery getDiscovery()
+    private HttpHost toHost(URI uri)
     {
-        return discovery;
+        return new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
     }
 
-    RetryComponents getRetryComponents()
+    // mostly copied from CloseableHttpClient.execute()
+    private <T> T internalExecute(final HttpUriRequest uriRequest, final HttpHost target, final HttpRequest request,
+                         final ResponseHandler<? extends T> responseHandler, final HttpContext context)
+        throws IOException
     {
-        return retryComponents;
+        Args.notNull(responseHandler, "Response handler");
+
+        final HttpResponse response = (uriRequest != null) ? execute(uriRequest, context) : execute(target, request, context);
+
+        final T result;
+        try {
+            result = responseHandler.handleResponse(response);
+        } catch (final Exception t) {
+            final HttpEntity entity = response.getEntity();
+            try {
+                EntityUtils.consume(entity);
+            } catch (final Exception t2) {
+                // Log this exception. The original exception is more
+                // important and will be thrown to the caller.
+                // TODO this.log.warn("Error consuming content after an exception.", t2);
+            }
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            }
+            if (t instanceof IOException) {
+                throw (IOException) t;
+            }
+            throw new UndeclaredThrowableException(t);
+        }
+
+        // Handling the response was successful. Ensure that the content has
+        // been fully consumed.
+        final HttpEntity entity = response.getEntity();
+        EntityUtils.consume(entity);
+        return result;
     }
 }

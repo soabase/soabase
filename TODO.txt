@@ -3,15 +3,16 @@
 * Hystrix?
 * Archaius?
 * Eureka?
-* Example App
+- Example App
 * Tests
 * javadoc/doc
 * TODO comments
 * Make sure Dropwizard can support JAR contained config files
 * Figure out why config isn't validating
 * Support arrays in overrides
-* Support Jersey client
+√ Support Jersey client
 * Logging
 * Guice and Spring
 - Don't deploy ExampleApp - config added to pom. Needs to be tested.
 * Don't register Discovery until managed is started
+* Figure out what @Valid means

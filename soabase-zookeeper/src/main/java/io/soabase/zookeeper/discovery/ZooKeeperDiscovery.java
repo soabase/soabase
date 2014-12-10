@@ -116,6 +116,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
         {
             ServiceProvider<Void> provider = providers.get(serviceName);
             ServiceInstance<Void> instance = provider.getInstance();
+            // TODO check for null
             if ( instance.getPort() != null )
             {
                 return new SoaDiscoveryInstance(instance.getAddress(), instance.getPort(), false);

@@ -19,7 +19,7 @@ public class HelloApp extends ExampleAppBase
     @Override
     protected void internalRun(ExampleConfiguration configuration, Environment environment)
     {
-        environment.jersey().register(HelloResource.class);
+        environment.jersey().register(HelloResourceJersey.class);
         environment.jersey().register(HelloResourceApache.class);
     }
 }

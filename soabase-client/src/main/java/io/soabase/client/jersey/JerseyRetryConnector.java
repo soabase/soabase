@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
 import io.soabase.client.Common;
+import io.soabase.client.SoaRequestId;
 import io.soabase.client.retry.RetryComponents;
 import io.soabase.client.retry.RetryContext;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
@@ -58,6 +59,12 @@ public class JerseyRetryConnector implements Connector
 
     private void filterRequest(ClientRequest request, RetryContext retryContext)
     {
+        String id = SoaRequestId.get();
+        if ( id != null )
+        {
+            request.getHeaders().putSingle(SoaRequestId.REQUEST_ID_HEADER_NAME, id);
+        }
+
         SoaDiscoveryInstance instance = Common.hostToInstance(retryContext.getComponents().getDiscovery(), retryContext.getOriginalHost());
         retryContext.setInstance(instance);
         URI filteredUri = Common.filterUri(request.getUri(), instance);

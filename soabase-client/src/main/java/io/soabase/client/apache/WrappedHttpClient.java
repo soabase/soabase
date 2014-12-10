@@ -1,6 +1,7 @@
 package io.soabase.client.apache;
 
 import io.soabase.client.Common;
+import io.soabase.client.SoaRequestId;
 import io.soabase.client.retry.RetryComponents;
 import io.soabase.client.retry.RetryContext;
 import io.soabase.core.features.discovery.SoaDiscovery;
@@ -57,6 +58,8 @@ public class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpUriRequest request, HttpContext context) throws IOException
     {
+        addRequestId(request);
+
         RetryContext retryContext = new RetryContext(retryComponents, request.getURI(), request.getMethod());
         for ( int retryCount = 0; /* no check */; ++retryCount )
         {
@@ -95,6 +98,8 @@ public class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context) throws IOException
     {
+        addRequestId(request);
+
         URI uri;
         try
         {
@@ -158,6 +163,15 @@ public class WrappedHttpClient implements HttpClient
     public <T> T execute(HttpHost target, HttpRequest request, ResponseHandler<? extends T> responseHandler, HttpContext context) throws IOException
     {
         return internalExecute(null, target, request, responseHandler, context);
+    }
+
+    private void addRequestId(HttpRequest request)
+    {
+        String requestId = SoaRequestId.get();
+        if ( requestId != null )
+        {
+            request.addHeader(SoaRequestId.REQUEST_ID_HEADER_NAME, requestId);
+        }
     }
 
     private HttpHost toHost(URI uri)

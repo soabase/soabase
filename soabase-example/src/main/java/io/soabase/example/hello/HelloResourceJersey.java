@@ -1,6 +1,7 @@
 package io.soabase.example.hello;
 
 import io.soabase.client.SoaClientBundle;
+import io.soabase.client.SoaRequestId;
 import io.soabase.core.SoaFeatures;
 import io.soabase.example.goodbye.GoodbyeResource;
 import javax.inject.Inject;
@@ -12,12 +13,12 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 @Path("/hello")
-public class HelloResource
+public class HelloResourceJersey
 {
     private final Client client;
 
     @Inject
-    public HelloResource(@Named(SoaFeatures.DEFAULT_NAME) Client client)
+    public HelloResourceJersey(@Named(SoaFeatures.DEFAULT_NAME) Client client)
     {
         this.client = client;
     }
@@ -27,6 +28,6 @@ public class HelloResource
     {
         URI uri = UriBuilder.fromResource(GoodbyeResource.class).host(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "GoodbyeApp").build();
         String value = client.target(uri).request().get(String.class);
-        return "hello/" + value;
+        return "hello - " + SoaRequestId.get() + "\n" + value;
     }
 }

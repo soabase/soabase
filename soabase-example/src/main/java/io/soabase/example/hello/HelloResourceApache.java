@@ -2,10 +2,10 @@ package io.soabase.example.hello;
 
 import com.google.common.io.CharStreams;
 import io.soabase.client.SoaClientBundle;
+import io.soabase.client.SoaRequestId;
 import io.soabase.core.SoaFeatures;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -37,12 +37,12 @@ public class HelloResourceApache
         ResponseHandler<String> responseHandler = new ResponseHandler<String>()
         {
             @Override
-            public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException
+            public String handleResponse(HttpResponse response) throws IOException
             {
                 return CharStreams.toString(new InputStreamReader(response.getEntity().getContent()));
             }
         };
         String value = client.execute(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()), get, responseHandler);
-        return "hello/" + value;
+        return "hello - " + SoaRequestId.get() + "\n" + value;
     }
 }

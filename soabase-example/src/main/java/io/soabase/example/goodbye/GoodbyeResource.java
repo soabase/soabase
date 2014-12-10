@@ -1,5 +1,6 @@
 package io.soabase.example.goodbye;
 
+import io.soabase.client.SoaRequestId;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -9,6 +10,6 @@ public class GoodbyeResource
     @GET
     public String getGoodbye() throws Exception
     {
-        return "goodbye";
+        return "goodbye " + SoaRequestId.get();
     }
 }

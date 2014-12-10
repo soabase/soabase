@@ -120,8 +120,6 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
             return null;
         }
 
-        // TODO - retries, discovery, etc.
-
         JerseyClientBuilder builder = new JerseyClientBuilder(environment)
             .using(jerseyClientConfiguration)
             .using(new JerseyRetryConnectorProvider(soaConfiguration.getDiscovery(), retryComponents));

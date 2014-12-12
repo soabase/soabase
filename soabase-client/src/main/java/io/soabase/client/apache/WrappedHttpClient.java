@@ -167,11 +167,15 @@ public class WrappedHttpClient implements HttpClient
 
     private void addRequestId(HttpRequest request)
     {
-        String requestId = SoaRequestId.get();
-        if ( requestId != null )
+        SoaRequestId.HeaderSetter<HttpRequest> setter = new SoaRequestId.HeaderSetter<HttpRequest>()
         {
-            request.addHeader(SoaRequestId.REQUEST_ID_HEADER_NAME, requestId);
-        }
+            @Override
+            public void setHeader(HttpRequest request, String header, String value)
+            {
+                request.addHeader(header, value);
+            }
+        };
+        SoaRequestId.checkSetHeaders(request, setter);
     }
 
     private HttpHost toHost(URI uri)

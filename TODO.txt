@@ -1,4 +1,4 @@
-* Jersey for Admin
+√ Jersey for Admin
 * Admin console
 * Hystrix?
 * Archaius?
@@ -9,10 +9,12 @@
 * TODO comments
 * Make sure Dropwizard can support JAR contained config files
 * Figure out why config isn't validating
-* Support arrays in overrides
 √ Support Jersey client
 * Logging
 * Guice and Spring
 - Don't deploy ExampleApp - config added to pom. Needs to be tested.
 * Don't register Discovery until managed is started
 * Figure out what @Valid means
+√ Add new request id header - refactor header addition into SoaRequestId
+* Oops - Dropwizard already supports overrides - use it
+* Support arrays in overrides

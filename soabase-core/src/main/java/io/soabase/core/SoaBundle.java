@@ -3,10 +3,13 @@ package io.soabase.core;
 import com.google.common.collect.Lists;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
+import io.dropwizard.jersey.DropwizardResourceConfig;
+import io.dropwizard.jersey.jackson.JacksonMessageBodyProvider;
+import io.dropwizard.jersey.setup.JerseyContainerHolder;
+import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.jetty.HttpConnectorFactory;
 import io.dropwizard.lifecycle.Managed;
-import io.dropwizard.server.AbstractServerFactory;
 import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.server.ServerFactory;
 import io.dropwizard.server.SimpleServerFactory;
@@ -20,6 +23,7 @@ import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.core.rest.DynamicAttributeApis;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.servlet.ServletContainer;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import java.net.InetAddress;
@@ -43,10 +47,18 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     {
         final SoaConfiguration soaConfiguration = configurationAccessor.accessConfiguration(configuration);
 
-        environment.jersey().register(DiscoveryApis.class);
-        environment.jersey().register(DynamicAttributeApis.class);
+        AbstractBinder binder = new AbstractBinder()
+        {
+            @Override
+            protected void configure()
+            {
+                bind(configuration).to(Configuration.class);
+                bind(soaConfiguration).to(SoaFeatures.class);
+            }
+        };
 
         checkCorsFilter(soaConfiguration, environment);
+        initJerseyAdmin(soaConfiguration, environment, binder);
 
         updateInstanceName(soaConfiguration);
         List<String> scopes = Lists.newArrayList();
@@ -62,15 +74,6 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 
         startDiscoveryHealth(discovery, soaConfiguration, environment);
 
-        AbstractBinder binder = new AbstractBinder()
-        {
-            @Override
-            protected void configure()
-            {
-                bind(configuration).to(Configuration.class);
-                bind(soaConfiguration).to(SoaFeatures.class);
-            }
-        };
         environment.jersey().register(binder);
 
         Managed managed = new Managed()
@@ -173,5 +176,39 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             environment.lifecycle().manage((Managed)obj);
         }
         return obj;
+    }
+
+    private void initJerseyAdmin(SoaConfiguration configuration, Environment environment, AbstractBinder binder)
+    {
+        if ( configuration.getAdminJerseyPath() == null )
+        {
+            return;
+        }
+
+        String jerseyRootPath = configuration.getAdminJerseyPath();
+        if ( !jerseyRootPath.endsWith("/*") )
+        {
+            if ( jerseyRootPath.endsWith("/") )
+            {
+                jerseyRootPath += "*";
+            }
+            else
+            {
+                jerseyRootPath += "/*";
+            }
+        }
+
+        DropwizardResourceConfig jerseyConfig = new DropwizardResourceConfig(environment.metrics());
+        JerseyContainerHolder jerseyServletContainer = new JerseyContainerHolder(new ServletContainer(jerseyConfig));
+        environment.admin().addServlet("soa-admin-jersey", jerseyServletContainer.getContainer()).addMapping(jerseyRootPath);
+
+        JerseyEnvironment jerseyEnvironment = new JerseyEnvironment(jerseyServletContainer, jerseyConfig);
+        configuration.putNamed(jerseyEnvironment, JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
+        jerseyEnvironment.register(DiscoveryApis.class);
+        jerseyEnvironment.register(DynamicAttributeApis.class);
+        jerseyEnvironment.register(binder);
+
+        jerseyEnvironment.setUrlPattern("/*");
+        jerseyEnvironment.register(new JacksonMessageBodyProvider(environment.getObjectMapper(), environment.getValidator()));
     }
 }

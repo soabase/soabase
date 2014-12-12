@@ -36,7 +36,7 @@ public class SoaCli
     @Inject
     public HelpOption helpOption;
 
-    @Option(name = {"-c", "--config"}, description = "Inline Dropwizard config (yaml or json)")
+    @Option(name = {"-c", "--config"}, description = "Inline Dropwizard json config")
     public String configStr = null;
 
     @Option(name = {"-f", "--config-file"}, description = "Dropwizard config file (yaml or json)")

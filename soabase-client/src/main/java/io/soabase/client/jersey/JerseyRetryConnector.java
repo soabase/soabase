@@ -59,11 +59,15 @@ public class JerseyRetryConnector implements Connector
 
     private void filterRequest(ClientRequest request, RetryContext retryContext)
     {
-        String id = SoaRequestId.get();
-        if ( id != null )
+        SoaRequestId.HeaderSetter<ClientRequest> setter = new SoaRequestId.HeaderSetter<ClientRequest>()
         {
-            request.getHeaders().putSingle(SoaRequestId.REQUEST_ID_HEADER_NAME, id);
-        }
+            @Override
+            public void setHeader(ClientRequest request, String header, String value)
+            {
+                request.getHeaders().putSingle(header, value);
+            }
+        };
+        SoaRequestId.checkSetHeaders(request, setter);
 
         SoaDiscoveryInstance instance = Common.hostToInstance(retryContext.getComponents().getDiscovery(), retryContext.getOriginalHost());
         retryContext.setInstance(instance);

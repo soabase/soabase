@@ -25,30 +25,33 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
 {
     @Valid
     @NotNull
-    private volatile SoaDiscoveryFactory discoveryFactory = new NullDiscoveryFactory();
+    private SoaDiscoveryFactory discoveryFactory = new NullDiscoveryFactory();
 
     @Valid
     @NotNull
-    private volatile SoaDiscoveryHealthFactory discoveryHealthFactory = new DefaultDiscoveryHealthFactory();
+    private SoaDiscoveryHealthFactory discoveryHealthFactory = new DefaultDiscoveryHealthFactory();
 
     @Valid
     @NotNull
-    private volatile SoaDynamicAttributesFactory attributesFactory = new NullDynamicAttributesFactory();
+    private SoaDynamicAttributesFactory attributesFactory = new NullDynamicAttributesFactory();
 
     @Valid
-    private volatile int shutdownWaitMaxMs = (int)TimeUnit.SECONDS.toMillis(5);
+    private int shutdownWaitMaxMs = (int)TimeUnit.SECONDS.toMillis(5);
 
     @Valid
-    private volatile String instanceName;
+    private String instanceName;
 
     @Valid
-    private volatile List<String> scopes = ImmutableList.of();
+    private List<String> scopes = ImmutableList.of();
 
     @Valid
-    private volatile boolean addCorsFilter = false;
+    private boolean addCorsFilter = false;
 
     @Valid
-    private volatile int discoveryHealthCheckPeriodMs = (int)TimeUnit.SECONDS.toMillis(10);
+    private int discoveryHealthCheckPeriodMs = (int)TimeUnit.SECONDS.toMillis(10);
+
+    @Valid
+    private String adminJerseyPath = "/api";
 
     private final AtomicBoolean locked = new AtomicBoolean(false);
 
@@ -158,6 +161,18 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     {
         Preconditions.checkState(!locked.get(), "Configuration has been locked and cannot be modified");
         this.discoveryHealthFactory = discoveryHealthFactory;
+    }
+
+    @JsonProperty("adminJerseyPath")
+    public String getAdminJerseyPath()
+    {
+        return adminJerseyPath;
+    }
+
+    @JsonProperty("adminJerseyPath")
+    public void setAdminJerseyPath(String adminJerseyPath)
+    {
+        this.adminJerseyPath = adminJerseyPath;
     }
 
     public void lock()

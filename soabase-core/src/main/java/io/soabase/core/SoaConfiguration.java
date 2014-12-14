@@ -182,7 +182,7 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
 
     public <T> T getNamedRequired(Class<T> clazz, String name)
     {
-        return Preconditions.checkNotNull(getNamed(clazz, name), String.format("No object found for %s of type %s", name, clazz.getName()));
+        return Preconditions.checkNotNull(getNamed(clazz, name), String.format("No object found for \"%s\" of type \"%s\"", name, clazz.getName()));
     }
 
     public <T> T getNamed(Class<T> clazz, String name)

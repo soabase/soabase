@@ -5,6 +5,7 @@ import io.dropwizard.Configuration;
 import io.dropwizard.client.HttpClientConfiguration;
 import io.soabase.client.SoaClientConfiguration;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
 import io.soabase.zookeeper.discovery.ZooKeeperDiscoveryFactory;
 
@@ -14,6 +15,7 @@ public class ExampleConfiguration extends Configuration
     private CuratorConfiguration curatorConfiguration = new CuratorConfiguration();
     private ZooKeeperDiscoveryFactory discoveryFactory = new ZooKeeperDiscoveryFactory();
     private SoaClientConfiguration clientConfiguration = new SoaClientConfiguration();
+    private SqlConfiguration sqlConfiguration = new SqlConfiguration();
 
     public ExampleConfiguration()
     {
@@ -66,5 +68,17 @@ public class ExampleConfiguration extends Configuration
     public void setClientConfiguration(SoaClientConfiguration clientConfiguration)
     {
         this.clientConfiguration = clientConfiguration;
+    }
+
+    @JsonProperty("sql")
+    public SqlConfiguration getSqlConfiguration()
+    {
+        return sqlConfiguration;
+    }
+
+    @JsonProperty("sql")
+    public void setSqlConfiguration(SqlConfiguration sqlConfiguration)
+    {
+        this.sqlConfiguration = sqlConfiguration;
     }
 }

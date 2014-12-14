@@ -11,10 +11,17 @@ import io.soabase.client.SoaClientConfiguration;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaFeatures;
+import io.soabase.sql.attributes.AttributeEntityMapper;
+import io.soabase.sql.attributes.SqlBundle;
+import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
+import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.ibatis.session.SqlSession;
 import java.io.Closeable;
 import java.net.URL;
+import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 
 public abstract class ExampleAppBase extends Application<ExampleConfiguration> implements Managed
@@ -53,7 +60,16 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
                 return configuration.getClientConfiguration();
             }
         };
+        ConfigurationAccessor<ExampleConfiguration, SqlConfiguration> sqlAccessor = new ConfigurationAccessor<ExampleConfiguration, SqlConfiguration>()
+        {
+            @Override
+            public SqlConfiguration accessConfiguration(ExampleConfiguration configuration)
+            {
+                return configuration.getSqlConfiguration();
+            }
+        };
         bootstrap.addBundle(new CuratorBundle<>(soaAccessor, curatorAccessor));
+        bootstrap.addBundle(new SqlBundle<>(soaAccessor, sqlAccessor));
         bootstrap.addBundle(new SoaBundle<>(soaAccessor));
         bootstrap.addBundle(new SoaClientBundle<>(soaAccessor, clientAccessor));
     }
@@ -69,6 +85,8 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
             System.setProperty("dw.soa.discovery.type", "zookeeper");
             System.setProperty("dw.soa.discovery.name", getClass().getSimpleName());
             System.setProperty("dw.soa.discovery.bindAddress", "localhost");
+            System.setProperty("dw.sql.mybatisConfigUrl", "example-mybatis.xml");
+            System.setProperty("dw.soa.attributes.type", "sql");
             arguments = new String[]
             {
                 "server",
@@ -83,6 +101,20 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
     public void run(ExampleConfiguration configuration, Environment environment) throws Exception
     {
         environment.lifecycle().manage(this);
+
+        SqlSession sqlSession = configuration.getSoaConfiguration().getNamedRequired(SqlSession.class, SoaFeatures.DEFAULT_NAME);
+        AttributeEntityMapper mapper = sqlSession.getMapper(AttributeEntityMapper.class);
+        try
+        {
+            mapper.createTable();
+        }
+        catch ( PersistenceException e )
+        {
+            if ( !(e.getCause() instanceof SQLSyntaxErrorException) )   // otherwise - it's a table exists error
+            {
+                e.printStackTrace();
+            }
+        }
 
         internalRun(configuration, environment);
     }

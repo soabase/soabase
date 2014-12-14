@@ -13,14 +13,8 @@ public class TestApplication extends Application<TestConfiguration>
 {
     public static void main(String[] args) throws Exception
     {
-        args = new String[]
-            {
-                "-o",
-                "soa.attributes.type=sql",
-                "-o",
-                "sql.mybatisConfigUrl=test-mybatis.xml"
-            };
-        args = SoaCli.parseArgs(args);
+        System.setProperty("dw.soa.attributes.type", "sql");
+        System.setProperty("dw.sql.mybatisConfigUrl", "test-mybatis.xml");
         new TestApplication().run(args);
     }
 

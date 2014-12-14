@@ -10,7 +10,6 @@ import io.soabase.client.SoaClientBundle;
 import io.soabase.client.SoaClientConfiguration;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaBundle;
-import io.soabase.core.SoaCli;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
@@ -66,22 +65,18 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
         {
             URL config = Resources.getResource(configFqpn);
 
+            System.setProperty("dw.curator.connectionString", "localhost:2181");
+            System.setProperty("dw.soa.discovery.type", "zookeeper");
+            System.setProperty("dw.soa.discovery.name", getClass().getSimpleName());
+            System.setProperty("dw.soa.discovery.bindAddress", "localhost");
             arguments = new String[]
             {
-                "-f",
-                config.getPath(),
-                "-o",
-                "curator.connectionString=localhost:2181",
-                "-o",
-                "soa.discovery.type=zookeeper",
-                "-o",
-                "soa.discovery.name=" + getClass().getSimpleName(),
-                "-o",
-                "soa.discovery.bindAddress=localhost"
+                "server",
+                config.getPath()
             };
         }
 
-        super.run(SoaCli.parseArgs(arguments));
+        super.run(arguments);
     }
 
     @Override

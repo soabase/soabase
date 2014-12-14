@@ -10,11 +10,7 @@
 * Figure out why config isn't validating
 √ Support Jersey client
 * Logging
-* Guice and Spring
 - Don't deploy ExampleApp - config added to pom. Needs to be tested.
 * Don't register Discovery until managed is started
 * Figure out what @Valid means
 √ Add new request id header - refactor header addition into SoaRequestId
-* Make sure Dropwizard can support JAR contained config files
-* Oops - Dropwizard already supports overrides - use it
-* Support arrays in overrides

@@ -1,10 +1,12 @@
 package io.soabase.sql.attributes;
 
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
+@CacheNamespace()   // TODO get cache attr correct
 public interface AttributeEntityMapper
 {
     @Select("SELECT * FROM SoaAttributes")

@@ -8,7 +8,6 @@ public class HealthCheckIntegration implements Runnable
     private final HealthCheckRegistry registry;
     private final SoaDiscovery discovery;
     private final SoaDiscoveryHealth health;
-    private final AtomicBoolean isInDiscovery = new AtomicBoolean(false);
 
     public HealthCheckIntegration(HealthCheckRegistry registry, SoaDiscovery discovery, SoaDiscoveryHealth health)
     {
@@ -20,19 +19,6 @@ public class HealthCheckIntegration implements Runnable
     @Override
     public void run()
     {
-        if ( health.shouldBeInDiscovery(registry) )
-        {
-            if ( isInDiscovery.compareAndSet(false, true) )
-            {
-                discovery.addThisInstance();
-            }
-        }
-        else
-        {
-            if ( isInDiscovery.compareAndSet(true, false) )
-            {
-                discovery.removeThisInstance();
-            }
-        }
+        discovery.setHealthyState(health.shouldBeInDiscovery(registry) ? SoaDiscovery.HealthyState.HEALTHY : SoaDiscovery.HealthyState.UNHEALTHY);
     }
 }

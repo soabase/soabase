@@ -19,6 +19,8 @@ import org.apache.curator.x.discovery.ServiceInstanceBuilder;
 import org.apache.curator.x.discovery.ServiceProvider;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 // TODO
 public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void>> implements SoaDiscovery, Managed, RemovalListener<String, ServiceProvider<Void>>
@@ -26,6 +28,9 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     private final ServiceDiscovery<Void> discovery;
     private final LoadingCache<String, ServiceProvider<Void>> providers;
     private final ServiceInstance<Void> us;
+    private final AtomicReference<HealthyState> healthyState = new AtomicReference<>(HealthyState.HEALTHY);
+    private final AtomicReference<ForcedState> forcedState = new AtomicReference<>(ForcedState.CLEARED);
+    private final AtomicBoolean isRegistered = new AtomicBoolean(false);
 
     public ZooKeeperDiscovery(CuratorFramework curator, int mainPort, ZooKeeperDiscoveryFactory factory)
     {
@@ -60,6 +65,20 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     }
 
     @Override
+    public void setHealthyState(HealthyState healthyState)
+    {
+        this.healthyState.set(healthyState);
+        updateRegistration();
+    }
+
+    @Override
+    public void setForcedState(ForcedState forcedState)
+    {
+        this.forcedState.set(forcedState);
+        updateRegistration();
+    }
+
+    @Override
     public ServiceProvider<Void> load(String serviceName) throws Exception
     {
         // TODO - other values
@@ -79,34 +98,6 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     {
         // TODO
         return null;
-    }
-
-    @Override
-    public void addThisInstance()
-    {
-        try
-        {
-            discovery.registerService(us);
-        }
-        catch ( Exception e )
-        {
-            // TODO logging
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void removeThisInstance()
-    {
-        try
-        {
-            discovery.unregisterService(us);
-        }
-        catch ( Exception e )
-        {
-            // TODO logging
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -188,5 +179,37 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     {
         providers.invalidateAll();
         CloseableUtils.closeQuietly(discovery);
+    }
+
+    private void updateRegistration()
+    {
+        boolean shouldBeRegistered;
+        if ( forcedState.get() != ForcedState.CLEARED )
+        {
+            shouldBeRegistered = (forcedState.get() == ForcedState.REGISTER);
+        }
+        else
+        {
+            shouldBeRegistered = (healthyState.get() == HealthyState.HEALTHY);
+        }
+        if ( isRegistered.compareAndSet(!shouldBeRegistered, shouldBeRegistered) )
+        {
+            try
+            {
+                if ( shouldBeRegistered )
+                {
+                    discovery.registerService(us);
+                }
+                else
+                {
+                    discovery.unregisterService(us);
+                }
+            }
+            catch ( Exception e )
+            {
+                // TODO logging
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

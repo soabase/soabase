@@ -180,8 +180,16 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
         locked.set(true);
     }
 
+    public <T> T getNamedRequired(Class<T> clazz, String name)
+    {
+        return Preconditions.checkNotNull(getNamed(clazz, name), String.format("No object found for %s of type %s", name, clazz.getName()));
+    }
+
     public <T> T getNamed(Class<T> clazz, String name)
     {
+        name = Preconditions.checkNotNull(name, "name cannot be null");
+        clazz = Preconditions.checkNotNull(clazz, "clazz cannot be null");
+
         Map<String, Object> map = named.get(clazz);
         Object o = (map != null) ? map.get(name) : null;
         return (o != null) ? clazz.cast(o) : null;

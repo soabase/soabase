@@ -22,7 +22,7 @@ public class GoodbyeApp extends ExampleAppBase
     protected void internalRun(ExampleConfiguration configuration, Environment environment)
     {
         environment.jersey().register(GoodbyeResource.class);
-        JerseyEnvironment adminJerseyEnvironment = configuration.getSoaConfiguration().getNamed(JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
+        JerseyEnvironment adminJerseyEnvironment = configuration.getSoaConfiguration().getNamedRequired(JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
         adminJerseyEnvironment.register(GoodbyeAdminResource.class);
     }
 }

@@ -33,13 +33,13 @@ public class NullDiscoveryFactory implements SoaDiscoveryFactory
             }
 
             @Override
-            public void addThisInstance()
+            public void setHealthyState(HealthyState healthyState)
             {
                 // NOP
             }
 
             @Override
-            public void removeThisInstance()
+            public void setForcedState(ForcedState forcedState)
             {
                 // NOP
             }

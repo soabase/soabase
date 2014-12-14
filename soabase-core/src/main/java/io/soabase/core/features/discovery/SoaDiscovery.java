@@ -10,7 +10,20 @@ public interface SoaDiscovery
 
     public void noteError(String serviceName, SoaDiscoveryInstance errorInstance);
 
-    public void addThisInstance();
+    public enum HealthyState
+    {
+        HEALTHY,
+        UNHEALTHY
+    }
 
-    public void removeThisInstance();
+    public void setHealthyState(HealthyState healthyState);
+
+    public enum ForcedState
+    {
+        REGISTER,
+        UNREGISTER,
+        CLEARED
+    }
+
+    public void setForcedState(ForcedState forcedState);
 }

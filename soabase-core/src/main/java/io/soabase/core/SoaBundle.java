@@ -52,7 +52,6 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             @Override
             protected void configure()
             {
-                bind(configuration).to(Configuration.class);
                 bind(soaConfiguration).to(SoaFeatures.class);
             }
         };
@@ -207,8 +206,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         jerseyEnvironment.register(DiscoveryApis.class);
         jerseyEnvironment.register(DynamicAttributeApis.class);
         jerseyEnvironment.register(binder);
-
-        jerseyEnvironment.setUrlPattern("/*");
+        jerseyEnvironment.setUrlPattern(jerseyConfig.getUrlPattern());
         jerseyEnvironment.register(new JacksonMessageBodyProvider(environment.getObjectMapper(), environment.getValidator()));
     }
 }

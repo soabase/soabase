@@ -2,7 +2,6 @@ package io.soabase.sql.attributes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.google.common.base.Preconditions;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
@@ -52,7 +51,7 @@ public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
     @Override
     public SoaDynamicAttributes build(SoaConfiguration configuration, Environment environment, List<String> scopes)
     {
-        SqlSession sqlSession = Preconditions.checkNotNull(configuration.getNamed(SqlSession.class, sessionName), "SoaSqlBundle has not been added or initialized");
+        SqlSession sqlSession = configuration.getNamedRequired(SqlSession.class, sessionName);
 
         final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(sqlSession, scopes);
         ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("SoaDynamicAttributes-%d", true).build();

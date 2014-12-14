@@ -4,6 +4,8 @@ import java.util.Collection;
 
 public interface SoaDiscovery
 {
+    public Collection<String> getCurrentServiceNames();
+
     public SoaDiscoveryInstance getInstance(String serviceName);
 
     public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName);
@@ -18,6 +20,8 @@ public interface SoaDiscovery
 
     public void setHealthyState(HealthyState healthyState);
 
+    public HealthyState getHealthyState();
+
     public enum ForcedState
     {
         REGISTER,
@@ -26,4 +30,6 @@ public interface SoaDiscovery
     }
 
     public void setForcedState(ForcedState forcedState);
+
+    public ForcedState getForcedState();
 }

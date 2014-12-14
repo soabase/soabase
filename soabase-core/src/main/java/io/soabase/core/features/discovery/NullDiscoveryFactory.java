@@ -15,6 +15,24 @@ public class NullDiscoveryFactory implements SoaDiscoveryFactory
         return new SoaDiscovery()
         {
             @Override
+            public Collection<String> getCurrentServiceNames()
+            {
+                return ImmutableSet.of();
+            }
+
+            @Override
+            public HealthyState getHealthyState()
+            {
+                return HealthyState.HEALTHY;
+            }
+
+            @Override
+            public ForcedState getForcedState()
+            {
+                return ForcedState.CLEARED;
+            }
+
+            @Override
             public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
             {
                 return ImmutableSet.of();

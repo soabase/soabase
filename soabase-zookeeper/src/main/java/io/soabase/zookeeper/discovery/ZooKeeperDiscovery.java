@@ -6,6 +6,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import io.dropwizard.lifecycle.Managed;
 import io.soabase.core.features.discovery.SoaDiscovery;
@@ -65,6 +66,12 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     }
 
     @Override
+    public Collection<String> getCurrentServiceNames()
+    {
+        return ImmutableSet.copyOf(providers.asMap().keySet());
+    }
+
+    @Override
     public void setHealthyState(HealthyState healthyState)
     {
         this.healthyState.set(healthyState);
@@ -72,10 +79,22 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     }
 
     @Override
+    public HealthyState getHealthyState()
+    {
+        return healthyState.get();
+    }
+
+    @Override
     public void setForcedState(ForcedState forcedState)
     {
         this.forcedState.set(forcedState);
         updateRegistration();
+    }
+
+    @Override
+    public ForcedState getForcedState()
+    {
+        return forcedState.get();
     }
 
     @Override
@@ -97,7 +116,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
     {
         // TODO
-        return null;
+        return ImmutableSet.of();
     }
 
     @Override

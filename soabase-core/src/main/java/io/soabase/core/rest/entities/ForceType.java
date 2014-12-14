@@ -1,4 +1,4 @@
-package io.soabase.core.rest;
+package io.soabase.core.rest.entities;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

@@ -1,12 +1,22 @@
 package io.soabase.core.rest;
 
+import com.google.common.collect.Lists;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.discovery.SoaDiscovery;
+import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import io.soabase.core.rest.entities.ForceType;
+import io.soabase.core.rest.entities.Instance;
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/soa/discovery")
 public class DiscoveryApis
@@ -21,6 +31,7 @@ public class DiscoveryApis
 
     @PUT
     @Path("force")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response forceRegister(ForceType forceType)
     {
         // TODO logging
@@ -38,5 +49,55 @@ public class DiscoveryApis
         features.getDiscovery().setForcedState(SoaDiscovery.ForcedState.CLEARED);
 
         return Response.ok().build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{name}")
+    public Response getInstance(@PathParam("name") String serviceName)
+    {
+        // TODO logging
+
+        SoaDiscoveryInstance instance = features.getDiscovery().getInstance(serviceName);
+        if ( instance == null )
+        {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Instance instanceEntity = new Instance(instance.getHost(), instance.getPort(), instance.isForceSsl());
+        return Response.ok(instanceEntity).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("all/{name}")
+    public Response getInstances(@PathParam("name") String serviceName)
+    {
+        List<SoaDiscoveryInstance> allInstances = Lists.newArrayList(features.getDiscovery().getAllInstances(serviceName));
+        return Response.ok(allInstances).build();
+    }
+
+    @GET
+    @Path("services")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getServiceNames()
+    {
+        return Lists.newArrayList(features.getDiscovery().getCurrentServiceNames());
+    }
+
+    @GET
+    @Path("healthyState")
+    @Produces(MediaType.APPLICATION_JSON)
+    public SoaDiscovery.HealthyState getHealthyState()
+    {
+        return features.getDiscovery().getHealthyState();
+    }
+
+    @GET
+    @Path("forcedState")
+    @Produces(MediaType.APPLICATION_JSON)
+    public SoaDiscovery.ForcedState getForcedState()
+    {
+        return features.getDiscovery().getForcedState();
     }
 }

@@ -44,6 +44,13 @@
                     <skip>true</skip>   <!-- don't deploy the example -->
                 </configuration>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>   <!-- don't doc the example -->
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

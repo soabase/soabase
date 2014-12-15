@@ -27,6 +27,9 @@
         <maven-javadoc-plugin-version>2.10.1</maven-javadoc-plugin-version>
         <maven-deploy-plugin-version>2.8.2</maven-deploy-plugin-version>
         <maven-license-plugin-version>1.9.0</maven-license-plugin-version>
+        <maven-site-plugin-version>3.4</maven-site-plugin-version>
+        <doxia-module-apt-version>1.6</doxia-module-apt-version>
+        <maven-project-info-reports-plugin-version>2.7</maven-project-info-reports-plugin-version>
 
         <dropwizard-version>0.8.0-rc2-SNAPSHOT</dropwizard-version>
         <curator-version>2.7.0</curator-version>
@@ -51,6 +54,47 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <name>Jordan Zimmerman</name>
+            <email>jordan@jordanzimmerman.com</email>
+            <timezone>-5</timezone>
+            <url>https://github.com/randgalt/</url>
+            <roles>
+                <role>Author</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/randgalt/soabase</url>
+        <connection>scm:git:https://github.com/randgalt/soabase.git</connection>
+        <developerConnection>scm:git:git@github.com:randgalt/soabase.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/randgalt/soabase/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <site>
+            <id>website</id>
+            <url>file://${project.basedir}/target/staging</url>
+        </site>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Sonatype Nexus Staging</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -144,6 +188,23 @@
                     <artifactId>maven-license-plugin</artifactId>
                     <version>${maven-license-plugin-version}</version>
                 </plugin>
+
+                <plugin>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>${maven-project-info-reports-plugin-version}</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${maven-site-plugin-version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.doxia</groupId>
+                            <artifactId>doxia-module-apt</artifactId>
+                            <version>${doxia-module-apt-version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -225,11 +286,19 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
     <reporting>
         <plugins>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>

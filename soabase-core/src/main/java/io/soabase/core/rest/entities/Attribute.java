@@ -9,14 +9,16 @@ public class Attribute implements Comparable<Attribute>
     private String key;
     private String scope;
     private String value;
+    private boolean isOverride;
 
     public Attribute()
     {
-        this("", "", "");
+        this("", "", "", false);
     }
 
-    public Attribute(String key, String scope, String value)
+    public Attribute(String key, String scope, String value, boolean isOverride)
     {
+        this.isOverride = isOverride;
         this.key = Preconditions.checkNotNull(key, "key cannot be null");
         this.scope = Preconditions.checkNotNull(scope, "scope cannot be null");
         this.value = Preconditions.checkNotNull(value, "value cannot be null");
@@ -52,6 +54,16 @@ public class Attribute implements Comparable<Attribute>
         this.value = value;
     }
 
+    public boolean isOverride()
+    {
+        return isOverride;
+    }
+
+    public void setOverride(boolean isOverride)
+    {
+        this.isOverride = isOverride;
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -66,6 +78,10 @@ public class Attribute implements Comparable<Attribute>
 
         Attribute attribute = (Attribute)o;
 
+        if ( isOverride != attribute.isOverride )
+        {
+            return false;
+        }
         if ( !key.equals(attribute.key) )
         {
             return false;
@@ -84,6 +100,16 @@ public class Attribute implements Comparable<Attribute>
     }
 
     @Override
+    public int hashCode()
+    {
+        int result = key.hashCode();
+        result = 31 * result + scope.hashCode();
+        result = 31 * result + value.hashCode();
+        result = 31 * result + (isOverride ? 1 : 0);
+        return result;
+    }
+
+    @Override
     public int compareTo(Attribute that)
     {
         if ( that == null )
@@ -96,6 +122,11 @@ public class Attribute implements Comparable<Attribute>
             return 0;
         }
 
+        if ( this.isOverride != that.isOverride )
+        {
+            return this.isOverride ? -1 : 1;
+        }
+
         int diff = this.key.compareTo(that.key);
         if ( diff == 0 )
         {
@@ -105,21 +136,13 @@ public class Attribute implements Comparable<Attribute>
     }
 
     @Override
-    public int hashCode()
-    {
-        int result = key.hashCode();
-        result = 31 * result + scope.hashCode();
-        result = 31 * result + value.hashCode();
-        return result;
-    }
-
-    @Override
     public String toString()
     {
         return "Attribute{" +
             "key='" + key + '\'' +
             ", scope='" + scope + '\'' +
             ", value='" + value + '\'' +
+            ", isOverride=" + isOverride +
             '}';
     }
 }

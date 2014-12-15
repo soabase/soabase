@@ -4,7 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.soabase.core.listening.Listenable;
@@ -14,6 +13,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,7 +45,38 @@ public class StandardAttributesContainer
 
     public Iterator<Attribute> iterator()
     {
-        return null;    // TODO
+        return new Iterator<Attribute>()
+        {
+            Iterator<Map.Entry<String, Object>> overridesIterator = overrides.entrySet().iterator();
+            Iterator<Map.Entry<AttributeKey, Object>> attributesIterator = attributes.entrySet().iterator();
+
+            public boolean hasNext()
+            {
+                return overridesIterator.hasNext() || attributesIterator.hasNext();
+            }
+
+            @Override
+            public Attribute next()
+            {
+                if ( overridesIterator.hasNext() )
+                {
+                    Map.Entry<String, Object> next = overridesIterator.next();
+                    return new Attribute(next.getKey(), "", String.valueOf(next.getValue()), true);
+                }
+                if ( attributesIterator.hasNext() )
+                {
+                    Map.Entry<AttributeKey, Object> next = attributesIterator.next();
+                    return new Attribute(next.getKey().getKey(), next.getKey().getScope(), String.valueOf(next.getValue()), false);
+                }
+                throw new NoSuchElementException();
+            }
+
+            @Override
+            public void remove()
+            {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 
     public Updater newUpdater()

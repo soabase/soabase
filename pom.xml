@@ -26,12 +26,31 @@
         <maven-source-plugin-version>2.4</maven-source-plugin-version>
         <maven-javadoc-plugin-version>2.10.1</maven-javadoc-plugin-version>
         <maven-deploy-plugin-version>2.8.2</maven-deploy-plugin-version>
+        <maven-license-plugin-version>1.9.0</maven-license-plugin-version>
 
         <dropwizard-version>0.8.0-rc2-SNAPSHOT</dropwizard-version>
         <curator-version>2.7.0</curator-version>
         <mybatis-version>3.2.8</mybatis-version>
         <hsqldb-version>2.3.2</hsqldb-version>
     </properties>
+
+    <name>Soabase</name>
+    <description>A suite of Dropwizard bundles and utilities that aid in building Service Oriented Applications.</description>
+    <url>https://github.com/randgalt/soabase</url>
+    <inceptionYear>2014</inceptionYear>
+
+    <organization>
+        <name>Soabase</name>
+        <url>http://soabase.github.io/</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <dependencyManagement>
         <dependencies>
@@ -119,6 +138,12 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>${maven-deploy-plugin-version}</version>
                 </plugin>
+
+                <plugin>
+                    <groupId>com.mycila.maven-license-plugin</groupId>
+                    <artifactId>maven-license-plugin</artifactId>
+                    <version>${maven-license-plugin-version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -162,6 +187,41 @@
                             <goal>aggregate</goal>
                         </goals>
                         <phase>site</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <configuration>
+                    <header>src/etc/header.txt</header>
+                    <excludes>
+                        <exclude>**/*.apt</exclude>
+                        <exclude>**/*.md</exclude>
+                        <exclude>**/*.graffle</exclude>
+                        <exclude>**/.gitignore</exclude>
+                        <exclude>**/*.json</exclude>
+                        <exclude>**/.idea/**</exclude>
+                        <exclude>**/DISCLAIMER</exclude>
+                        <exclude>**/DEPENDENCIES</exclude>
+                        <exclude>**/KEYS</exclude>
+                        <exclude>**/LICENSE</exclude>
+                        <exclude>**/NOTICE</exclude>
+                        <exclude>**/README</exclude>
+                        <exclude>**/CHANGES</exclude>
+                        <exclude>**/RELEASE-NOTES</exclude>
+                        <exclude>**/generated/**</exclude>
+                    </excludes>
+                    <strictCheck>true</strictCheck>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>license</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>compile</phase>
                     </execution>
                 </executions>
             </plugin>

@@ -21,6 +21,7 @@ import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryHealth;
 import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.core.rest.DynamicAttributeApis;
+import io.soabase.core.rest.SoaApis;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -47,18 +48,6 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     {
         final SoaConfiguration soaConfiguration = configurationAccessor.accessConfiguration(configuration);
 
-        AbstractBinder binder = new AbstractBinder()
-        {
-            @Override
-            protected void configure()
-            {
-                bind(soaConfiguration).to(SoaFeatures.class);
-            }
-        };
-
-        checkCorsFilter(soaConfiguration, environment);
-        initJerseyAdmin(soaConfiguration, environment, binder);
-
         updateInstanceName(soaConfiguration);
         List<String> scopes = Lists.newArrayList();
         scopes.add(soaConfiguration.getInstanceName());
@@ -66,6 +55,20 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         scopes.addAll(soaConfiguration.getScopes());
 
         int mainPort = getMainPort(configuration);
+        final SoaInfo soaInfo = new SoaInfo(scopes, mainPort, soaConfiguration.getThisServiceName(), soaConfiguration.getInstanceName());
+
+        AbstractBinder binder = new AbstractBinder()
+        {
+            @Override
+            protected void configure()
+            {
+                bind(soaConfiguration).to(SoaFeatures.class);
+                bind(soaInfo).to(SoaInfo.class);
+            }
+        };
+
+        checkCorsFilter(soaConfiguration, environment);
+        initJerseyAdmin(soaConfiguration, environment, binder);
 
         SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(mainPort, soaConfiguration, environment));
         SoaDynamicAttributes attributes = checkManaged(environment, soaConfiguration.getAttributesFactory().build(soaConfiguration, environment, scopes));
@@ -204,6 +207,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 
         JerseyEnvironment jerseyEnvironment = new JerseyEnvironment(jerseyServletContainer, jerseyConfig);
         configuration.putNamed(jerseyEnvironment, JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
+        jerseyEnvironment.register(SoaApis.class);
         jerseyEnvironment.register(DiscoveryApis.class);
         jerseyEnvironment.register(DynamicAttributeApis.class);
         jerseyEnvironment.register(binder);

@@ -14,3 +14,4 @@
 * Don't register Discovery until managed is started
 * Figure out what @Valid means
 √ Add new request id header - refactor header addition into SoaRequestId
+* Figure out why admin jersey apis DW info output doesn't include "api"

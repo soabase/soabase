@@ -9,7 +9,7 @@ Features
 --------
 
 * Service Discovery
- * Default implementation using Apache Curator
+ * Default implementation using [Apache Curator](http://curator.apache.org/curator-x-discovery/index.html)
  * Supports plugging in any desired implementation
 * Load Balancing REST Client
  * Default implementations for both Jersey and Apache clients

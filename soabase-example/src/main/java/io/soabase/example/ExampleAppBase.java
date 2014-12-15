@@ -83,7 +83,7 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
 
             System.setProperty("dw.curator.connectionString", "localhost:2181");
             System.setProperty("dw.soa.discovery.type", "zookeeper");
-            System.setProperty("dw.soa.discovery.name", getClass().getSimpleName());
+            System.setProperty("dw.soa.thisServiceName", getClass().getSimpleName());
             System.setProperty("dw.soa.discovery.bindAddress", "localhost");
             System.setProperty("dw.sql.mybatisConfigUrl", "example-mybatis.xml");
             System.setProperty("dw.soa.attributes.type", "sql");

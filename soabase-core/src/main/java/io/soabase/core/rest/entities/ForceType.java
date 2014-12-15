@@ -25,4 +25,41 @@ public class ForceType
     {
         this.register = register;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        ForceType forceType = (ForceType)o;
+
+        //noinspection RedundantIfStatement
+        if ( register != forceType.register )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return (register ? 1 : 0);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ForceType{" +
+            "register=" + register +
+            '}';
+    }
 }

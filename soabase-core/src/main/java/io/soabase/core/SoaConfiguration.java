@@ -15,6 +15,7 @@ import io.soabase.core.features.discovery.SoaDiscoveryFactory;
 import io.soabase.core.features.discovery.SoaDiscoveryHealthFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
@@ -34,6 +35,11 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     @Valid
     @NotNull
     private SoaDynamicAttributesFactory attributesFactory = new NullDynamicAttributesFactory();
+
+    @Valid
+    @NotNull
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Service Names can only contain letters and numbers")
+    private String thisServiceName;
 
     @Valid
     private int shutdownWaitMaxMs = (int)TimeUnit.SECONDS.toMillis(5);
@@ -173,6 +179,18 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     public void setAdminJerseyPath(String adminJerseyPath)
     {
         this.adminJerseyPath = adminJerseyPath;
+    }
+
+    @JsonProperty("thisServiceName")
+    public String getThisServiceName()
+    {
+        return thisServiceName;
+    }
+
+    @JsonProperty("thisServiceName")
+    public void setThisServiceName(String thisServiceName)
+    {
+        this.thisServiceName = thisServiceName;
     }
 
     public void lock()

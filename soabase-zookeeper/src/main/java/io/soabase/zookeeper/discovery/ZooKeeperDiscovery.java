@@ -33,7 +33,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     private final AtomicReference<ForcedState> forcedState = new AtomicReference<>(ForcedState.CLEARED);
     private final AtomicBoolean isRegistered = new AtomicBoolean(false);
 
-    public ZooKeeperDiscovery(CuratorFramework curator, int mainPort, ZooKeeperDiscoveryFactory factory)
+    public ZooKeeperDiscovery(CuratorFramework curator, int mainPort, ZooKeeperDiscoveryFactory factory, String serviceName)
     {
         providers = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)  // TODO config
@@ -44,7 +44,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
         {
             // TODO
             ServiceInstanceBuilder<Void> builder = ServiceInstance.<Void>builder()
-                .name(factory.getThisServiceName())
+                .name(serviceName)
                 .port(mainPort);
             if ( factory.getBindAddress() != null )
             {

@@ -4,11 +4,14 @@ import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.soabase.core.listening.Listenable;
 import io.soabase.core.listening.ListenerContainer;
+import io.soabase.core.rest.entities.Attribute;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +41,11 @@ public class StandardAttributesContainer
         public void put(String key, String scope, Object value);
 
         public void commit();
+    }
+
+    public Iterator<Attribute> iterator()
+    {
+        return null;    // TODO
     }
 
     public Updater newUpdater()

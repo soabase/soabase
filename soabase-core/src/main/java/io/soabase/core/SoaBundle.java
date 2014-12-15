@@ -62,6 +62,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         updateInstanceName(soaConfiguration);
         List<String> scopes = Lists.newArrayList();
         scopes.add(soaConfiguration.getInstanceName());
+        scopes.add(soaConfiguration.getThisServiceName());
         scopes.addAll(soaConfiguration.getScopes());
 
         int mainPort = getMainPort(configuration);

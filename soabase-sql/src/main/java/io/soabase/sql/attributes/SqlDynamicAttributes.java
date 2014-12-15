@@ -5,8 +5,10 @@ import io.soabase.core.features.attributes.SoaDynamicAttributeListener;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.StandardAttributesContainer;
 import io.soabase.core.listening.Listenable;
+import io.soabase.core.rest.entities.Attribute;
 import org.apache.ibatis.session.SqlSession;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
@@ -18,6 +20,12 @@ public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
     {
         this.session = session;
         container = new StandardAttributesContainer(scopes);
+    }
+
+    @Override
+    public Iterator<Attribute> iterator()
+    {
+        return container.iterator();
     }
 
     @Override

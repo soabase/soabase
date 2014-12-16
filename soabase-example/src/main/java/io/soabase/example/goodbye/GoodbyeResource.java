@@ -16,15 +16,25 @@
 package io.soabase.example.goodbye;
 
 import io.soabase.client.SoaRequestId;
+import io.soabase.core.SoaInfo;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 @Path("/goodbye")
 public class GoodbyeResource
 {
+    private final SoaInfo info;
+
+    @Inject
+    public GoodbyeResource(SoaInfo info)
+    {
+        this.info = info;
+    }
+
     @GET
     public String getGoodbye() throws Exception
     {
-        return "goodbye " + SoaRequestId.get();
+        return info.getServiceName() + " - " + info.getInstanceName();
     }
 }

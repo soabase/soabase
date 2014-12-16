@@ -18,6 +18,7 @@ package io.soabase.example.hello;
 import io.soabase.client.SoaClientBundle;
 import io.soabase.client.SoaRequestId;
 import io.soabase.core.SoaFeatures;
+import io.soabase.core.SoaInfo;
 import io.soabase.example.goodbye.GoodbyeResource;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,19 +31,22 @@ import java.net.URI;
 @Path("/hello")
 public class HelloResourceJersey
 {
+    private final SoaInfo info;
     private final Client client;
 
     @Inject
-    public HelloResourceJersey(@Named(SoaFeatures.DEFAULT_NAME) Client client)
+    public HelloResourceJersey(SoaInfo info, @Named(SoaFeatures.DEFAULT_NAME) Client client)
     {
+        this.info = info;
         this.client = client;
     }
 
     @GET
     public String getHello() throws Exception
     {
+        String result = info.getServiceName() + " - " + info.getInstanceName();
         URI uri = UriBuilder.fromResource(GoodbyeResource.class).host(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "goodbye").build();
         String value = client.target(uri).request().get(String.class);
-        return "hello - " + SoaRequestId.get() + "\n" + value;
+        return result + "\nGoodbye app says: \"" + value + "\"";
     }
 }

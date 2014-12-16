@@ -34,6 +34,7 @@ import org.apache.curator.test.InstanceSpec;
 import java.io.Closeable;
 import java.net.URL;
 import java.util.List;
+import java.util.Random;
 
 public abstract class ExampleAppBase extends Application<ExampleConfiguration> implements Managed
 {
@@ -93,6 +94,7 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
             URL config = Resources.getResource(configFqpn);
 
             System.setProperty("dw.curator.connectionString", "localhost:2181");
+            System.setProperty("dw.soa.instanceName", "instance-" + new Random().nextInt(10000));
             System.setProperty("dw.soa.discovery.type", "zookeeper");
             System.setProperty("dw.soa.discovery.bindAddress", "localhost");
             System.setProperty("dw.sql.mybatisConfigUrl", "example-mybatis.xml");

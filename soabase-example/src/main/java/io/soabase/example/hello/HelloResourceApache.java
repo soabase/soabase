@@ -17,8 +17,8 @@ package io.soabase.example.hello;
 
 import com.google.common.io.CharStreams;
 import io.soabase.client.SoaClientBundle;
-import io.soabase.client.SoaRequestId;
 import io.soabase.core.SoaFeatures;
+import io.soabase.core.SoaInfo;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -36,17 +36,20 @@ import java.net.URI;
 @Path("/helloapache")
 public class HelloResourceApache
 {
+    private final SoaInfo info;
     private final HttpClient client;
 
     @Inject
-    public HelloResourceApache(@Named(SoaFeatures.DEFAULT_NAME) HttpClient client)
+    public HelloResourceApache(SoaInfo info, @Named(SoaFeatures.DEFAULT_NAME) HttpClient client)
     {
+        this.info = info;
         this.client = client;
     }
 
     @GET
     public String getHello() throws Exception
     {
+        String result = info.getServiceName() + " - " + info.getInstanceName();
         URI uri = new URIBuilder().setHost(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "goodbye").setPath("/goodbye").build();
         HttpGet get = new HttpGet(uri);
         ResponseHandler<String> responseHandler = new ResponseHandler<String>()
@@ -58,6 +61,6 @@ public class HelloResourceApache
             }
         };
         String value = client.execute(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()), get, responseHandler);
-        return "hello - " + SoaRequestId.get() + "\n" + value;
+        return result + "\nGoodbye app says: \"" + value + "\"";
     }
 }

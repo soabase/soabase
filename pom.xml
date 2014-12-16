@@ -248,6 +248,9 @@
                             <goal>aggregate</goal>
                         </goals>
                         <phase>site</phase>
+                        <configuration>
+                            <excludePackageNames>io.soabase.example,io.soabase.example.*</excludePackageNames>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

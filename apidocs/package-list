@@ -1,0 +1,12 @@
+io.soabase.client
+io.soabase.client.apache
+io.soabase.client.jersey
+io.soabase.client.retry
+io.soabase.core
+io.soabase.core.features.attributes
+io.soabase.core.features.discovery
+io.soabase.core.listening
+io.soabase.core.rest
+io.soabase.core.rest.entities
+io.soabase.sql.attributes
+io.soabase.zookeeper.discovery

@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20141216" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>Soabase &#x2013; About</title>
+    <title>soabase-core &#x2013; Project Dependency Management</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.3.1.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -69,64 +69,7 @@
                 
                     
                 <ul class="nav nav-list">
-                    <li class="nav-header">Project</li>
-                              
-      <li class="active">
-  
-            <a href="#"><i class="none"></i>About</a>
-          </li>
-                              <li class="nav-header">Details</li>
-                              
-      <li>
-  
-                          <a href="source-repository.html" title="Source Code">
-          <i class="none"></i>
-        Source Code</a>
-            </li>
-                
-      <li>
-  
-                          <a href="issue-tracking.html" title="Issues">
-          <i class="none"></i>
-        Issues</a>
-            </li>
-                
-      <li>
-  
-                          <a href="apidocs/index.html" title="JavaDoc">
-          <i class="none"></i>
-        JavaDoc</a>
-            </li>
-                
-      <li>
-  
-                          <a href="team-list.html" title="Team">
-          <i class="none"></i>
-        Team</a>
-            </li>
-                              <li class="nav-header">Reports</li>
-                              
-      <li>
-  
-                          <a href="project-summary.html" title="Summary">
-          <i class="none"></i>
-        Summary</a>
-            </li>
-                
-      <li>
-  
-                          <a href="dependencies.html" title="Dependencies">
-          <i class="none"></i>
-        Dependencies</a>
-            </li>
-                
-      <li>
-  
-                          <a href="license.html" title="License">
-          <i class="none"></i>
-        License</a>
-            </li>
-            </ul>
+  </ul>
                 
                     
                 
@@ -148,30 +91,77 @@
         <div id="bodyColumn"  class="span9" >
                                   
             <div class="section">
-<h2><a name="About_Soabase"></a>About Soabase</h2><a name="About_Soabase"></a>
-<p>A suite of Dropwizard bundles and utilities that aid in building Service Oriented Applications.</p>
+<h2><a name="Project_Dependency_Management"></a>Project Dependency Management</h2><a name="Project_Dependency_Management"></a>
 <div class="section">
-<h3><a name="Project_Modules"></a>Project Modules</h3><a name="Project_Modules"></a>
-<p>This project has declared the following modules:</p>
+<h3><a name="compile"></a>compile</h3><a name="compile"></a>
+<p>The following is a list of compile dependencies in the DependencyManagement of this project. These dependencies can be included in the submodules to compile and run the submodule:</p>
 <table border="0" class="table table-striped">
 <tr class="a">
-<th>Name</th>
-<th>Description</th></tr>
+<th>GroupId</th>
+<th>ArtifactId</th>
+<th>Version</th>
+<th>Type</th>
+<th>License</th></tr>
 <tr class="b">
-<td><a href="soabase-core/index.html">soabase-core</a></td>
-<td>A suite of Dropwizard bundles and utilities that aid in building Service Oriented Applications.</td></tr>
+<td>io.dropwizard</td>
+<td><a class="externalLink" href="http://www.dropwizard.io/0.8.0-rc2-SNAPSHOT/dropwizard-client">dropwizard-client</a></td>
+<td>0.8.0-rc2-SNAPSHOT</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</a></td></tr>
 <tr class="a">
-<td><a href="soabase-zookeeper/index.html">soabase-zookeeper</a></td>
-<td>A suite of Dropwizard bundles and utilities that aid in building Service Oriented Applications.</td></tr>
+<td>io.dropwizard</td>
+<td><a class="externalLink" href="http://www.dropwizard.io/0.8.0-rc2-SNAPSHOT/dropwizard-core">dropwizard-core</a></td>
+<td>0.8.0-rc2-SNAPSHOT</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</a></td></tr>
 <tr class="b">
-<td><a href="soabase-sql/index.html">soabase-sql</a></td>
-<td>A suite of Dropwizard bundles and utilities that aid in building Service Oriented Applications.</td></tr>
+<td>io.soabase</td>
+<td><a class="externalLink" href="https://github.com/randgalt/soabase/soabase-client">soabase-client</a></td>
+<td>0.1.0-SNAPSHOT</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
 <tr class="a">
-<td><a href="soabase-client/index.html">soabase-client</a></td>
-<td>A suite of Dropwizard bundles and utilities that aid in building Service Oriented Applications.</td></tr>
+<td>io.soabase</td>
+<td><a class="externalLink" href="https://github.com/randgalt/soabase/soabase-core">soabase-core</a></td>
+<td>0.1.0-SNAPSHOT</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
 <tr class="b">
-<td><a href="soabase-example/index.html">soabase-example</a></td>
-<td>A suite of Dropwizard bundles and utilities that aid in building Service Oriented Applications.</td></tr></table></div></div>
+<td>io.soabase</td>
+<td><a class="externalLink" href="https://github.com/randgalt/soabase/soabase-sql">soabase-sql</a></td>
+<td>0.1.0-SNAPSHOT</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
+<tr class="a">
+<td>io.soabase</td>
+<td><a class="externalLink" href="https://github.com/randgalt/soabase/soabase-zookeeper">soabase-zookeeper</a></td>
+<td>0.1.0-SNAPSHOT</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
+<tr class="b">
+<td>org.apache.curator</td>
+<td><a class="externalLink" href="http://curator.apache.org/curator-test">curator-test</a></td>
+<td>2.7.0</td>
+<td>jar</td>
+<td>file://${basedir}/LICENSE</td></tr>
+<tr class="a">
+<td>org.apache.curator</td>
+<td><a class="externalLink" href="http://curator.apache.org/curator-x-discovery">curator-x-discovery</a></td>
+<td>2.7.0</td>
+<td>jar</td>
+<td>file://${basedir}/LICENSE</td></tr>
+<tr class="b">
+<td>org.hsqldb</td>
+<td><a class="externalLink" href="http://hsqldb.org">hsqldb</a></td>
+<td>2.3.2</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://hsqldb.org/web/hsqlLicense.html">HSQLDB License, a BSD open source license</a></td></tr>
+<tr class="a">
+<td>org.mybatis</td>
+<td><a class="externalLink" href="http://www.mybatis.org/core/">mybatis</a></td>
+<td>3.2.8</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr></table></div></div>
                   </div>
             </div>
           </div>

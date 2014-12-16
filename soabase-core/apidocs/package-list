@@ -1,0 +1,6 @@
+io.soabase.core
+io.soabase.core.features.attributes
+io.soabase.core.features.discovery
+io.soabase.core.listening
+io.soabase.core.rest
+io.soabase.core.rest.entities

@@ -1,0 +1,4 @@
+io.soabase.client
+io.soabase.client.apache
+io.soabase.client.jersey
+io.soabase.client.retry

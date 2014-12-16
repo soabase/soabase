@@ -44,9 +44,13 @@ public class HelloResourceJersey
     @GET
     public String getHello() throws Exception
     {
-        String result = info.getServiceName() + " - " + info.getInstanceName();
+        String result = "Service Name: " + info.getServiceName()
+            + "\nInstance Name: " + info.getInstanceName()
+            + "\nRequest Id:" + SoaRequestId.get()
+            ;
+
         URI uri = UriBuilder.fromResource(GoodbyeResource.class).host(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "goodbye").build();
         String value = client.target(uri).request().get(String.class);
-        return result + "\nGoodbye app says: \"" + value + "\"";
+        return result + "\nGoodbye app says: \n\t" + value;
     }
 }

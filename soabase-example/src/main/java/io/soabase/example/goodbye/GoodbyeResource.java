@@ -35,6 +35,9 @@ public class GoodbyeResource
     @GET
     public String getGoodbye() throws Exception
     {
-        return info.getServiceName() + " - " + info.getInstanceName();
+        return "Service Name: " + info.getServiceName()
+            + "\n\tInstance Name: " + info.getInstanceName()
+            + "\n\tRequest Id:" + SoaRequestId.get()
+            ;
     }
 }

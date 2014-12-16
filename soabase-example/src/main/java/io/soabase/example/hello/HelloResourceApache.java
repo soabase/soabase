@@ -17,6 +17,7 @@ package io.soabase.example.hello;
 
 import com.google.common.io.CharStreams;
 import io.soabase.client.SoaClientBundle;
+import io.soabase.client.SoaRequestId;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
 import org.apache.http.HttpHost;
@@ -49,7 +50,11 @@ public class HelloResourceApache
     @GET
     public String getHello() throws Exception
     {
-        String result = info.getServiceName() + " - " + info.getInstanceName();
+        String result = "Service Name: " + info.getServiceName()
+            + "\nInstance Name: " + info.getInstanceName()
+            + "\nRequest Id:" + SoaRequestId.get()
+            ;
+
         URI uri = new URIBuilder().setHost(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "goodbye").setPath("/goodbye").build();
         HttpGet get = new HttpGet(uri);
         ResponseHandler<String> responseHandler = new ResponseHandler<String>()
@@ -61,6 +66,6 @@ public class HelloResourceApache
             }
         };
         String value = client.execute(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()), get, responseHandler);
-        return result + "\nGoodbye app says: \"" + value + "\"";
+        return result + "\nGoodbye app says: \n\t" + value;
     }
 }

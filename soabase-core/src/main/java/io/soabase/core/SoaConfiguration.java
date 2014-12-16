@@ -75,7 +75,6 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     private String adminJerseyPath = "/api";
 
     private final AtomicBoolean locked = new AtomicBoolean(false);
-    private final long startTimeMs = System.currentTimeMillis();
 
     private volatile SoaDiscovery discovery;
     private volatile SoaDynamicAttributes attributes;

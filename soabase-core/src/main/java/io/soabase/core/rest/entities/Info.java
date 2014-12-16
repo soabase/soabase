@@ -26,6 +26,7 @@ public class Info
 {
     private List<String> scopes;
     private int mainPort;
+    private int adminPort;
     private String serviceName;
     private String instanceName;
     private String startTimeUtc;
@@ -33,14 +34,15 @@ public class Info
 
     public Info()
     {
-        this(Lists.<String>newArrayList(), 0, "", "", "", "");
+        this(Lists.<String>newArrayList(), 0, 0, "", "", "", "");
     }
 
-    public Info(List<String> scopes, int mainPort, String serviceName, String instanceName, String startTimeUtc, String currentTimeUtc)
+    public Info(List<String> scopes, int mainPort, int adminPort, String serviceName, String instanceName, String startTimeUtc, String currentTimeUtc)
     {
         scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");
         this.scopes = ImmutableList.copyOf(scopes);
         this.mainPort = mainPort;
+        this.adminPort = adminPort;
         this.serviceName = Preconditions.checkNotNull(serviceName, "serviceName cannot be null");
         this.instanceName = Preconditions.checkNotNull(instanceName, "instanceName cannot be null");
         this.startTimeUtc = Preconditions.checkNotNull(startTimeUtc, "startTimeUtc cannot be null");
@@ -107,6 +109,16 @@ public class Info
         this.currentTimeUtc = currentTimeUtc;
     }
 
+    public int getAdminPort()
+    {
+        return adminPort;
+    }
+
+    public void setAdminPort(int adminPort)
+    {
+        this.adminPort = adminPort;
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -121,6 +133,10 @@ public class Info
 
         Info info = (Info)o;
 
+        if ( adminPort != info.adminPort )
+        {
+            return false;
+        }
         if ( mainPort != info.mainPort )
         {
             return false;
@@ -155,6 +171,7 @@ public class Info
     {
         int result = scopes.hashCode();
         result = 31 * result + mainPort;
+        result = 31 * result + adminPort;
         result = 31 * result + serviceName.hashCode();
         result = 31 * result + instanceName.hashCode();
         result = 31 * result + startTimeUtc.hashCode();
@@ -162,5 +179,17 @@ public class Info
         return result;
     }
 
-
+    @Override
+    public String toString()
+    {
+        return "Info{" +
+            "scopes=" + scopes +
+            ", mainPort=" + mainPort +
+            ", adminPort=" + adminPort +
+            ", serviceName='" + serviceName + '\'' +
+            ", instanceName='" + instanceName + '\'' +
+            ", startTimeUtc='" + startTimeUtc + '\'' +
+            ", currentTimeUtc='" + currentTimeUtc + '\'' +
+            '}';
+    }
 }

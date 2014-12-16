@@ -16,15 +16,28 @@
 package io.soabase.core.features.discovery;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import java.util.Map;
 
 public class SoaDiscoveryInstance
 {
     private final String host;
     private final int port;
     private final boolean forceSsl;
+    private final int adminPort;
+    private final Map<String, String> metaData;
 
-    public SoaDiscoveryInstance(String host, int port, boolean forceSsl)
+    public SoaDiscoveryInstance(String host, int port, int adminPort, boolean forceSsl)
     {
+        this(host, port, adminPort, forceSsl, Maps.<String, String>newHashMap());
+    }
+
+    public SoaDiscoveryInstance(String host, int port, int adminPort, boolean forceSsl, Map<String, String> metaData)
+    {
+        metaData = Preconditions.checkNotNull(metaData, "metaData cannot be null");
+        this.metaData = ImmutableMap.copyOf(metaData);
+        this.adminPort = adminPort;
         this.host = Preconditions.checkNotNull(host, "host cannot be null");
         this.port = port;
         this.forceSsl = forceSsl;
@@ -45,6 +58,16 @@ public class SoaDiscoveryInstance
         return forceSsl;
     }
 
+    public int getAdminPort()
+    {
+        return adminPort;
+    }
+
+    public Map<String, String> getMetaData()
+    {
+        return metaData;
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -59,6 +82,10 @@ public class SoaDiscoveryInstance
 
         SoaDiscoveryInstance that = (SoaDiscoveryInstance)o;
 
+        if ( adminPort != that.adminPort )
+        {
+            return false;
+        }
         if ( forceSsl != that.forceSsl )
         {
             return false;
@@ -67,8 +94,12 @@ public class SoaDiscoveryInstance
         {
             return false;
         }
-        //noinspection RedundantIfStatement
         if ( !host.equals(that.host) )
+        {
+            return false;
+        }
+        //noinspection RedundantIfStatement
+        if ( !metaData.equals(that.metaData) )
         {
             return false;
         }
@@ -82,6 +113,8 @@ public class SoaDiscoveryInstance
         int result = host.hashCode();
         result = 31 * result + port;
         result = 31 * result + (forceSsl ? 1 : 0);
+        result = 31 * result + adminPort;
+        result = 31 * result + metaData.hashCode();
         return result;
     }
 
@@ -92,6 +125,8 @@ public class SoaDiscoveryInstance
             "host='" + host + '\'' +
             ", port=" + port +
             ", forceSsl=" + forceSsl +
+            ", adminPort=" + adminPort +
+            ", metaData=" + metaData +
             '}';
     }
 }

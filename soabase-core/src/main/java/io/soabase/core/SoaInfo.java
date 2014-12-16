@@ -23,15 +23,17 @@ public class SoaInfo
 {
     private final List<String> scopes;
     private final int mainPort;
+    private final int adminPort;
     private final String serviceName;
     private final String instanceName;
     private final long startTimeMs = System.currentTimeMillis();
 
-    public SoaInfo(List<String> scopes, int mainPort, String serviceName, String instanceName)
+    public SoaInfo(List<String> scopes, int mainPort, int adminPort, String serviceName, String instanceName)
     {
         scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");
         this.scopes = ImmutableList.copyOf(scopes);
         this.mainPort = mainPort;
+        this.adminPort = adminPort;
         this.serviceName = Preconditions.checkNotNull(serviceName, "serviceName cannot be null");
         this.instanceName = Preconditions.checkNotNull(instanceName, "instanceName cannot be null");
     }
@@ -59,5 +61,10 @@ public class SoaInfo
     public long getStartTimeMs()
     {
         return startTimeMs;
+    }
+
+    public int getAdminPort()
+    {
+        return adminPort;
     }
 }

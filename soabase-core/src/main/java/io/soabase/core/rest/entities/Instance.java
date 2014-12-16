@@ -16,7 +16,10 @@
 package io.soabase.core.rest.entities;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Map;
 
 @XmlRootElement
 public class Instance
@@ -24,14 +27,19 @@ public class Instance
     private String host;
     private int port;
     private boolean forceSsl;
+    private int adminPort;
+    private Map<String, String> metaData;
 
     public Instance()
     {
-        this("", 0, false);
+        this("", 0, 0, false, Maps.<String, String>newHashMap());
     }
 
-    public Instance(String host, int port, boolean forceSsl)
+    public Instance(String host, int port, int adminPort, boolean forceSsl, Map<String, String> metaData)
     {
+        metaData = Preconditions.checkNotNull(metaData, "metaData cannot be null");
+        this.adminPort = adminPort;
+        this.metaData = ImmutableMap.copyOf(metaData);
         this.host = Preconditions.checkNotNull(host, "host cannot be null");
         this.port = port;
         this.forceSsl = forceSsl;
@@ -67,6 +75,26 @@ public class Instance
         this.forceSsl = forceSsl;
     }
 
+    public int getAdminPort()
+    {
+        return adminPort;
+    }
+
+    public void setAdminPort(int adminPort)
+    {
+        this.adminPort = adminPort;
+    }
+
+    public Map<String, String> getMetaData()
+    {
+        return metaData;
+    }
+
+    public void setMetaData(Map<String, String> metaData)
+    {
+        this.metaData = ImmutableMap.copyOf(metaData);
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -81,6 +109,10 @@ public class Instance
 
         Instance instance = (Instance)o;
 
+        if ( adminPort != instance.adminPort )
+        {
+            return false;
+        }
         if ( forceSsl != instance.forceSsl )
         {
             return false;
@@ -89,8 +121,12 @@ public class Instance
         {
             return false;
         }
-        //noinspection RedundantIfStatement
         if ( !host.equals(instance.host) )
+        {
+            return false;
+        }
+        //noinspection RedundantIfStatement
+        if ( !metaData.equals(instance.metaData) )
         {
             return false;
         }
@@ -104,6 +140,8 @@ public class Instance
         int result = host.hashCode();
         result = 31 * result + port;
         result = 31 * result + (forceSsl ? 1 : 0);
+        result = 31 * result + adminPort;
+        result = 31 * result + metaData.hashCode();
         return result;
     }
 
@@ -114,6 +152,8 @@ public class Instance
             "host='" + host + '\'' +
             ", port=" + port +
             ", forceSsl=" + forceSsl +
+            ", adminPort=" + adminPort +
+            ", metaData=" + metaData +
             '}';
     }
 }

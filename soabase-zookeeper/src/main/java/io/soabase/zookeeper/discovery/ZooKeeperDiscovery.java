@@ -23,7 +23,9 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import io.dropwizard.lifecycle.Managed;
+import io.soabase.core.SoaInfo;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import org.apache.curator.framework.CuratorFramework;
@@ -39,16 +41,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 // TODO
-public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void>> implements SoaDiscovery, Managed, RemovalListener<String, ServiceProvider<Void>>
+public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payload>> implements SoaDiscovery, Managed, RemovalListener<String, ServiceProvider<Payload>>
 {
-    private final ServiceDiscovery<Void> discovery;
-    private final LoadingCache<String, ServiceProvider<Void>> providers;
-    private final ServiceInstance<Void> us;
+    private final ServiceDiscovery<Payload> discovery;
+    private final LoadingCache<String, ServiceProvider<Payload>> providers;
+    private final ServiceInstance<Payload> us;
     private final AtomicReference<HealthyState> healthyState = new AtomicReference<>(HealthyState.HEALTHY);
     private final AtomicReference<ForcedState> forcedState = new AtomicReference<>(ForcedState.CLEARED);
     private final AtomicBoolean isRegistered = new AtomicBoolean(false);
 
-    public ZooKeeperDiscovery(CuratorFramework curator, int mainPort, ZooKeeperDiscoveryFactory factory, String serviceName)
+    public ZooKeeperDiscovery(CuratorFramework curator, ZooKeeperDiscoveryFactory factory, SoaInfo soaInfo)
     {
         providers = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)  // TODO config
@@ -57,10 +59,13 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
 
         try
         {
-            // TODO
-            ServiceInstanceBuilder<Void> builder = ServiceInstance.<Void>builder()
-                .name(serviceName)
-                .port(mainPort);
+            Payload payload = new Payload(soaInfo.getAdminPort(), Maps.<String, String>newHashMap());   // TODO metadata
+
+            // TODO - metadata, etc.
+            ServiceInstanceBuilder<Payload> builder = ServiceInstance.<Payload>builder()
+                .name(soaInfo.getServiceName())
+                .payload(payload)
+                .port(soaInfo.getMainPort());
             if ( factory.getBindAddress() != null )
             {
                 builder = builder.address(factory.getBindAddress());
@@ -68,7 +73,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
             us = builder.build();
 
             discovery = ServiceDiscoveryBuilder
-                .builder(Void.class)
+                .builder(Payload.class)
                 .basePath("/")  // TODO
                 .client(curator)
                 .build();
@@ -113,16 +118,16 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     }
 
     @Override
-    public ServiceProvider<Void> load(String serviceName) throws Exception
+    public ServiceProvider<Payload> load(String serviceName) throws Exception
     {
         // TODO - other values
-        ServiceProvider<Void> provider = discovery.serviceProviderBuilder().serviceName(serviceName).build();
+        ServiceProvider<Payload> provider = discovery.serviceProviderBuilder().serviceName(serviceName).build();
         provider.start();
         return provider;
     }
 
     @Override
-    public void onRemoval(RemovalNotification<String, ServiceProvider<Void>> notification)
+    public void onRemoval(RemovalNotification<String, ServiceProvider<Payload>> notification)
     {
         CloseableUtils.closeQuietly(notification.getValue());
     }
@@ -139,18 +144,19 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     {
         try
         {
-            ServiceProvider<Void> provider = providers.get(serviceName);
-            ServiceInstance<Void> instance = provider.getInstance();
+            ServiceProvider<Payload> provider = providers.get(serviceName);
+            ServiceInstance<Payload> instance = provider.getInstance();
+            Payload payload = instance.getPayload();
             // TODO check for null
             if ( instance.getPort() != null )
             {
-                return new SoaDiscoveryInstance(instance.getAddress(), instance.getPort(), false);
+                return new SoaDiscoveryInstance(instance.getAddress(), instance.getPort(), payload.getAdminPort(), false, payload.getMetaData());
             }
             if ( instance.getSslPort() != null )
             {
-                return new SoaDiscoveryInstance(instance.getAddress(), instance.getSslPort(), true);
+                return new SoaDiscoveryInstance(instance.getAddress(), instance.getSslPort(), payload.getAdminPort(), true, payload.getMetaData());
             }
-            return new SoaDiscoveryInstance(instance.getAddress(), 0, true);
+            return new SoaDiscoveryInstance(instance.getAddress(), 0, payload.getAdminPort(), true, payload.getMetaData());
         }
         catch ( Exception e )
         {
@@ -162,18 +168,18 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Void
     @Override
     public void noteError(String serviceName, final SoaDiscoveryInstance errorInstance)
     {
-        ServiceProvider<Void> provider = providers.getUnchecked(serviceName);
+        ServiceProvider<Payload> provider = providers.getUnchecked(serviceName);
         if ( provider != null )
         {
             try
             {
-                ServiceInstance<Void> foundInstance = Iterables.find
+                ServiceInstance<Payload> foundInstance = Iterables.find
                     (
                         provider.getAllInstances(),
-                        new Predicate<ServiceInstance<Void>>()
+                        new Predicate<ServiceInstance<Payload>>()
                         {
                             @Override
-                            public boolean apply(ServiceInstance<Void> instance)
+                            public boolean apply(ServiceInstance<Payload> instance)
                             {
                                 if ( instance.getAddress().equals(errorInstance.getHost()) )
                                 {

@@ -46,6 +46,6 @@ public class SoaApis
         df.setTimeZone(tz);
         String now = df.format(new Date());
         String start = df.format(new Date(soaInfo.getStartTimeMs()));
-        return new Info(soaInfo.getScopes(), soaInfo.getMainPort(), soaInfo.getServiceName(), soaInfo.getInstanceName(), start, now);
+        return new Info(soaInfo.getScopes(), soaInfo.getMainPort(), soaInfo.getAdminPort(), soaInfo.getServiceName(), soaInfo.getInstanceName(), start, now);
     }
 }

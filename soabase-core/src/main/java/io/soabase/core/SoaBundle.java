@@ -69,8 +69,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         scopes.add(soaConfiguration.getThisServiceName());
         scopes.addAll(soaConfiguration.getScopes());
 
-        int mainPort = getMainPort(configuration);
-        final SoaInfo soaInfo = new SoaInfo(scopes, mainPort, soaConfiguration.getThisServiceName(), soaConfiguration.getInstanceName());
+        Ports ports = getPorts(configuration);
+        final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getThisServiceName(), soaConfiguration.getInstanceName());
 
         AbstractBinder binder = new AbstractBinder()
         {
@@ -85,7 +85,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         checkCorsFilter(soaConfiguration, environment);
         initJerseyAdmin(soaConfiguration, environment, binder);
 
-        SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(mainPort, soaConfiguration, environment));
+        SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(soaConfiguration, environment, soaInfo));
         SoaDynamicAttributes attributes = checkManaged(environment, soaConfiguration.getAttributesFactory().build(soaConfiguration, environment, scopes));
         soaConfiguration.setDiscovery(discovery);
         soaConfiguration.setAttributes(attributes);
@@ -117,43 +117,70 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         // NOP
     }
 
-    private int getMainPort(T configuration)
+    private static class Ports
+    {
+        final int mainPort;
+        final int adminPort;
+
+        Ports(int mainPort, int adminPort)
+        {
+            this.mainPort = mainPort;
+            this.adminPort = adminPort;
+        }
+    }
+
+    private Ports getPorts(T configuration)
     {
         if ( SoaMainPortAccessor.class.isAssignableFrom(configuration.getClass()) )
         {
-            return ((SoaMainPortAccessor)configuration).getMainPort(configuration);
+            SoaMainPortAccessor accessor = (SoaMainPortAccessor)configuration;
+            return new Ports(accessor.getMainPort(configuration), accessor.getAdminPort(configuration));
         }
 
         ServerFactory serverFactory = configuration.getServerFactory();
         if ( SoaMainPortAccessor.class.isAssignableFrom(serverFactory.getClass()) )
         {
-            return ((SoaMainPortAccessor)serverFactory).getMainPort(configuration);
+            SoaMainPortAccessor accessor = (SoaMainPortAccessor)serverFactory;
+            return new Ports(accessor.getMainPort(configuration), accessor.getAdminPort(configuration));
         }
 
+        int mainPort = 0;
+        int adminPort = 0;
         if ( DefaultServerFactory.class.isAssignableFrom(serverFactory.getClass()) )
         {
-            List<ConnectorFactory> applicationConnectors = ((DefaultServerFactory)serverFactory).getApplicationConnectors();
-            if ( applicationConnectors.size() > 0 )
-            {
-                ConnectorFactory connectorFactory = applicationConnectors.get(0);
-                if ( HttpConnectorFactory.class.isAssignableFrom(connectorFactory.getClass()) )
-                {
-                    return ((HttpConnectorFactory)connectorFactory).getPort();
-                }
-            }
+            mainPort = portFromConnectorFactories(((DefaultServerFactory)serverFactory).getApplicationConnectors());
+            adminPort = portFromConnectorFactories(((DefaultServerFactory)serverFactory).getAdminConnectors());
         }
 
         if ( SimpleServerFactory.class.isAssignableFrom(serverFactory.getClass()) )
         {
-            ConnectorFactory connectorFactory = ((SimpleServerFactory)serverFactory).getConnector();
-            if ( HttpConnectorFactory.class.isAssignableFrom(connectorFactory.getClass()) )
-            {
-                return ((HttpConnectorFactory)connectorFactory).getPort();
-            }
+            mainPort = adminPort = portFromConnectorFactory(((SimpleServerFactory)serverFactory).getConnector());
         }
 
-        // TODO logging
-        throw new RuntimeException("Cannot determine the main server port");
+        if ( (mainPort == 0) && (adminPort == 0) )
+        {
+            throw new RuntimeException("Cannot determine the main server ports");
+        }
+        return new Ports(mainPort, adminPort);
+    }
+
+    private int portFromConnectorFactories(List<ConnectorFactory> applicationConnectors)
+    {
+        if ( applicationConnectors.size() > 0 )
+        {
+            return portFromConnectorFactory(applicationConnectors.get(0));
+        }
+        return 0;
+    }
+
+    private int portFromConnectorFactory(ConnectorFactory connectorFactory)
+    {
+        if ( HttpConnectorFactory.class.isAssignableFrom(connectorFactory.getClass()) )
+        {
+            HttpConnectorFactory factory = (HttpConnectorFactory)connectorFactory;
+            return factory.getPort();
+        }
+        return 0;
     }
 
     private void startDiscoveryHealth(SoaDiscovery discovery, SoaConfiguration soaConfiguration, Environment environment)

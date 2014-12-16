@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
+import io.soabase.core.SoaInfo;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
 import org.apache.curator.framework.CuratorFramework;
@@ -44,9 +45,9 @@ public class ZooKeeperDiscoveryFactory implements SoaDiscoveryFactory
     }
 
     @Override
-    public SoaDiscovery build(int mainPort, SoaConfiguration configuration, Environment environment)
+    public SoaDiscovery build(SoaConfiguration configuration, Environment environment, SoaInfo soaInfo)
     {
         CuratorFramework curatorFramework = configuration.getNamedRequired(CuratorFramework.class, SoaFeatures.DEFAULT_NAME);
-        return new ZooKeeperDiscovery(curatorFramework, mainPort, this, configuration.getThisServiceName());
+        return new ZooKeeperDiscovery(curatorFramework, this, soaInfo);
     }
 }

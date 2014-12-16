@@ -47,7 +47,7 @@ public class HelloResourceApache
     @GET
     public String getHello() throws Exception
     {
-        URI uri = new URIBuilder().setHost(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "GoodbyeApp").setPath("/goodbye").build();
+        URI uri = new URIBuilder().setHost(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "goodbye").setPath("/goodbye").build();
         HttpGet get = new HttpGet(uri);
         ResponseHandler<String> responseHandler = new ResponseHandler<String>()
         {

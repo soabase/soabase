@@ -20,4 +20,6 @@ import io.dropwizard.Configuration;
 public interface SoaMainPortAccessor
 {
     public <T extends Configuration> int getMainPort(T configuration);
+
+    public <T extends Configuration> int getAdminPort(T configuration);
 }

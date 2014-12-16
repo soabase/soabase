@@ -15,12 +15,14 @@
  */
 package io.soabase.core.rest;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import io.soabase.core.rest.entities.ForceType;
 import io.soabase.core.rest.entities.Instance;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -79,17 +81,25 @@ public class DiscoveryApis
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        Instance instanceEntity = new Instance(instance.getHost(), instance.getPort(), instance.isForceSsl());
+        Instance instanceEntity = new Instance(instance.getHost(), instance.getPort(), instance.getAdminPort(), instance.isForceSsl(), instance.getMetaData());
         return Response.ok(instanceEntity).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("all/{name}")
-    public Response getInstances(@PathParam("name") String serviceName)
+    public List<Instance> getInstances(@PathParam("name") String serviceName)
     {
         List<SoaDiscoveryInstance> allInstances = Lists.newArrayList(features.getDiscovery().getAllInstances(serviceName));
-        return Response.ok(allInstances).build();
+        return Lists.transform(allInstances, new Function<SoaDiscoveryInstance, Instance>()
+        {
+            @Nullable
+            @Override
+            public Instance apply(SoaDiscoveryInstance instance)
+            {
+                return new Instance(instance.getHost(), instance.getPort(), instance.getAdminPort(), instance.isForceSsl(), instance.getMetaData());
+            }
+        });
     }
 
     @GET

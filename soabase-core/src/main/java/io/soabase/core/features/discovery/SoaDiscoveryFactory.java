@@ -19,9 +19,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.dropwizard.jackson.Discoverable;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = NullDiscoveryFactory.class)
 public interface SoaDiscoveryFactory extends Discoverable
 {
-    public SoaDiscovery build(int mainPort, SoaConfiguration configuration, Environment environment);
+    public SoaDiscovery build(SoaConfiguration configuration, Environment environment, SoaInfo soaInfo);
 }

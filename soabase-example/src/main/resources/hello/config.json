@@ -1,16 +1,18 @@
 {
+  "soa": {
+    "thisServiceName": "hello"
+  },
+
   "server": {
     "applicationConnectors": [
       {
-        "type": "http",
-        "port": 7777
+        "type": "http"
       }
     ],
 
     "adminConnectors": [
       {
-        "type": "http",
-        "port": 7776
+        "type": "http"
       }
     ]
   }

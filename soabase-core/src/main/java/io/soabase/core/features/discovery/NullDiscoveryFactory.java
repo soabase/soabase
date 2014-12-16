@@ -19,13 +19,14 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.common.collect.ImmutableSet;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaInfo;
 import java.util.Collection;
 
 @JsonTypeName("default")
 public class NullDiscoveryFactory implements SoaDiscoveryFactory
 {
     @Override
-    public SoaDiscovery build(int mainPort, SoaConfiguration configuration, Environment environment)
+    public SoaDiscovery build(SoaConfiguration configuration, Environment environment, SoaInfo soaInfo)
     {
         return new SoaDiscovery()
         {

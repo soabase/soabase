@@ -54,7 +54,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
                 SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(stream);
                 Configuration mybatisConfiguration = sqlSessionFactory.getConfiguration();
                 mybatisConfiguration.addMapper(AttributeEntityMapper.class);
-                final SqlSession session = sqlSessionFactory.openSession();
+                final SqlSession session = sqlSessionFactory.openSession(true);
 
                 SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
                 soaConfiguration.putNamed(session, SqlSession.class, sqlConfiguration.getSessionName());

@@ -17,9 +17,11 @@ package io.soabase.sql.attributes;
 
 import com.google.common.base.Preconditions;
 import io.soabase.core.features.attributes.StandardAttributesContainer;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.UUID;
 
-public class AttributeEntity
+public class AttributeEntity implements Serializable
 {
     private String fKEY;
     private String fSCOPE;
@@ -82,5 +84,61 @@ public class AttributeEntity
     public void setfTIMESTAMP(String fTIMESTAMP)
     {
         this.fTIMESTAMP = fTIMESTAMP;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        AttributeEntity that = (AttributeEntity)o;
+
+        if ( !fKEY.equals(that.fKEY) )
+        {
+            return false;
+        }
+        if ( !fSCOPE.equals(that.fSCOPE) )
+        {
+            return false;
+        }
+        if ( fTIMESTAMP != null ? !fTIMESTAMP.equals(that.fTIMESTAMP) : that.fTIMESTAMP != null )
+        {
+            return false;
+        }
+        //noinspection RedundantIfStatement
+        if ( fVALUE != null ? !fVALUE.equals(that.fVALUE) : that.fVALUE != null )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = fKEY.hashCode();
+        result = 31 * result + fSCOPE.hashCode();
+        result = 31 * result + (fVALUE != null ? fVALUE.hashCode() : 0);
+        result = 31 * result + (fTIMESTAMP != null ? fTIMESTAMP.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "AttributeEntity{" +
+            "fKEY='" + fKEY + '\'' +
+            ", fSCOPE='" + fSCOPE + '\'' +
+            ", fVALUE='" + fVALUE + '\'' +
+            ", fTIMESTAMP='" + fTIMESTAMP + '\'' +
+            '}';
     }
 }

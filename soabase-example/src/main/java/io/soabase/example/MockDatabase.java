@@ -1,33 +1,29 @@
 package io.soabase.example;
 
 import com.google.common.io.Resources;
+import io.soabase.sql.attributes.AttributeEntity;
 import io.soabase.sql.attributes.AttributeEntityMapper;
-import org.apache.curator.test.DirectoryUtils;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.hsqldb.server.Server;
-import java.io.File;
+import org.hsqldb.Server;
 import java.io.InputStream;
+import java.util.List;
 
 public class MockDatabase
 {
     @SuppressWarnings("ParameterCanBeLocal")
     public static void main(String[] args) throws Exception
     {
-        File db = new File("testdb");
-        if ( db.exists() )
-        {
-            DirectoryUtils.deleteRecursively(db);
-        }
-
         args = new String[]
             {
                 "--database.0",
-                "file:testdb/testdb",
+                "mem:test",
                 "--dbname.0",
-                "xdb"
+                "xdb",
+                "--port",
+                "10064"
             };
         Server.main(args);
 
@@ -37,12 +33,19 @@ public class MockDatabase
             SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(stream);
             Configuration mybatisConfiguration = sqlSessionFactory.getConfiguration();
             mybatisConfiguration.addMapper(AttributeEntityMapper.class);
-            session = sqlSessionFactory.openSession();
+            session = sqlSessionFactory.openSession(true);
         }
 
         AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
         mapper.createTable();
 
+        AttributeEntity attribute = new AttributeEntity("test", "main");
+        mapper.insert(attribute);
+
+        List<AttributeEntity> attributeEntities = mapper.selectAll();
+        System.out.println(attributeEntities);
+
+        System.out.println("Running...");
         Thread.currentThread().join();
     }
 }

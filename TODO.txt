@@ -28,6 +28,7 @@
 * Don't register Discovery until managed is started
 * Figure out what @Valid means
 * Figure out why admin jersey apis DW info output doesn't include "api"
+* Have SoaCli check for external override file
 
 √ Jersey for Admin
 √ Support Jersey client

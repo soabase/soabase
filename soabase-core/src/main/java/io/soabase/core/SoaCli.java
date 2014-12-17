@@ -34,6 +34,7 @@ public class SoaCli
         {
             if ( arg.startsWith("!") && (arg.length() > 0) )
             {
+                System.out.println("Unpacking: " + arg.substring(1));
                 URL resource = Resources.getResource(arg.substring(1));
                 File f = File.createTempFile("soa", ".tmp");
                 f.deleteOnExit();

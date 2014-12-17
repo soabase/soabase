@@ -15,5 +15,17 @@
         "type": "http"
       }
     ]
+  },
+
+  "logging": {
+    "appenders": [
+      {
+        "type": "file",
+        "currentLogFilename": "./logs/example.log",
+        "archivedLogFilenamePattern": "./logs/example-%d.log.gz",
+        "archivedFileCount": "5",
+        "timeZone": "UTC"
+      }
+    ]
   }
 }

@@ -25,6 +25,7 @@ import io.soabase.client.SoaClientBundle;
 import io.soabase.client.SoaClientConfiguration;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaBundle;
+import io.soabase.core.SoaCli;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.sql.attributes.SqlConfiguration;
@@ -91,8 +92,6 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
     {
         if ( arguments.length == 0 )
         {
-            URL config = Resources.getResource(configFqpn);
-
             System.setProperty("dw.curator.connectionString", "localhost:2181");
             System.setProperty("dw.soa.instanceName", "instance-" + new Random().nextInt(10000));
             System.setProperty("dw.soa.discovery.type", "zookeeper");
@@ -104,11 +103,11 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
             arguments = new String[]
             {
                 "server",
-                config.getPath()
+                "!" + configFqpn
             };
         }
 
-        super.run(arguments);
+        super.run(SoaCli.filter(arguments));
     }
 
     @Override

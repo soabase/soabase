@@ -30,6 +30,7 @@
         <maven-site-plugin-version>3.4</maven-site-plugin-version>
         <doxia-module-apt-version>1.6</doxia-module-apt-version>
         <maven-project-info-reports-plugin-version>2.7</maven-project-info-reports-plugin-version>
+        <maven-shade-plugin-version>2.3</maven-shade-plugin-version>
 
         <dropwizard-version>0.8.0-rc2-SNAPSHOT</dropwizard-version>
         <curator-version>2.7.0</curator-version>
@@ -204,6 +205,24 @@
                             <version>${doxia-module-apt-version}</version>
                         </dependency>
                     </dependencies>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${maven-shade-plugin-version}</version>
+                    <configuration>
+                        <createDependencyReducedPom>false</createDependencyReducedPom>
+                        <filters>
+                            <filter>
+                                <artifact>*:*</artifact>
+                                <excludes>
+                                    <exclude>META-INF/*.SF</exclude>
+                                    <exclude>META-INF/*.DSA</exclude>
+                                    <exclude>META-INF/*.RSA</exclude>
+                                </excludes>
+                            </filter>
+                        </filters>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

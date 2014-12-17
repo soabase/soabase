@@ -38,10 +38,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import javax.servlet.DispatcherType;
 import javax.ws.rs.client.Client;
 import java.io.IOException;
-import java.util.EnumSet;
 
 public class SoaClientBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
@@ -89,8 +87,6 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
-
         SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
         SoaClientConfiguration clientConfiguration = clientAccessor.accessConfiguration(configuration);
 

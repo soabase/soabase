@@ -34,6 +34,7 @@ import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.discovery.HealthCheckIntegration;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryHealth;
+import io.soabase.core.features.request.SoaClientFilter;
 import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.core.rest.DynamicAttributeApis;
 import io.soabase.core.rest.SoaApis;
@@ -62,6 +63,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     public void run(final T configuration, Environment environment) throws Exception
     {
         final SoaConfiguration soaConfiguration = configurationAccessor.accessConfiguration(configuration);
+
+        environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         updateInstanceName(soaConfiguration);
         List<String> scopes = Lists.newArrayList();

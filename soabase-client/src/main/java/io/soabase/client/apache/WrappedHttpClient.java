@@ -16,7 +16,7 @@
 package io.soabase.client.apache;
 
 import io.soabase.client.Common;
-import io.soabase.client.SoaRequestId;
+import io.soabase.core.features.request.SoaRequestId;
 import io.soabase.client.retry.RetryComponents;
 import io.soabase.client.retry.RetryContext;
 import io.soabase.core.features.discovery.SoaDiscovery;

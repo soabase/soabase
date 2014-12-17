@@ -16,7 +16,7 @@
 package io.soabase.example.hello;
 
 import io.soabase.client.SoaClientBundle;
-import io.soabase.client.SoaRequestId;
+import io.soabase.core.features.request.SoaRequestId;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
 import io.soabase.example.goodbye.GoodbyeResource;
@@ -25,6 +25,8 @@ import javax.inject.Named;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
@@ -42,11 +44,12 @@ public class HelloResourceJersey
     }
 
     @GET
-    public String getHello() throws Exception
+    public String getHello(@Context HttpHeaders headers) throws Exception
     {
         String result = "Service Name: " + info.getServiceName()
             + "\nInstance Name: " + info.getInstanceName()
-            + "\nRequest Id:" + SoaRequestId.get()
+            + "\nRequest Id:" + SoaRequestId.get(headers)
+            + "\n"
             ;
 
         URI uri = UriBuilder.fromResource(GoodbyeResource.class).host(SoaClientBundle.hostForService("goodbye")).build();

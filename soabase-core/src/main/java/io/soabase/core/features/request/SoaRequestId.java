@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.client;
+package io.soabase.core.features.request;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
 import java.util.UUID;
 
 public class SoaRequestId
@@ -35,6 +37,11 @@ public class SoaRequestId
 
     public static final String REQUEST_ID_HEADER_NAME = "soa-request-id";
     public static final String REQUEST_ID_IS_NEW_HEADER_NAME = "soa-request-id-is-new";
+
+    public static String get(HttpHeaders headers)
+    {
+        return headers.getHeaderString(REQUEST_ID_HEADER_NAME);
+    }
 
     public static String get()
     {

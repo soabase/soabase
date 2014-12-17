@@ -19,7 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
 import io.soabase.client.Common;
-import io.soabase.client.SoaRequestId;
+import io.soabase.core.features.request.SoaRequestId;
 import io.soabase.client.retry.RetryComponents;
 import io.soabase.client.retry.RetryContext;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;

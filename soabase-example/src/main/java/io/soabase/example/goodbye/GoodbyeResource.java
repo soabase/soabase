@@ -15,11 +15,13 @@
  */
 package io.soabase.example.goodbye;
 
-import io.soabase.client.SoaRequestId;
 import io.soabase.core.SoaInfo;
+import io.soabase.core.features.request.SoaRequestId;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 
 @Path("/goodbye")
 public class GoodbyeResource
@@ -33,11 +35,12 @@ public class GoodbyeResource
     }
 
     @GET
-    public String getGoodbye() throws Exception
+    public String getGoodbye(@Context HttpHeaders headers) throws Exception
     {
         return "Service Name: " + info.getServiceName()
             + "\n\tInstance Name: " + info.getInstanceName()
-            + "\n\tRequest Id:" + SoaRequestId.get()
+            + "\n\tRequest Id:" + SoaRequestId.get(headers)
+            + "\n"
             ;
     }
 }

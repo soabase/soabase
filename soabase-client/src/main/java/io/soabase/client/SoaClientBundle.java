@@ -51,6 +51,11 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
     private final ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor;
 
+    public static String hostForService(String serviceName)
+    {
+        return HOST_SUBSTITUTION_TOKEN + serviceName;
+    }
+
     private volatile RetryHandler retryHandler = new DefaultRetryHandler();
 
     public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor)

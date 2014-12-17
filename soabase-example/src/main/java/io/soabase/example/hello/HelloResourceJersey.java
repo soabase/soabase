@@ -49,7 +49,7 @@ public class HelloResourceJersey
             + "\nRequest Id:" + SoaRequestId.get()
             ;
 
-        URI uri = UriBuilder.fromResource(GoodbyeResource.class).host(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "goodbye").build();
+        URI uri = UriBuilder.fromResource(GoodbyeResource.class).host(SoaClientBundle.hostForService("goodbye")).build();
         String value = client.target(uri).request().get(String.class);
         return result + "\nGoodbye app says: \n\t" + value;
     }

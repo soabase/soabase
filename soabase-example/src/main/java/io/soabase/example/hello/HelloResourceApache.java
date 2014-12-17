@@ -55,7 +55,7 @@ public class HelloResourceApache
             + "\nRequest Id:" + SoaRequestId.get()
             ;
 
-        URI uri = new URIBuilder().setHost(SoaClientBundle.HOST_SUBSTITUTION_TOKEN + "goodbye").setPath("/goodbye").build();
+        URI uri = new URIBuilder().setHost(SoaClientBundle.hostForService("goodbye")).setPath("/goodbye").build();
         HttpGet get = new HttpGet(uri);
         ResponseHandler<String> responseHandler = new ResponseHandler<String>()
         {

@@ -21,3 +21,8 @@ Features
 * Jersey-based Admin APIs
  * Add Jersey resources to the Admin port
  * Built in resources for SOA features
+
+Details
+-------
+
+For full details, see the website: http://randgalt.github.io/soabase

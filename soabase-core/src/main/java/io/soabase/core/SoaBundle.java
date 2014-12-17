@@ -69,11 +69,12 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         updateInstanceName(soaConfiguration);
         List<String> scopes = Lists.newArrayList();
         scopes.add(soaConfiguration.getInstanceName());
-        scopes.add(soaConfiguration.getThisServiceName());
+        scopes.add(soaConfiguration.getServiceName());
         scopes.addAll(soaConfiguration.getScopes());
 
         Ports ports = getPorts(configuration);
-        final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getThisServiceName(), soaConfiguration.getInstanceName());
+        final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName());
+        soaConfiguration.putNamed(soaInfo, SoaInfo.class, SoaFeatures.DEFAULT_NAME);
 
         AbstractBinder binder = new AbstractBinder()
         {

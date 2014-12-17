@@ -1,6 +1,6 @@
 {
   "soa": {
-    "thisServiceName": "goodbye"
+    "serviceName": "goodbye"
   },
 
   "server": {

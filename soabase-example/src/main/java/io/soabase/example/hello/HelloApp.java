@@ -16,6 +16,8 @@
 package io.soabase.example.hello;
 
 import io.dropwizard.setup.Environment;
+import io.soabase.core.SoaFeatures;
+import io.soabase.core.SoaInfo;
 import io.soabase.example.ExampleAppBase;
 import io.soabase.example.ExampleConfiguration;
 
@@ -36,5 +38,8 @@ public class HelloApp extends ExampleAppBase
     {
         environment.jersey().register(HelloResourceJersey.class);
         environment.jersey().register(HelloResourceApache.class);
+
+        SoaInfo info = configuration.getSoaConfiguration().getNamed(SoaInfo.class, SoaFeatures.DEFAULT_NAME);
+        System.err.println("Main port: " + info.getMainPort());
     }
 }

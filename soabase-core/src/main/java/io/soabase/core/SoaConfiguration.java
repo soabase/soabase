@@ -54,7 +54,7 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     @Valid
     @NotNull
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Service Names can only contain letters and numbers")
-    private String thisServiceName;
+    private String serviceName;
 
     @Valid
     private int shutdownWaitMaxMs = (int)TimeUnit.SECONDS.toMillis(5);
@@ -196,16 +196,16 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
         this.adminJerseyPath = adminJerseyPath;
     }
 
-    @JsonProperty("thisServiceName")
-    public String getThisServiceName()
+    @JsonProperty("serviceName")
+    public String getServiceName()
     {
-        return thisServiceName;
+        return serviceName;
     }
 
-    @JsonProperty("thisServiceName")
-    public void setThisServiceName(String thisServiceName)
+    @JsonProperty("serviceName")
+    public void setServiceName(String serviceName)
     {
-        this.thisServiceName = thisServiceName;
+        this.serviceName = serviceName;
     }
 
     public void lock()

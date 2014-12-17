@@ -42,6 +42,7 @@
     <body>
         <menu name="Project">
             <item name="About" href="index.html"/>
+            <item name="Example" href="example.html"/>
         </menu>
 
         <menu name="Details">

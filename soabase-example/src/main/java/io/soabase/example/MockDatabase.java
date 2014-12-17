@@ -23,7 +23,10 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.hsqldb.Server;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 public class MockDatabase
@@ -31,6 +34,18 @@ public class MockDatabase
     @SuppressWarnings("ParameterCanBeLocal")
     public static void main(String[] args) throws Exception
     {
+        if ( !Boolean.getBoolean("debug") )
+        {
+            OutputStream nullOut = new OutputStream()
+            {
+                @Override
+                public void write(int b) throws IOException
+                {
+                }
+            };
+            System.setOut(new PrintStream(nullOut));
+        }
+
         args = new String[]
             {
                 "--database.0",

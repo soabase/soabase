@@ -79,3 +79,58 @@ curl http://localhost:HelloMainPort/hello
 |                           | Sobase adds a Request Id header which the wrapped REST Clients are aware of. In the example |
 |                           | you see that the Hello app's REST call tp the Goodbye app maintained the same Request Id.   |
 *---------------------------*---------------------------------------------------------------------------------------------*
+
+    * Dynamic Attributes
+
+        The MockDatabase app sets a few dynamic attributes that you can query for.
+
++------------------------------------------+
+curl http://localhost:HelloAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+        This will return "global".
+
++------------------------------------------+
+curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+        This will also return "global".
+
++------------------------------------------+
+curl http://localhost:HelloAdminPort/api/soa/attributes/test2
++------------------------------------------+
+
+        This will return "one".
+
++------------------------------------------+
+curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
++------------------------------------------+
+
+        This will return "two".
+
++------------------------------------------+
+curl -X PUT -d '"new"' http://localhost:HelloAdminPort/api/soa/attributes/test
+curl http://localhost:HelloAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+        This will return "new".
+
++------------------------------------------+
+curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+        This will still return "global".
+
+        This example shows the following features:
+
+*-----------------------*-------------------------------------------------------------------------------------------------*
+| Scoped Attributes     | Soabase dynamic attributes can be scoped. There are three default scopes: Global, service and   |
+|                       | instance. You can also define your own scopes. In the example, the attribute "test" is set at   |
+|                       | the global scope so is the same for both Goodbye and Hello apps. The attribute "test2" is set   |
+|                       | differently for the service scope and so Goodbye and Hello return different values.             |
+*-----------------------*-------------------------------------------------------------------------------------------------*
+| Jersey for Admin      | Soabase adds Jersey support to Dropwizard's admin port. Soabase defines a few APIs and you can  |
+|                       | add your own.                                                                                   |
+*-----------------------*-------------------------------------------------------------------------------------------------*
+| Local Overrides       | Through the admin API you can set instance specific overrides for dynamic attributes.           |
+*-----------------------*-------------------------------------------------------------------------------------------------*

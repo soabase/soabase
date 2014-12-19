@@ -19,9 +19,10 @@
 * Archaius?
 * Eureka?
 - Example App
+    * Have MockDatabase support adding new values somehow
 * Tests
 * javadoc/doc
-* TODO comments
+* TO-DOs
 * Figure out why config isn't validating
 * Logging
 - Don't deploy ExampleApp - config added to pom. Needs to be tested.
@@ -30,7 +31,3 @@
 * Figure out why admin jersey apis DW info output doesn't include "api"
 * Have SoaCli check for external override file
 * kill isn't working for soa apps
-
-√ Jersey for Admin
-√ Support Jersey client
-√ Add new request id header - refactor header addition into SoaRequestId

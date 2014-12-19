@@ -70,8 +70,8 @@ public class MockDatabase
         mapper.createTable();
 
         mapper.insert(new AttributeEntity("test", "global"));
-        mapper.insert(new AttributeEntity("service", "goodbye", "goodbye"));
-        mapper.insert(new AttributeEntity("service", "hello", "hello"));
+        mapper.insert(new AttributeEntity("test2", "hello", "one"));
+        mapper.insert(new AttributeEntity("test2", "goodbye", "two"));
 
         List<AttributeEntity> attributeEntities = mapper.selectAll();
         System.out.println(attributeEntities);

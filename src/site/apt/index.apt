@@ -1,0 +1,41 @@
+Soabase
+
+    A suite of {{{http://dropwizard.io/}Dropwizard}} bundles and utilities that aid in building
+    Service Oriented Applications. Soabase is implementation neutral, however, default production-level implementations
+    are available.
+
+* Features
+
+    * {{{./discovery.html}Service Discovery}}
+
+        * Default implementation using {{{http://curator.apache.org/curator-x-discovery/index.html}Apache Curator}}
+
+        * Supports plugging in any desired implementation
+
+    * {{{./client.html}Load Balancing REST Client}}
+
+        * Default implementations for both Jersey and Apache clients
+
+        * Integrates with Service Discovery for retries, etc.
+
+        * Supports plugging in any desired implementation
+
+    * {{{./attributes.html}Distributed, Scoped Dynamic Attributes}}
+
+        * Built in support for JDBC datasources via {{{http://mybatis.github.io/mybatis-3/}Mybatis}}
+
+        * Supports plugging in any desired implementation
+
+    * {{{./admin.html}Jersey-based Admin APIs}}
+
+        * Add Jersey resources to the Admin port
+
+        * Built in resources for SOA features
+
+* Usage
+
+    It is assumed that you are familiar with Dropwizard, bundles, etc. See the {{{./usage.html}Usage}} page for details.
+
+* Example
+
+    See the {{{./example.html}Examples}} page for a detailed example of Soabase

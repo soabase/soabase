@@ -1,8 +1,6 @@
 Example
 
-* WorkflowAdmin
-
-    blah blah blah
+    The Soabase example shows some of the features of the various bundles and utilities.
 
 * Building the example
 
@@ -109,7 +107,7 @@ curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
         This will return "two".
 
 +------------------------------------------+
-curl -X PUT -d '"new"' http://localhost:HelloAdminPort/api/soa/attributes/test
+curl -X PUT -d '"new"' -H "Content-Type: application/json" http://localhost:HelloAdminPort/api/soa/attributes/test
 curl http://localhost:HelloAdminPort/api/soa/attributes/test
 +------------------------------------------+
 
@@ -120,6 +118,13 @@ curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
 +------------------------------------------+
 
         This will still return "global".
+
++------------------------------------------+
+curl -X DELETE http://localhost:HelloAdminPort/api/soa/attributes/test
+curl http://localhost:HelloAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+        This will return "global" again.
 
         This example shows the following features:
 

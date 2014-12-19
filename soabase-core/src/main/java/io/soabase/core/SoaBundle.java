@@ -74,7 +74,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 
         Ports ports = getPorts(configuration);
         final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName());
-        soaConfiguration.putNamed(soaInfo, SoaInfo.class, SoaFeatures.DEFAULT_NAME);
+        soaConfiguration.setSoaInfo(soaInfo);
 
         AbstractBinder binder = new AbstractBinder()
         {

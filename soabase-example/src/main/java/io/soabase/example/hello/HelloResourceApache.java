@@ -54,7 +54,7 @@ public class HelloResourceApache
     {
         String result = "Service Name: " + info.getServiceName()
             + "\nInstance Name: " + info.getInstanceName()
-            + "\nRequest Id:" + SoaRequestId.get(headers)
+            + "\nRequest Id: " + SoaRequestId.get(headers)
             + "\n"
             ;
 

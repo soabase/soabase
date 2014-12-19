@@ -78,6 +78,7 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
 
     private volatile SoaDiscovery discovery;
     private volatile SoaDynamicAttributes attributes;
+    private volatile SoaInfo soaInfo;
     private final ConcurrentMap<Class<?>, ConcurrentMap<String, Object>> named = Maps.newConcurrentMap();
 
     @JsonProperty("checkPeriodMs")
@@ -251,7 +252,7 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
         return discovery;
     }
 
-    public void setDiscovery(SoaDiscovery discovery)
+    void setDiscovery(SoaDiscovery discovery)
     {
         Preconditions.checkState(!locked.get(), "Configuration has been locked and cannot be modified");
         this.discovery = discovery;
@@ -263,9 +264,20 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
         return attributes;
     }
 
-    public void setAttributes(SoaDynamicAttributes attributes)
+    void setAttributes(SoaDynamicAttributes attributes)
     {
         Preconditions.checkState(!locked.get(), "Configuration has been locked and cannot be modified");
         this.attributes = attributes;
+    }
+
+    @Override
+    public SoaInfo getSoaInfo()
+    {
+        return soaInfo;
+    }
+
+    void setSoaInfo(SoaInfo soaInfo)
+    {
+        this.soaInfo = soaInfo;
     }
 }

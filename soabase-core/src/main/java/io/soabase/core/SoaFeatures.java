@@ -28,4 +28,6 @@ public interface SoaFeatures
     public SoaDiscovery getDiscovery();
 
     public SoaDynamicAttributes getAttributes();
+
+    public SoaInfo getSoaInfo();
 }

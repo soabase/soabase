@@ -39,7 +39,7 @@ public class GoodbyeResource
     {
         return "Service Name: " + info.getServiceName()
             + "\n\tInstance Name: " + info.getInstanceName()
-            + "\n\tRequest Id:" + SoaRequestId.get(headers)
+            + "\n\tRequest Id: " + SoaRequestId.get(headers)
             + "\n"
             ;
     }

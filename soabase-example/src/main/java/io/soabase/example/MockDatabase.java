@@ -69,8 +69,9 @@ public class MockDatabase
         AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
         mapper.createTable();
 
-        AttributeEntity attribute = new AttributeEntity("test", "main");
-        mapper.insert(attribute);
+        mapper.insert(new AttributeEntity("test", "global"));
+        mapper.insert(new AttributeEntity("service", "goodbye", "goodbye"));
+        mapper.insert(new AttributeEntity("service", "hello", "hello"));
 
         List<AttributeEntity> attributeEntities = mapper.selectAll();
         System.out.println(attributeEntities);

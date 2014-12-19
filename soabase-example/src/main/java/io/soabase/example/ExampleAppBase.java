@@ -16,7 +16,6 @@
 package io.soabase.example;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
 import io.dropwizard.Application;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
@@ -27,13 +26,14 @@ import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaCli;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaFeatures;
+import io.soabase.core.SoaInfo;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
 import org.apache.curator.test.InstanceSpec;
 import java.io.Closeable;
-import java.net.URL;
 import java.util.List;
 import java.util.Random;
 
@@ -116,6 +116,10 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
         environment.lifecycle().manage(this);
 
         internalRun(configuration, environment);
+
+        SoaInfo info = configuration.getSoaConfiguration().getSoaInfo();
+        System.err.println("Main port: " + info.getMainPort());
+        System.err.println("Admin port: " + info.getAdminPort());
     }
 
     protected abstract void internalRun(ExampleConfiguration configuration, Environment environment);

@@ -1,4 +1,4 @@
-package io.soabase.admin;
+package io.soabase.admin.rest;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;

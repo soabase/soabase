@@ -8,6 +8,7 @@
   },
 
   "server": {
+    "rootPath": "/api/*",
     "adminConnectors": []
   }
 }

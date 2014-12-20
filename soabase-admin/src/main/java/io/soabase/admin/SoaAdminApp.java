@@ -13,6 +13,7 @@ import io.soabase.core.SoaCli;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
 import io.soabase.sql.attributes.SqlConfiguration;
+import io.soabase.zookeeper.discovery.CuratorConfiguration;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import java.util.prefs.Preferences;
 
@@ -33,6 +34,8 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         {
             return;
         }
+
+        System.setProperty("dw.curator.connectionString", "tbd");
 
         String[] internalArgs = new String[]
         {
@@ -61,15 +64,24 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
                 return configuration.getSqlConfiguration();
             }
         };
+        ConfigurationAccessor<SoaAdminConfiguration, CuratorConfiguration> curatorAccessor = new ConfigurationAccessor<SoaAdminConfiguration, CuratorConfiguration>()
+        {
+            @Override
+            public CuratorConfiguration accessConfiguration(SoaAdminConfiguration configuration)
+            {
+                return configuration.getCuratorConfiguration();
+            }
+        };
 //        bootstrap.addBundle(new SqlBundle<>(soaAccessor, sqlAccessor));
         bootstrap.addBundle(new SoaBundle<>(soaAccessor));
+//        bootstrap.addBundle(new CuratorBundle<>(soaAccessor, curatorAccessor));
         bootstrap.addBundle(new AssetsBundle("/assets", "/assets"));
     }
 
     @Override
     public void run(SoaAdminConfiguration configuration, Environment environment) throws Exception
     {
-        final ComponentManager componentManager = new ComponentManager(options.appName);
+        final ComponentManager componentManager = new ComponentManager(options.appName, options.company, options.footerMessage);
         final Preferences preferences = Preferences.userRoot();
         AbstractBinder binder = new AbstractBinder()
         {
@@ -83,7 +95,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         configuration.getSoaConfiguration().putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
         configuration.getSoaConfiguration().putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
-        componentManager.addTab(new TabComponent("", "Home", "assets/main.html"));
+        componentManager.addTab(new TabComponent("", "Instances", "assets/main.html"));
         componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html"));
 
         environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("/index.html", "/");

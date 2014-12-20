@@ -8,10 +8,14 @@ public class ComponentManager
 {
     private final List<TabComponent> tabs = Lists.newCopyOnWriteArrayList();
     private final String appName;
+    private final String companyName;
+    private final String footerMessage;
 
-    public ComponentManager(String appName)
+    public ComponentManager(String appName, String companyName, String footerMessage)
     {
         this.appName = appName;
+        this.companyName = companyName;
+        this.footerMessage = footerMessage;
     }
 
     public void addTab(final TabComponent tab)
@@ -28,5 +32,15 @@ public class ComponentManager
     public String getAppName()
     {
         return appName;
+    }
+
+    public String getCompanyName()
+    {
+        return companyName;
+    }
+
+    public String getFooterMessage()
+    {
+        return footerMessage;
     }
 }

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Calendar;
 
 public class IndexServlet extends HttpServlet
 {
@@ -61,6 +62,8 @@ public class IndexServlet extends HttpServlet
 
     private String addTabs(String localIndexFile, ComponentManager componentManager) throws IOException
     {
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
         StringBuilder tabs = new StringBuilder();
         StringBuilder ids = new StringBuilder();
         StringBuilder css = new StringBuilder();
@@ -82,7 +85,7 @@ public class IndexServlet extends HttpServlet
             }
 
             String tabContent = Resources.toString(Resources.getResource(tab.getContentPath()), charset);   // TODO - handle classloader issues
-            content.append("<div id=\"" + SOA_TAB_PREFIX).append(tab.getId()).append("\">").append(tabContent).append("</div>\n");
+            content.append("<div class=\"soa-hidden\" id=\"" + SOA_TAB_PREFIX).append(tab.getId()).append("\">").append(tabContent).append("</div>\n");
         }
         localIndexFile = localIndexFile.replace("$SOA_TABS$", tabs.toString());
         localIndexFile = localIndexFile.replace("$SOA_TABS_CONTENT$", content.toString());
@@ -90,6 +93,8 @@ public class IndexServlet extends HttpServlet
         localIndexFile = localIndexFile.replace("$SOA_CSS$", css.toString());
         localIndexFile = localIndexFile.replace("$SOA_JS$", jss.toString());
         localIndexFile = localIndexFile.replace("$SOA_NAME$", componentManager.getAppName());
+        localIndexFile = localIndexFile.replace("$SOA_COPYRIGHT$", "" + currentYear + " " + componentManager.getCompanyName());
+        localIndexFile = localIndexFile.replace("$SOA_FOOTER_MESSAGE$", "" + componentManager.getFooterMessage());
 
         return localIndexFile;
     }

@@ -15,6 +15,12 @@ public class SoaAdminOptions
     @Option(name = {"--name"}, description = "Display name for the Application")
     public String appName = "Soabase";
 
+    @Option(name = {"--company"}, description = "Your company's name")
+    public String company = "";
+
+    @Option(name = {"--footer"}, description = "Optional footer message")
+    public String footerMessage = "- Internal use only - Proprietary and Confidential";
+
     public static SoaAdminOptions get(String... args)
     {
         SoaAdminOptions options = SingleCommand.singleCommand(SoaAdminOptions.class).parse(args);

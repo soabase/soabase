@@ -30,7 +30,9 @@ import io.dropwizard.server.ServerFactory;
 import io.dropwizard.server.SimpleServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.soabase.core.features.attributes.SafeDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
+import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
 import io.soabase.core.features.discovery.HealthCheckIntegration;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryHealth;
@@ -90,7 +92,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         initJerseyAdmin(soaConfiguration, ports, environment, binder);
 
         SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(soaConfiguration, environment, soaInfo));
-        SoaDynamicAttributes attributes = checkManaged(environment, soaConfiguration.getAttributesFactory().build(soaConfiguration, environment, scopes));
+        SoaDynamicAttributes attributes = wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(soaConfiguration, environment, scopes)));
         soaConfiguration.setDiscovery(discovery);
         soaConfiguration.setAttributes(attributes);
 
@@ -113,6 +115,23 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             }
         };
         environment.lifecycle().manage(managed);
+    }
+
+    private SoaDynamicAttributes wrapAttributes(SoaDynamicAttributes attributes)
+    {
+        if ( attributes instanceof SoaWritableDynamicAttributes )
+        {
+            try
+            {
+                // presence of this key allows mutable attributes
+                Class.forName("io.soabase.admin.SoaAdminKey");
+            }
+            catch ( ClassNotFoundException e )
+            {
+                return new SafeDynamicAttributes(attributes);
+            }
+        }
+        return attributes;
     }
 
     @Override

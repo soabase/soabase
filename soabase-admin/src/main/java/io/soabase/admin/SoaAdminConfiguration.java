@@ -12,6 +12,18 @@ public class SoaAdminConfiguration extends Configuration
 {
     @Valid
     @NotNull
+    private String appName = "Soabase";
+
+    @Valid
+    @NotNull
+    private String company = "";
+
+    @Valid
+    @NotNull
+    private String footerMessage = "- Internal use only - Proprietary and Confidential";
+
+    @Valid
+    @NotNull
     private SoaConfiguration soaConfiguration = new SoaConfiguration();
 
     @Valid
@@ -56,5 +68,41 @@ public class SoaAdminConfiguration extends Configuration
     public void setCuratorConfiguration(CuratorConfiguration curatorConfiguration)
     {
         this.curatorConfiguration = curatorConfiguration;
+    }
+
+    @JsonProperty("appName")
+    public String getAppName()
+    {
+        return appName;
+    }
+
+    @JsonProperty("appName")
+    public void setAppName(String appName)
+    {
+        this.appName = appName;
+    }
+
+    @JsonProperty("company")
+    public String getCompany()
+    {
+        return company;
+    }
+
+    @JsonProperty("company")
+    public void setCompany(String company)
+    {
+        this.company = company;
+    }
+
+    @JsonProperty("footerMessage")
+    public String getFooterMessage()
+    {
+        return footerMessage;
+    }
+
+    @JsonProperty("footerMessage")
+    public void setFooterMessage(String footerMessage)
+    {
+        this.footerMessage = footerMessage;
     }
 }

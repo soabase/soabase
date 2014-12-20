@@ -12,10 +12,14 @@ function soaShowPage() {
         var item = $('#' + id);
         var liItem = $('#' + id + "-li");
         if ( id === command ) {
-            item.show();
+            item.show(function(){
+                $(this).trigger('soa-show');
+            });
             liItem.addClass('active');
         } else {
-            item.hide();
+            item.hide(function(){
+                $(this).trigger('soa-hide');
+            });
             liItem.removeClass('active');
         }
     }

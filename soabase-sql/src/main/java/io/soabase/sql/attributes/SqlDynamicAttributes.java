@@ -16,8 +16,9 @@
 package io.soabase.sql.attributes;
 
 import io.dropwizard.lifecycle.Managed;
+import io.soabase.core.features.attributes.AttributeKey;
 import io.soabase.core.features.attributes.SoaDynamicAttributeListener;
-import io.soabase.core.features.attributes.SoaDynamicAttributes;
+import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
 import io.soabase.core.features.attributes.StandardAttributesContainer;
 import io.soabase.core.listening.Listenable;
 import io.soabase.core.rest.entities.Attribute;
@@ -26,7 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
+public class SqlDynamicAttributes implements SoaWritableDynamicAttributes, Managed
 {
     private final StandardAttributesContainer container;
     private final SqlSession session;
@@ -35,6 +36,13 @@ public class SqlDynamicAttributes implements SoaDynamicAttributes, Managed
     {
         this.session = session;
         container = new StandardAttributesContainer(scopes);
+    }
+
+    @Override
+    public void put(AttributeKey key, Object value)
+    {
+        AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
+        mapper.insert(new AttributeEntity(key.getKey(), key.getScope(), String.valueOf(value)));
     }
 
     @Override

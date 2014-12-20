@@ -1,0 +1,13 @@
+{
+  "soa": {
+    "serviceName": "soabaseadmin"
+  },
+
+  "sql": {
+    "mybatisConfigUrl": "tbd"
+  },
+
+  "server": {
+    "adminConnectors": []
+  }
+}

@@ -87,7 +87,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         };
 
         checkCorsFilter(soaConfiguration, environment);
-        initJerseyAdmin(soaConfiguration, environment, binder);
+        initJerseyAdmin(soaConfiguration, ports, environment, binder);
 
         SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(soaConfiguration, environment, soaInfo));
         SoaDynamicAttributes attributes = checkManaged(environment, soaConfiguration.getAttributesFactory().build(soaConfiguration, environment, scopes));
@@ -227,9 +227,9 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return obj;
     }
 
-    private void initJerseyAdmin(SoaConfiguration configuration, Environment environment, AbstractBinder binder)
+    private void initJerseyAdmin(SoaConfiguration configuration, Ports ports, Environment environment, AbstractBinder binder)
     {
-        if ( configuration.getAdminJerseyPath() == null )
+        if ( (configuration.getAdminJerseyPath() == null) || (ports.adminPort == 0) )
         {
             return;
         }

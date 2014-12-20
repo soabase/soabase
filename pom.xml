@@ -13,6 +13,7 @@
         <module>soabase-sql</module>
         <module>soabase-client</module>
         <module>soabase-example</module>
+        <module>soabase-admin</module>
     </modules>
 
     <properties>
@@ -132,6 +133,12 @@
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-client</artifactId>
+                <version>${dropwizard-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-assets</artifactId>
                 <version>${dropwizard-version}</version>
             </dependency>
 

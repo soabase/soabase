@@ -125,6 +125,12 @@
             </dependency>
 
             <dependency>
+                <groupId>io.soabase</groupId>
+                <artifactId>soabase-admin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-core</artifactId>
                 <version>${dropwizard-version}</version>

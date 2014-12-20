@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 Jordan Zimmerman
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.soabase.admin;
 
 import com.google.common.collect.Lists;
@@ -17,8 +32,6 @@ import io.soabase.core.SoaCli;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.rest.DiscoveryApis;
-import io.soabase.sql.attributes.SqlConfiguration;
-import io.soabase.zookeeper.discovery.CuratorConfiguration;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import java.util.prefs.Preferences;
 
@@ -29,8 +42,6 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
     {
         System.setProperty("dw.soa.serviceName", "soabaseadmin");
         System.setProperty("dw.soa.addCorsFilter", "true");
-        System.setProperty("dw.sql.mybatisConfigUrl", "tbd");
-        System.setProperty("dw.curator.connectionString", "tbd");
         System.setProperty("dw.server.rootPath", "/api/*");
 
         new SoaAdminApp().run(SoaCli.filter(args));
@@ -65,25 +76,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
                 return configuration.getSoaConfiguration();
             }
         };
-        ConfigurationAccessor<SoaAdminConfiguration, SqlConfiguration> sqlAccessor = new ConfigurationAccessor<SoaAdminConfiguration, SqlConfiguration>()
-        {
-            @Override
-            public SqlConfiguration accessConfiguration(SoaAdminConfiguration configuration)
-            {
-                return configuration.getSqlConfiguration();
-            }
-        };
-        ConfigurationAccessor<SoaAdminConfiguration, CuratorConfiguration> curatorAccessor = new ConfigurationAccessor<SoaAdminConfiguration, CuratorConfiguration>()
-        {
-            @Override
-            public CuratorConfiguration accessConfiguration(SoaAdminConfiguration configuration)
-            {
-                return configuration.getCuratorConfiguration();
-            }
-        };
-//        bootstrap.addBundle(new SqlBundle<>(soaAccessor, sqlAccessor));
         bootstrap.addBundle(new SoaBundle<>(soaAccessor));
-//        bootstrap.addBundle(new CuratorBundle<>(soaAccessor, curatorAccessor));
         bootstrap.addBundle(new AssetsBundle("/assets", "/assets"));
     }
 
@@ -104,7 +97,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         configuration.getSoaConfiguration().putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
         configuration.getSoaConfiguration().putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
-        componentManager.addTab(new TabComponent("", "Instances", "assets/main.html"));
+        componentManager.addTab(new TabComponent("", "Instances", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.<String>newArrayList()));
         componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html"));
 
         environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("/index.html", "/");

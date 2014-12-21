@@ -15,7 +15,7 @@
     limitations under the License.
 
 -->
-<project xsi:schemaLocation="http://maven.apache.org/DECORATION/1.6.0 http://maven.apache.org/xsd/decoration-1.6.0.xsd" name="Soabase" xmlns="http://maven.apache.org/DECORATION/1.6.0"
+<project xsi:schemaLocation="http://maven.apache.org/DECORATION/1.6.0 http://maven.apache.org/xsd/decoration-1.6.0.xsd" xmlns="http://maven.apache.org/DECORATION/1.6.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <skin>
         <groupId>org.apache.maven.skins</groupId>
@@ -36,6 +36,7 @@
                 <ribbonOrientation>right</ribbonOrientation>
                 <ribbonColor>black</ribbonColor>
             </gitHub>
+            <facebookLike />
         </fluidoSkin>
     </custom>
 

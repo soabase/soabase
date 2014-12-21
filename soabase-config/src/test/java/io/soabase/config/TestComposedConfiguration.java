@@ -82,14 +82,22 @@ public class TestComposedConfiguration
         ConfigurationFactory<ComposedConfiguration> factory = factoryFactory.create(ComposedConfiguration.class, validator, Jackson.newObjectMapper(), "dw");
         System.setProperty("dw.t1.two", "override two");
         System.setProperty("dw.t2.a", "override a");
-        ComposedConfiguration configuration = factory.build();
-        TestConfiguration1 c1 = configuration.as(TestConfiguration1.class);
-        TestConfiguration2 c2 = configuration.as(TestConfiguration2.class);
-        Assert.assertNotNull(c1);
-        Assert.assertNotNull(c2);
-        Assert.assertEquals(c1.getField1(), "1");
-        Assert.assertEquals(c1.getField2(), "override two");
-        Assert.assertEquals(c2.getField1(), "override a");
-        Assert.assertEquals(c2.getField2(), "b");
+        try
+        {
+            ComposedConfiguration configuration = factory.build();
+            TestConfiguration1 c1 = configuration.as(TestConfiguration1.class);
+            TestConfiguration2 c2 = configuration.as(TestConfiguration2.class);
+            Assert.assertNotNull(c1);
+            Assert.assertNotNull(c2);
+            Assert.assertEquals(c1.getField1(), "1");
+            Assert.assertEquals(c1.getField2(), "override two");
+            Assert.assertEquals(c2.getField1(), "override a");
+            Assert.assertEquals(c2.getField2(), "b");
+        }
+        finally
+        {
+            System.clearProperty("dw.t1.two");
+            System.clearProperty("dw.t2.a");
+        }
     }
 }

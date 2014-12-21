@@ -27,9 +27,11 @@ public class SoaInfo
     private final String serviceName;
     private final String instanceName;
     private final long startTimeMs = System.currentTimeMillis();
+    private final boolean registerInDiscovery;
 
-    public SoaInfo(List<String> scopes, int mainPort, int adminPort, String serviceName, String instanceName)
+    public SoaInfo(List<String> scopes, int mainPort, int adminPort, String serviceName, String instanceName, boolean registerInDiscovery)
     {
+        this.registerInDiscovery = registerInDiscovery;
         scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");
         this.scopes = ImmutableList.copyOf(scopes);
         this.mainPort = mainPort;
@@ -66,5 +68,10 @@ public class SoaInfo
     public int getAdminPort()
     {
         return adminPort;
+    }
+
+    public boolean isRegisterInDiscovery()
+    {
+        return registerInDiscovery;
     }
 }

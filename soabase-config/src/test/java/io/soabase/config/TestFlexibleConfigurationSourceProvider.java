@@ -18,10 +18,10 @@ package io.soabase.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
-import io.dropwizard.Configuration;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
 import io.dropwizard.jackson.Jackson;
+import io.soabase.config.mocks.MyConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import javax.validation.Validation;
@@ -73,18 +73,13 @@ public class TestFlexibleConfigurationSourceProvider
         }
     }
 
-    public static class TestConfiguration extends Configuration
-    {
-        public String testValue = "unset";
-    }
-
     @Test
     public void testViaDW() throws Exception
     {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         ObjectMapper objectMapper = Jackson.newObjectMapper();
-        ConfigurationFactory<TestConfiguration> configurationFactory = new DefaultConfigurationFactoryFactory<TestConfiguration>().create(TestConfiguration.class, validator, objectMapper, "dw");
-        TestConfiguration configuration = configurationFactory.build(new FlexibleConfigurationSourceProvider(), "%{\"testValue\": \"override\"}");
+        ConfigurationFactory<MyConfiguration> configurationFactory = new DefaultConfigurationFactoryFactory<MyConfiguration>().create(MyConfiguration.class, validator, objectMapper, "dw");
+        MyConfiguration configuration = configurationFactory.build(new FlexibleConfigurationSourceProvider(), "%{\"testValue\": \"override\"}");
         Assert.assertEquals(configuration.testValue, "override");
     }
 }

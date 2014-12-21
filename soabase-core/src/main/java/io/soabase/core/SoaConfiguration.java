@@ -70,6 +70,9 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
     private boolean addCorsFilter = false;
 
     @Valid
+    private boolean registerInDiscovery = true;
+
+    @Valid
     private int discoveryHealthCheckPeriodMs = (int)TimeUnit.SECONDS.toMillis(10);
 
     @Valid
@@ -210,10 +213,22 @@ public class SoaConfiguration extends Configuration implements SoaFeatures
         this.serviceName = serviceName;
     }
 
+    @JsonProperty("registerInDiscovery")
+    public boolean isRegisterInDiscovery()
+    {
+        return registerInDiscovery;
+    }
+
+    @JsonProperty("registerInDiscovery")
+    public void setRegisterInDiscovery(boolean registerInDiscovery)
+    {
+        this.registerInDiscovery = registerInDiscovery;
+    }
+
     public void lock()
     {
         locked.set(true);
-    }
+    }   // TODO
 
     public <T> T getNamedRequired(Class<T> clazz, String name)
     {

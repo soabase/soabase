@@ -74,7 +74,7 @@ public class SoaBundle<T extends ComposedConfiguration> implements ConfiguredBun
         scopes.addAll(soaConfiguration.getScopes());
 
         Ports ports = getPorts(configuration);
-        final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName());
+        final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
         soaConfiguration.setSoaInfo(soaInfo);
 
         AbstractBinder binder = new AbstractBinder()

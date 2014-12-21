@@ -28,11 +28,13 @@ import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.config.ComposedConfiguration;
+import io.soabase.config.FlexibleConfigurationSourceProvider;
 import io.soabase.config.service.FromServices;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.rest.DiscoveryApis;
+import io.soabase.zookeeper.discovery.CuratorBundle;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import java.util.prefs.Preferences;
 
@@ -43,6 +45,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
     {
         System.setProperty("dw.soa.serviceName", "soabaseadmin");
         System.setProperty("dw.soa.addCorsFilter", "true");
+        System.setProperty("dw.soa.registerInDiscovery", "false");
         System.setProperty("dw.server.rootPath", "/api/*");
 
         new SoaAdminApp().run(args);
@@ -51,6 +54,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
     @Override
     public void initialize(Bootstrap<SoaAdminConfiguration> bootstrap)
     {
+        bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider());
         ConfigurationFactoryFactory<SoaAdminConfiguration> factory = FromServices.<SoaAdminConfiguration>create().withBaseClass(SoaAdminConfiguration.class).factory();
         bootstrap.setConfigurationFactoryFactory(factory);
 
@@ -71,6 +75,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
             }
         };
         bootstrap.addBundle(bundle);
+        bootstrap.addBundle(new CuratorBundle<>());
         bootstrap.addBundle(new SoaBundle<>());
         bootstrap.addBundle(new AssetsBundle("/assets", "/assets"));
     }

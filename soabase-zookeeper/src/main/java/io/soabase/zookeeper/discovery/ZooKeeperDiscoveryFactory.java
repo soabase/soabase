@@ -25,12 +25,19 @@ import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
 import org.apache.curator.framework.CuratorFramework;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @JsonTypeName("zookeeper")
 public class ZooKeeperDiscoveryFactory implements SoaDiscoveryFactory
 {
     @Valid
     private String bindAddress;
+
+    @Valid
+    @NotNull
+    @Pattern(regexp = "/..*")
+    private String zookeeperPath = "/discovery";
 
     @JsonProperty("bindAddress")
     public String getBindAddress()
@@ -42,6 +49,18 @@ public class ZooKeeperDiscoveryFactory implements SoaDiscoveryFactory
     public void setBindAddress(String bindAddress)
     {
         this.bindAddress = bindAddress;
+    }
+
+    @JsonProperty("zookeeperPath")
+    public String getZookeeperPath()
+    {
+        return zookeeperPath;
+    }
+
+    @JsonProperty("zookeeperPath")
+    public void setZookeeperPath(String zookeeperPath)
+    {
+        this.zookeeperPath = zookeeperPath;
     }
 
     @Override

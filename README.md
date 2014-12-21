@@ -21,6 +21,9 @@ Features
 * Jersey-based Admin APIs
  * Add Jersey resources to the Admin port
  * Built in resources for SOA features
+* Configuration Utilities
+ * Utility that enables specifying command line arguments that can be a resource contained in a JAR or in the file system
+ * Utility to dynamically generate Configuration classes that contain custom configuration fields
 
 Details
 -------

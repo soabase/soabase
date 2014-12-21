@@ -17,7 +17,7 @@
 
         <dependency>
             <groupId>org.javassist</groupId>
-            <artifactId>javaassist</artifactId>
+            <artifactId>javassist</artifactId>
         </dependency>
 
         <dependency>

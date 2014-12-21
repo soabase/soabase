@@ -183,7 +183,7 @@
 
             <dependency>
                 <groupId>org.javassist</groupId>
-                <artifactId>javaassist</artifactId>
+                <artifactId>javassist</artifactId>
                 <version>${javassist-version}</version>
             </dependency>
 
@@ -329,6 +329,7 @@
                         <exclude>**/CHANGES</exclude>
                         <exclude>**/RELEASE-NOTES</exclude>
                         <exclude>**/generated/**</exclude>
+                        <exclude>**/test-file.txt</exclude>
                     </excludes>
                     <strictCheck>true</strictCheck>
                 </configuration>

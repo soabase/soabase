@@ -8,18 +8,20 @@ import javassist.CtField;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 
-public class ComposedConfigurationBuilder
+public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
 {
     private final CtClass ctClass;
     private final ClassPool ctPool;
     private final Set<Class<?>> classes = Sets.newHashSet();
 
-    public ComposedConfigurationBuilder()
+    public static final String DEFAULT_COMPOSED_FQ_CLASS_NAME = "io.soabase.core.config.SoaComposedConfiguration";
+
+    public ComposedConfigurationBuilder(Class<T> baseClass)
     {
-        this("io.soabase.core.config.SoaComposedConfiguration");
+        this(DEFAULT_COMPOSED_FQ_CLASS_NAME, baseClass);
     }
 
-    public ComposedConfigurationBuilder(String fqClassName)
+    public ComposedConfigurationBuilder(String fqClassName, Class<T> baseClass)
     {
         ClassPool localCtPool;
         CtClass localCtClass;
@@ -27,7 +29,7 @@ public class ComposedConfigurationBuilder
         {
             localCtPool = ClassPool.getDefault();
             localCtClass = localCtPool.makeClass(fqClassName);
-            localCtClass.setSuperclass(localCtPool.get(ComposedConfiguration.class.getName()));
+            localCtClass.setSuperclass(localCtPool.get(baseClass.getName()));
         }
         catch ( Exception e )
         {
@@ -38,12 +40,14 @@ public class ComposedConfigurationBuilder
         ctPool = localCtPool;
     }
 
-    @SuppressWarnings("unchecked")
-    public Class<ComposedConfiguration> build()
+    public Class<T> build()
     {
         try
         {
-            return ctClass.toClass();
+            //noinspection unchecked
+            Class<T> clazz = (Class<T>)ctClass.toClass();
+            ctClass.detach();
+            return clazz;
         }
         catch ( Exception e )
         {
@@ -52,7 +56,7 @@ public class ComposedConfigurationBuilder
         }
     }
 
-    public <T> void add(String name, Class<T> clazz)
+    public <C> void add(String name, Class<C> clazz)
     {
         name = Preconditions.checkNotNull(name, "name cannot be null");
         clazz = Preconditions.checkNotNull(clazz, "clazz cannot be null");

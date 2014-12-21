@@ -13,7 +13,7 @@ public class ComposedConfigurationFactoryFactory implements ConfigurationFactory
 
     public static ComposedConfigurationBuilder builderFromServices()
     {
-        ComposedConfigurationBuilder builder = new ComposedConfigurationBuilder();
+        ComposedConfigurationBuilder<ComposedConfiguration> builder = new ComposedConfigurationBuilder<>(ComposedConfiguration.class);
         ServiceLoader<ComposedConfigurationFactory> serviceLoader = ServiceLoader.load(ComposedConfigurationFactory.class);
         for ( ComposedConfigurationFactory factory : Lists.newArrayList(serviceLoader.iterator()) )
         {

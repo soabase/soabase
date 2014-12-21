@@ -2,6 +2,7 @@ package io.soabase.config;
 
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.jackson.Jackson;
+import io.soabase.config.mocks.ExtendedConfiguration;
 import io.soabase.config.mocks.TestConfiguration1;
 import io.soabase.config.mocks.TestConfiguration2;
 import org.testng.Assert;
@@ -14,7 +15,7 @@ public class TestComposedConfiguration
     @Test
     public void testGeneral() throws Exception
     {
-        ComposedConfigurationBuilder builder = new ComposedConfigurationBuilder();
+        ComposedConfigurationBuilder<ComposedConfiguration> builder = new ComposedConfigurationBuilder<>("x.a", ComposedConfiguration.class);
         builder.add("t1", TestConfiguration1.class);
         builder.add("t2", TestConfiguration2.class);
         Class<? extends ComposedConfiguration> build = builder.build();
@@ -28,7 +29,7 @@ public class TestComposedConfiguration
     @Test
     public void testViaDW() throws Exception
     {
-        ComposedConfigurationBuilder builder = new ComposedConfigurationBuilder();
+        ComposedConfigurationBuilder<ComposedConfiguration> builder = new ComposedConfigurationBuilder<>("x.b", ComposedConfiguration.class);
         builder.add("t1", TestConfiguration1.class);
         builder.add("t2", TestConfiguration2.class);
         ComposedConfigurationFactoryFactory factoryFactory = new ComposedConfigurationFactoryFactory(builder);
@@ -41,6 +42,17 @@ public class TestComposedConfiguration
     {
         ComposedConfigurationFactoryFactory factoryFactory = ComposedConfigurationFactoryFactory.fromServices();
         internalTestViaFactoryFactory(factoryFactory);
+    }
+
+    @Test
+    public void testExtended() throws Exception
+    {
+        ComposedConfigurationBuilder<ExtendedConfiguration> builder = new ComposedConfigurationBuilder<>("x.c", ExtendedConfiguration.class);
+        Class<ExtendedConfiguration> clazz = builder.build();
+        ExtendedConfiguration configuration = clazz.newInstance();
+        Assert.assertNotNull(configuration);
+        Assert.assertEquals(configuration.getField1(), "1");
+        Assert.assertEquals(configuration.getField2(), "2");
     }
 
     private void internalTestViaFactoryFactory(ComposedConfigurationFactoryFactory factoryFactory) throws java.io.IOException, io.dropwizard.configuration.ConfigurationException

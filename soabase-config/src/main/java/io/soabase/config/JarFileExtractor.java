@@ -15,6 +15,7 @@
  */
 package io.soabase.config;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import java.io.BufferedOutputStream;
@@ -27,30 +28,52 @@ import java.util.List;
 
 public class JarFileExtractor
 {
+    private final String separator;
+
+    public static final String DEFAULT_SEPARATOR = "!";
+
     public static String[] filter(String... args) throws IOException
+    {
+        return new JarFileExtractor(DEFAULT_SEPARATOR).filterAndExtract(args);
+    }
+
+    public JarFileExtractor(String separator)
+    {
+        this.separator = separator;
+    }
+
+    public String[] filterAndExtract(String... args) throws IOException
     {
         List<String> filtered = Lists.newArrayList();
         for ( String arg : args )
         {
-            if ( arg.startsWith("!") && (arg.length() > 0) )
+            if ( arg.contains(separator) )
             {
-                System.out.println("Unpacking: " + arg.substring(1));
-                URL resource = Resources.getResource(arg.substring(1));
-                File f = File.createTempFile("soa", ".tmp");
-                f.deleteOnExit();
-                try ( OutputStream out = new BufferedOutputStream(new FileOutputStream(f)) )
+                List<String> parts = Splitter.on(separator).trimResults().limit(2).splitToList(arg);
+                if ( parts.size() == 2 )
                 {
-                    Resources.copy(resource, out);
+                    File filePart = new File(parts.get(0));
+                    String resourcePart = parts.get(1);
+                    if ( filePart.exists() )
+                    {
+                        arg = filePart.getCanonicalPath();
+                    }
+                    else
+                    {
+                        URL resource = Resources.getResource(resourcePart);
+                        File f = File.createTempFile("soa", ".tmp");
+                        f.deleteOnExit();
+                        try ( OutputStream out = new BufferedOutputStream(new FileOutputStream(f)) )
+                        {
+                            Resources.copy(resource, out);
+                        }
+                        arg = f.getCanonicalPath();
+                    }
                 }
-                arg = f.getCanonicalPath();
             }
             filtered.add(arg);
         }
 
         return filtered.toArray(new String[filtered.size()]);
-    }
-
-    private JarFileExtractor()
-    {
     }
 }

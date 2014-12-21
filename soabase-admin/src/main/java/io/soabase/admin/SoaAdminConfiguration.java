@@ -16,12 +16,10 @@
 package io.soabase.admin;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dropwizard.Configuration;
-import io.soabase.core.SoaConfiguration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-public class SoaAdminConfiguration extends Configuration
+public class SoaAdminConfiguration
 {
     @Valid
     @NotNull
@@ -34,22 +32,6 @@ public class SoaAdminConfiguration extends Configuration
     @Valid
     @NotNull
     private String footerMessage = "- Internal use only - Proprietary and Confidential";
-
-    @Valid
-    @NotNull
-    private SoaConfiguration soaConfiguration = new SoaConfiguration();
-
-    @JsonProperty("soa")
-    public SoaConfiguration getSoaConfiguration()
-    {
-        return soaConfiguration;
-    }
-
-    @JsonProperty("soa")
-    public void setSoaConfiguration(SoaConfiguration soaConfiguration)
-    {
-        this.soaConfiguration = soaConfiguration;
-    }
 
     @JsonProperty("appName")
     public String getAppName()

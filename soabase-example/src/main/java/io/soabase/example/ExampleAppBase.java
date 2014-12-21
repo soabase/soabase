@@ -17,27 +17,24 @@ package io.soabase.example;
 
 import com.google.common.collect.Lists;
 import io.dropwizard.Application;
+import io.dropwizard.configuration.ConfigurationFactoryFactory;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.client.SoaClientBundle;
-import io.soabase.client.SoaClientConfiguration;
-import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaBundle;
-import io.soabase.core.SoaCli;
 import io.soabase.core.SoaConfiguration;
-import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
+import io.soabase.core.config.ComposedConfiguration;
+import io.soabase.core.config.SoaCli;
 import io.soabase.sql.attributes.SqlBundle;
-import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorBundle;
-import io.soabase.zookeeper.discovery.CuratorConfiguration;
 import org.apache.curator.test.InstanceSpec;
 import java.io.Closeable;
 import java.util.List;
 import java.util.Random;
 
-public abstract class ExampleAppBase extends Application<ExampleConfiguration> implements Managed
+public abstract class ExampleAppBase extends Application<ComposedConfiguration> implements Managed
 {
     private final List<Closeable> closeables = Lists.newArrayList();
     private final String configFqpn;
@@ -47,44 +44,14 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
         this.configFqpn = configFqpn;
     }
 
-    public void initialize(Bootstrap<ExampleConfiguration> bootstrap)
+    public void initialize(Bootstrap<ComposedConfiguration> bootstrap)
     {
-        ConfigurationAccessor<ExampleConfiguration, SoaConfiguration> soaAccessor = new ConfigurationAccessor<ExampleConfiguration, SoaConfiguration>()
-        {
-            @Override
-            public SoaConfiguration accessConfiguration(ExampleConfiguration configuration)
-            {
-                return configuration.getSoaConfiguration();
-            }
-        };
-        ConfigurationAccessor<ExampleConfiguration, CuratorConfiguration> curatorAccessor = new ConfigurationAccessor<ExampleConfiguration, CuratorConfiguration>()
-        {
-            @Override
-            public CuratorConfiguration accessConfiguration(ExampleConfiguration configuration)
-            {
-                return configuration.getCuratorConfiguration();
-            }
-        };
-        ConfigurationAccessor<ExampleConfiguration, SoaClientConfiguration> clientAccessor = new ConfigurationAccessor<ExampleConfiguration, SoaClientConfiguration>()
-        {
-            @Override
-            public SoaClientConfiguration accessConfiguration(ExampleConfiguration configuration)
-            {
-                return configuration.getClientConfiguration();
-            }
-        };
-        ConfigurationAccessor<ExampleConfiguration, SqlConfiguration> sqlAccessor = new ConfigurationAccessor<ExampleConfiguration, SqlConfiguration>()
-        {
-            @Override
-            public SqlConfiguration accessConfiguration(ExampleConfiguration configuration)
-            {
-                return configuration.getSqlConfiguration();
-            }
-        };
-        bootstrap.addBundle(new CuratorBundle<>(soaAccessor, curatorAccessor));
-        bootstrap.addBundle(new SqlBundle<>(soaAccessor, sqlAccessor));
-        bootstrap.addBundle(new SoaBundle<>(soaAccessor));
-        bootstrap.addBundle(new SoaClientBundle<>(soaAccessor, clientAccessor));
+        ConfigurationFactoryFactory<ComposedConfiguration> configurationFactoryFactory = null;
+        bootstrap.setConfigurationFactoryFactory(configurationFactoryFactory);
+        bootstrap.addBundle(new CuratorBundle());
+        bootstrap.addBundle(new SqlBundle());
+        bootstrap.addBundle(new SoaBundle());
+        bootstrap.addBundle(new SoaClientBundle());
     }
 
     @Override
@@ -111,18 +78,19 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
     }
 
     @Override
-    public void run(ExampleConfiguration configuration, Environment environment) throws Exception
+    public void run(ComposedConfiguration configuration, Environment environment) throws Exception
     {
         environment.lifecycle().manage(this);
 
         internalRun(configuration, environment);
 
-        SoaInfo info = configuration.getSoaConfiguration().getSoaInfo();
+        SoaConfiguration soaConfiguration = configuration.access(SoaBundle.CONFIGURATION_NAME, SoaConfiguration.class);
+        SoaInfo info = soaConfiguration.getSoaInfo();
         System.err.println("Main port: " + info.getMainPort());
         System.err.println("Admin port: " + info.getAdminPort());
     }
 
-    protected abstract void internalRun(ExampleConfiguration configuration, Environment environment);
+    protected abstract void internalRun(ComposedConfiguration configuration, Environment environment);
 
     @Override
     public void start() throws Exception

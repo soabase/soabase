@@ -15,9 +15,12 @@
  */
 package io.soabase.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
+import io.dropwizard.configuration.ConfigurationFactory;
+import io.dropwizard.configuration.ConfigurationFactoryFactory;
 import io.dropwizard.jersey.DropwizardResourceConfig;
 import io.dropwizard.jersey.jackson.JacksonMessageBodyProvider;
 import io.dropwizard.jersey.setup.JerseyContainerHolder;
@@ -30,6 +33,7 @@ import io.dropwizard.server.ServerFactory;
 import io.dropwizard.server.SimpleServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.soabase.core.config.ComposedConfiguration;
 import io.soabase.core.features.attributes.SafeDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
@@ -45,6 +49,7 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.servlet.ServletContainer;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
+import javax.validation.Validator;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.EnumSet;
@@ -52,19 +57,20 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
+public class SoaBundle implements ConfiguredBundle<ComposedConfiguration>
 {
-    private final ConfigurationAccessor<T, SoaConfiguration> configurationAccessor;
+    public static final String CONFIGURATION_NAME = "soa";
 
-    public SoaBundle(ConfigurationAccessor<T, SoaConfiguration> configurationAccessor)
+    @Override
+    public void initialize(Bootstrap<?> bootstrap)
     {
-        this.configurationAccessor = new CheckedConfigurationAccessor<>(configurationAccessor);
+        // NOP
     }
 
     @Override
-    public void run(final T configuration, Environment environment) throws Exception
+    public void run(final ComposedConfiguration configuration, Environment environment) throws Exception
     {
-        final SoaConfiguration soaConfiguration = configurationAccessor.accessConfiguration(configuration);
+        final SoaConfiguration soaConfiguration = configuration.access(CONFIGURATION_NAME, SoaConfiguration.class);
 
         environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
@@ -134,12 +140,6 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return attributes;
     }
 
-    @Override
-    public void initialize(Bootstrap<?> bootstrap)
-    {
-        // NOP
-    }
-
     private static class Ports
     {
         final int mainPort;
@@ -152,7 +152,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         }
     }
 
-    private Ports getPorts(T configuration)
+    private Ports getPorts(ComposedConfiguration configuration)
     {
         if ( SoaMainPortAccessor.class.isAssignableFrom(configuration.getClass()) )
         {

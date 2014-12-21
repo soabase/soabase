@@ -20,9 +20,9 @@ import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.CheckedConfigurationAccessor;
-import io.soabase.core.ConfigurationAccessor;
+import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.config.ComposedConfiguration;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -31,22 +31,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 
-public class SqlBundle<T extends io.dropwizard.Configuration> implements ConfiguredBundle<T>
+public class SqlBundle implements ConfiguredBundle<ComposedConfiguration>
 {
-    private final ConfigurationAccessor<T, SqlConfiguration> sqlAccessor;
-    private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public SqlBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SqlConfiguration> sqlAccessor)
-    {
-        this.soaAccessor = new CheckedConfigurationAccessor<>(soaAccessor);
-        this.sqlAccessor = new CheckedConfigurationAccessor<>(sqlAccessor);
-    }
+    public static final String CONFIGURATION_NAME = "sql";
 
     @Override
-    public void run(T configuration, Environment environment) throws Exception
+    public void run(ComposedConfiguration configuration, Environment environment) throws Exception
     {
-        SqlConfiguration sqlConfiguration = sqlAccessor.accessConfiguration(configuration);
+        SqlConfiguration sqlConfiguration = configuration.access(CONFIGURATION_NAME, SqlConfiguration.class);
         try
         {
             try ( InputStream stream = Resources.getResource(sqlConfiguration.getMybatisConfigUrl()).openStream() )
@@ -56,7 +50,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
                 mybatisConfiguration.addMapper(AttributeEntityMapper.class);
                 final SqlSession session = sqlSessionFactory.openSession(true);
 
-                SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
+                SoaConfiguration soaConfiguration = configuration.access(SoaBundle.CONFIGURATION_NAME, SoaConfiguration.class);
                 soaConfiguration.putNamed(session, SqlSession.class, sqlConfiguration.getSessionName());
                 Managed managed = new Managed()
                 {

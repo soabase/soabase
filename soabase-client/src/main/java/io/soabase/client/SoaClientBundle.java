@@ -16,7 +16,6 @@
 package io.soabase.client;
 
 import com.google.common.base.Preconditions;
-import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.client.HttpClientConfiguration;
@@ -30,10 +29,10 @@ import io.soabase.client.retry.DefaultRetryHandler;
 import io.soabase.client.retry.RetryComponents;
 import io.soabase.client.retry.RetryExecutor;
 import io.soabase.client.retry.RetryHandler;
-import io.soabase.core.CheckedConfigurationAccessor;
-import io.soabase.core.ConfigurationAccessor;
+import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
+import io.soabase.core.config.ComposedConfiguration;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
@@ -41,13 +40,12 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import javax.ws.rs.client.Client;
 import java.io.IOException;
 
-public class SoaClientBundle<T extends Configuration> implements ConfiguredBundle<T>
+public class SoaClientBundle implements ConfiguredBundle<ComposedConfiguration>
 {
     public static final String HOST_SUBSTITUTION_TOKEN = "00000.";
+    public static final String CONFIGURATION_NAME = "client";
 
     private final String clientName;
-    private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
-    private final ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor;
 
     public static String hostForService(String serviceName)
     {
@@ -56,15 +54,13 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
 
     private volatile RetryHandler retryHandler = new DefaultRetryHandler();
 
-    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor)
+    public SoaClientBundle()
     {
-        this(soaAccessor, clientAccessor, SoaFeatures.DEFAULT_NAME);
+        this(SoaFeatures.DEFAULT_NAME);
     }
 
-    public SoaClientBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, SoaClientConfiguration> clientAccessor, String clientName)
+    public SoaClientBundle(String clientName)
     {
-        this.soaAccessor = new CheckedConfigurationAccessor<>(soaAccessor);
-        this.clientAccessor = new CheckedConfigurationAccessor<>(clientAccessor);
         this.clientName = Preconditions.checkNotNull(clientName, "clientName cannot be null");
     }
 
@@ -85,10 +81,10 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     }
 
     @Override
-    public void run(T configuration, Environment environment) throws Exception
+    public void run(io.soabase.core.config.ComposedConfiguration configuration, Environment environment) throws Exception
     {
-        SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
-        SoaClientConfiguration clientConfiguration = clientAccessor.accessConfiguration(configuration);
+        SoaConfiguration soaConfiguration = configuration.access(SoaBundle.CONFIGURATION_NAME, SoaConfiguration.class);
+        SoaClientConfiguration clientConfiguration = configuration.access(CONFIGURATION_NAME, SoaClientConfiguration.class);
 
         RetryExecutor retryExecutor = new RetryExecutor(environment.lifecycle().executorService("RetryHandler-%d"));
         RetryComponents retryComponents = new RetryComponents(retryHandler, soaConfiguration.getDiscovery(), clientConfiguration.getMaxRetries(), clientConfiguration.isRetry500s(), retryExecutor);
@@ -116,19 +112,19 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
 
     // protected so users can override
     @SuppressWarnings("UnusedParameters")
-    protected JerseyClientBuilder updateJerseyClientBuilder(T configuration, Environment environment, JerseyClientBuilder builder)
+    protected JerseyClientBuilder updateJerseyClientBuilder(ComposedConfiguration configuration, Environment environment, JerseyClientBuilder builder)
     {
         return builder;
     }
 
     // protected so users can override
     @SuppressWarnings("UnusedParameters")
-    protected HttpClientBuilder updateHttpClientBuilder(T configuration, Environment environment, HttpClientBuilder httpClientBuilder)
+    protected HttpClientBuilder updateHttpClientBuilder(ComposedConfiguration configuration, Environment environment, HttpClientBuilder httpClientBuilder)
     {
         return httpClientBuilder;
     }
 
-    private Client buildJerseyClient(T configuration, SoaConfiguration soaConfiguration, SoaClientConfiguration clientConfiguration, Environment environment, RetryComponents retryComponents)
+    private Client buildJerseyClient(ComposedConfiguration configuration, SoaConfiguration soaConfiguration, SoaClientConfiguration clientConfiguration, Environment environment, RetryComponents retryComponents)
     {
         JerseyClientConfiguration jerseyClientConfiguration = clientConfiguration.getJerseyClientConfiguration();
         if ( jerseyClientConfiguration == null )
@@ -146,7 +142,7 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
         return client;
     }
 
-    private HttpClient buildHttpClient(T configuration, SoaConfiguration soaConfiguration, SoaClientConfiguration clientConfiguration, Environment environment, RetryComponents retryComponents)
+    private HttpClient buildHttpClient(ComposedConfiguration configuration, SoaConfiguration soaConfiguration, SoaClientConfiguration clientConfiguration, Environment environment, RetryComponents retryComponents)
     {
         if ( clientConfiguration.getHttpClientConfiguration() == null )
         {

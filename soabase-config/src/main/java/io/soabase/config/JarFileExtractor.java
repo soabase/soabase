@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.core;
+package io.soabase.config;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
@@ -25,7 +25,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
 
-public class SoaCli
+public class JarFileExtractor
 {
     public static String[] filter(String... args) throws IOException
     {
@@ -50,7 +50,7 @@ public class SoaCli
         return filtered.toArray(new String[filtered.size()]);
     }
 
-    private SoaCli()
+    private JarFileExtractor()
     {
     }
 }

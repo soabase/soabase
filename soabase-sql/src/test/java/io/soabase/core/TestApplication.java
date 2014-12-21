@@ -18,13 +18,13 @@ package io.soabase.core;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.soabase.core.config.ComposedConfiguration;
 import io.soabase.sql.attributes.AttributeEntity;
 import io.soabase.sql.attributes.AttributeEntityMapper;
 import io.soabase.sql.attributes.SqlBundle;
-import io.soabase.sql.attributes.SqlConfiguration;
 import org.apache.ibatis.session.SqlSession;
 
-public class TestApplication extends Application<TestConfiguration>
+public class TestApplication extends Application<ComposedConfiguration>
 {
     public static void main(String[] args) throws Exception
     {
@@ -34,32 +34,17 @@ public class TestApplication extends Application<TestConfiguration>
     }
 
     @Override
-    public void initialize(Bootstrap<TestConfiguration> bootstrap)
+    public void initialize(Bootstrap<ComposedConfiguration> bootstrap)
     {
-        ConfigurationAccessor<TestConfiguration, SoaConfiguration> soaAccessor = new ConfigurationAccessor<TestConfiguration, SoaConfiguration>()
-        {
-            @Override
-            public SoaConfiguration accessConfiguration(TestConfiguration configuration)
-            {
-                return configuration.getSoaConfiguration();
-            }
-        };
-        ConfigurationAccessor<TestConfiguration, SqlConfiguration> sqlAccessor = new ConfigurationAccessor<TestConfiguration, SqlConfiguration>()
-        {
-            @Override
-            public SqlConfiguration accessConfiguration(TestConfiguration configuration)
-            {
-                return configuration.getSqlConfiguration();
-            }
-        };
-        bootstrap.addBundle(new SqlBundle<>(soaAccessor, sqlAccessor));
-        bootstrap.addBundle(new SoaBundle<>(soaAccessor));
+        bootstrap.addBundle(new SqlBundle());
+        bootstrap.addBundle(new SoaBundle());
     }
 
     @Override
-    public void run(TestConfiguration configuration, Environment environment) throws Exception
+    public void run(ComposedConfiguration configuration, Environment environment) throws Exception
     {
-        SqlSession sqlSession = configuration.getSoaConfiguration().getNamedRequired(SqlSession.class, SoaFeatures.DEFAULT_NAME);
+        SoaConfiguration soaConfiguration = configuration.access(SoaBundle.CONFIGURATION_NAME, SoaConfiguration.class);
+        SqlSession sqlSession = soaConfiguration.getNamedRequired(SqlSession.class, SoaFeatures.DEFAULT_NAME);
         AttributeEntityMapper mapper = sqlSession.getMapper(AttributeEntityMapper.class);
         mapper.createTable();
         AttributeEntity attribute = new AttributeEntity("hey", "", "my value");

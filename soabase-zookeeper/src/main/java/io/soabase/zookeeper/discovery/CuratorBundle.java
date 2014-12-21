@@ -15,34 +15,26 @@
  */
 package io.soabase.zookeeper.discovery;
 
-import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.CheckedConfigurationAccessor;
-import io.soabase.core.ConfigurationAccessor;
+import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
+import io.soabase.core.config.ComposedConfiguration;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.utils.CloseableUtils;
 
-public class CuratorBundle<T extends Configuration> implements ConfiguredBundle<T>
+public class CuratorBundle implements ConfiguredBundle<ComposedConfiguration>
 {
-    private final ConfigurationAccessor<T, CuratorConfiguration> curatorAccessor;
-    private final ConfigurationAccessor<T, SoaConfiguration> soaAccessor;
-
-    public CuratorBundle(ConfigurationAccessor<T, SoaConfiguration> soaAccessor, ConfigurationAccessor<T, CuratorConfiguration> curatorAccessor)
-    {
-        this.soaAccessor = new CheckedConfigurationAccessor<>(soaAccessor);
-        this.curatorAccessor = new CheckedConfigurationAccessor<>(curatorAccessor);
-    }
+    public static final String CONFIGURATION_NAME = "curator";
 
     @Override
-    public void run(T configuration, Environment environment) throws Exception
+    public void run(ComposedConfiguration configuration, Environment environment) throws Exception
     {
-        CuratorConfiguration curatorConfiguration = curatorAccessor.accessConfiguration(configuration);
+        CuratorConfiguration curatorConfiguration = configuration.access(CONFIGURATION_NAME, CuratorConfiguration.class);
         // TODO more config
         final CuratorFramework curator = CuratorFrameworkFactory.newClient(curatorConfiguration.getConnectionString(), new RetryOneTime(1));
 
@@ -62,7 +54,7 @@ public class CuratorBundle<T extends Configuration> implements ConfiguredBundle<
         };
         environment.lifecycle().manage(managed);
 
-        SoaConfiguration soaConfiguration = soaAccessor.accessConfiguration(configuration);
+        SoaConfiguration soaConfiguration = configuration.access(SoaBundle.CONFIGURATION_NAME, SoaConfiguration.class);
         soaConfiguration.putNamed(curator, CuratorFramework.class, curatorConfiguration.getCuratorName());
     }
 

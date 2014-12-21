@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+// TODO - move to config package
 public class SoaConfiguration extends Configuration implements SoaFeatures
 {
     @Valid

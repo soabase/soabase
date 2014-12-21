@@ -28,14 +28,15 @@ import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.core.ConfigurationAccessor;
 import io.soabase.core.SoaBundle;
-import io.soabase.core.SoaCli;
+import io.soabase.core.config.ComposedConfiguration;
+import io.soabase.core.config.SoaCli;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.rest.DiscoveryApis;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import java.util.prefs.Preferences;
 
-public class SoaAdminApp extends Application<SoaAdminConfiguration>
+public class SoaAdminApp extends Application<ComposedConfiguration>
 {
     @SuppressWarnings("ParameterCanBeLocal")
     public static void main(String[] args) throws Exception
@@ -48,12 +49,12 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
     }
 
     @Override
-    public void initialize(Bootstrap<SoaAdminConfiguration> bootstrap)
+    public void initialize(Bootstrap<ComposedConfiguration> bootstrap)
     {
-        ConfiguredBundle<SoaAdminConfiguration> bundle = new ConfiguredBundle<SoaAdminConfiguration>()
+        ConfiguredBundle<ComposedConfiguration> bundle = new ConfiguredBundle<ComposedConfiguration>()
         {
             @Override
-            public void run(SoaAdminConfiguration configuration, Environment environment) throws Exception
+            public void run(ComposedConfiguration configuration, Environment environment) throws Exception
             {
                 DefaultServerFactory factory = new DefaultServerFactory();
                 factory.setAdminConnectors(Lists.<ConnectorFactory>newArrayList());
@@ -67,22 +68,14 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
             }
         };
         bootstrap.addBundle(bundle);
-
-        ConfigurationAccessor<SoaAdminConfiguration, SoaConfiguration> soaAccessor = new ConfigurationAccessor<SoaAdminConfiguration, SoaConfiguration>()
-        {
-            @Override
-            public SoaConfiguration accessConfiguration(SoaAdminConfiguration configuration)
-            {
-                return configuration.getSoaConfiguration();
-            }
-        };
-        bootstrap.addBundle(new SoaBundle<>(soaAccessor));
+        bootstrap.addBundle(new SoaBundle());
         bootstrap.addBundle(new AssetsBundle("/assets", "/assets"));
     }
 
     @Override
-    public void run(SoaAdminConfiguration configuration, Environment environment) throws Exception
+    public void run(ComposedConfiguration configuration, Environment environment) throws Exception
     {
+/*
         final ComponentManager componentManager = new ComponentManager(configuration.getAppName(), configuration.getCompany(), configuration.getFooterMessage());
         final Preferences preferences = Preferences.userRoot();
         AbstractBinder binder = new AbstractBinder()
@@ -105,5 +98,6 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         environment.jersey().register(binder);
         environment.jersey().register(DiscoveryApis.class);
         environment.jersey().register(PreferencesResource.class);
+*/
     }
 }

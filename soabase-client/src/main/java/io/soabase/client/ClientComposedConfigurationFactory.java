@@ -6,7 +6,7 @@ import io.soabase.config.ComposedConfigurationFactory;
 public class ClientComposedConfigurationFactory implements ComposedConfigurationFactory
 {
     @Override
-    public void addToBuilder(ComposedConfigurationBuilder builder)
+    public void addToBuilder(ComposedConfigurationBuilder<?> builder)
     {
         builder.add("client", SoaClientConfiguration.class);
     }

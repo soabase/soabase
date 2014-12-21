@@ -7,7 +7,7 @@ import io.soabase.core.SoaConfiguration;
 public class SoaComposedConfigurationFactory implements ComposedConfigurationFactory
 {
     @Override
-    public void addToBuilder(ComposedConfigurationBuilder builder)
+    public void addToBuilder(ComposedConfigurationBuilder<?> builder)
     {
         builder.add("soa", SoaConfiguration.class);
     }

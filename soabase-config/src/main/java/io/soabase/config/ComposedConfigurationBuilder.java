@@ -9,19 +9,63 @@ import javassist.CtMethod;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 
+/**
+ * <p>
+ *     Composed configuration class generator
+ * </p>
+ *
+ * <p>
+ *     Builds a new class that extends ComposedConfiguration having
+ *     fields for additional configurations. Usage: allocate a builder,
+ *     add configuration fields as needed and call {@link #build()} to
+ *     generate the class. The class will extend {#link ComposedConfiguration}
+ *     or another class if you desire. It will have named fields for each
+ *     configuration that you add. Use {@link ComposedConfiguration#as(Class)} to
+ *     access the configuration instances.
+ * </p>
+ */
 public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
 {
     private final CtClass ctClass;
     private final ClassPool ctPool;
     private final Set<String> classes = Sets.newHashSet();
+    private final Set<String> names = Sets.newHashSet();
 
-    public static final String DEFAULT_COMPOSED_FQ_CLASS_NAME = "io.soabase.core.config.SoaComposedConfiguration";
+    /**
+     * The default fully qualified class name. IMPORTANT: each class generated
+     * by ComposedConfigurationBuilder must have a unique FQCN
+     */
+    public static final String DEFAULT_COMPOSED_FQ_CLASS_NAME = "io.soabase.config.GeneratedComposedConfiguration";
 
+    /**
+     * Create a new builder that creates a configuration class that extends {@link ComposedConfiguration} using the
+     * default FQCN. NOTE: this can only be used once within a JVM instance
+     *
+     * @return new builder
+     */
+    public static ComposedConfigurationBuilder<ComposedConfiguration> standard()
+    {
+        return new ComposedConfigurationBuilder<>(ComposedConfiguration.class);
+    }
+
+    /**
+     * Create a new builder that creates a configuration class that extends the given base class using the default FQCN.
+     * NOTE: this can only be used once within a JVM instance.
+     *
+     * @param baseClass the base class for the configuration class
+     */
     public ComposedConfigurationBuilder(Class<T> baseClass)
     {
         this(DEFAULT_COMPOSED_FQ_CLASS_NAME, baseClass);
     }
 
+    /**
+     * Create a new builder that creates a configuration class that extends the given base class using the given FQCN.
+     * NOTE: each FQCN must be unique within a JVM instance.
+     *
+     * @param fqClassName fully qualified class name to create
+     * @param baseClass the base class for the configuration class
+     */
     public ComposedConfigurationBuilder(String fqClassName, Class<T> baseClass)
     {
         fqClassName = Preconditions.checkNotNull(fqClassName, "fqClassName cannot be null");
@@ -44,6 +88,11 @@ public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
         ctPool = localCtPool;
     }
 
+    /**
+     * Build and return the class
+     *
+     * @return new configuration class
+     */
     public Class<T> build()
     {
         try
@@ -60,11 +109,18 @@ public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
         }
     }
 
+    /**
+     * Add a configuration field to the class
+     *
+     * @param name name of the field - must be unique in the class
+     * @param clazz type of the field. The clazz MUST have a public no-arg constructor.
+     */
     public <C> void add(String name, Class<C> clazz)
     {
         name = Preconditions.checkNotNull(name, "name cannot be null");
         clazz = Preconditions.checkNotNull(clazz, "clazz cannot be null");
-        Preconditions.checkArgument(name.length() > 0, "Name cannot be empty: " + name);
+        Preconditions.checkArgument(isJavaIdentifier(name), "Name must be a legal Java identifier: " + name);
+        Preconditions.checkArgument(names.add(name), "There is already a field with the name: " + name);
         Preconditions.checkArgument(classes.add(clazz.getSimpleName()), "There is already a field of type: " + clazz.getSimpleName());
 
         try
@@ -85,8 +141,32 @@ public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
         }
     }
 
-    public static <C> String getterName(Class<C> clazz)
+    static <C> String getterName(Class<C> clazz)
     {
         return "get" + clazz.getSimpleName();
+    }
+
+    private boolean isJavaIdentifier(String name)
+    {
+        boolean isFirst = true;
+        for ( char c : name.toCharArray() )
+        {
+            if ( isFirst )
+            {
+                isFirst = false;
+                if ( !Character.isJavaIdentifierStart(c) )
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if ( !Character.isJavaIdentifierPart(c) )
+                {
+                    return false;
+                }
+            }
+        }
+        return !isFirst;
     }
 }

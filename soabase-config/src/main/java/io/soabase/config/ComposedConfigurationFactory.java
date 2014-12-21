@@ -2,5 +2,5 @@ package io.soabase.config;
 
 public interface ComposedConfigurationFactory
 {
-    public void addToBuilder(ComposedConfigurationBuilder builder);
+    public void addToBuilder(ComposedConfigurationBuilder<?> builder);
 }

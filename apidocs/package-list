@@ -1,10 +1,17 @@
+io.soabase.admin
+io.soabase.admin.components
+io.soabase.admin.rest
 io.soabase.client
 io.soabase.client.apache
 io.soabase.client.jersey
 io.soabase.client.retry
+io.soabase.config
+io.soabase.config.service
 io.soabase.core
+io.soabase.core.features
 io.soabase.core.features.attributes
 io.soabase.core.features.discovery
+io.soabase.core.features.request
 io.soabase.core.listening
 io.soabase.core.rest
 io.soabase.core.rest.entities

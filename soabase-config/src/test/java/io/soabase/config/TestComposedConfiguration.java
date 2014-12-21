@@ -1,10 +1,12 @@
 package io.soabase.config;
 
 import io.dropwizard.configuration.ConfigurationFactory;
+import io.dropwizard.configuration.ConfigurationFactoryFactory;
 import io.dropwizard.jackson.Jackson;
 import io.soabase.config.mocks.ExtendedConfiguration;
 import io.soabase.config.mocks.TestConfiguration1;
 import io.soabase.config.mocks.TestConfiguration2;
+import io.soabase.config.service.FromServices;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import javax.validation.Validation;
@@ -40,7 +42,7 @@ public class TestComposedConfiguration
     @Test
     public void testViaServices() throws Exception
     {
-        ComposedConfigurationFactoryFactory<ComposedConfiguration> factoryFactory = FromServices
+        ConfigurationFactoryFactory<ComposedConfiguration> factoryFactory = FromServices
             .create()
             .withFqClassName("x.c")
             .withBaseClass(ComposedConfiguration.class)
@@ -59,7 +61,7 @@ public class TestComposedConfiguration
         Assert.assertEquals(configuration.getField2(), "2");
     }
 
-    private void internalTestViaFactoryFactory(ComposedConfigurationFactoryFactory<ComposedConfiguration> factoryFactory) throws java.io.IOException, io.dropwizard.configuration.ConfigurationException
+    private void internalTestViaFactoryFactory(ConfigurationFactoryFactory<ComposedConfiguration> factoryFactory) throws java.io.IOException, io.dropwizard.configuration.ConfigurationException
     {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         ConfigurationFactory<ComposedConfiguration> factory = factoryFactory.create(ComposedConfiguration.class, validator, Jackson.newObjectMapper(), "dw");

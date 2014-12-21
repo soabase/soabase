@@ -1,9 +1,9 @@
 package io.soabase.client;
 
 import io.soabase.config.ComposedConfigurationBuilder;
-import io.soabase.config.ComposedConfigurationFactory;
+import io.soabase.config.service.ComposedConfigurationServiceFactory;
 
-public class ClientComposedConfigurationFactory implements ComposedConfigurationFactory
+public class ClientComposedConfigurationFactory implements ComposedConfigurationServiceFactory
 {
     @Override
     public void addToBuilder(ComposedConfigurationBuilder<?> builder)

@@ -22,7 +22,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.client.SoaClientBundle;
 import io.soabase.config.ComposedConfiguration;
-import io.soabase.config.FromServices;
+import io.soabase.config.service.FromServices;
 import io.soabase.config.JarFileExtractor;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;

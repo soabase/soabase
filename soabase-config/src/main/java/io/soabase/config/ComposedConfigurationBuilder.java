@@ -15,10 +15,10 @@ import java.util.Set;
  * </p>
  *
  * <p>
- *     Builds a new class that extends ComposedConfiguration having
+ *     Builds a new class that extends {@link ComposedConfiguration} having
  *     fields for additional configurations. Usage: allocate a builder,
- *     add configuration fields as needed and call {@link #build()} to
- *     generate the class. The class will extend {#link ComposedConfiguration}
+ *     {@link #add(String, Class)} configuration fields as needed and call {@link #build()} to
+ *     generate the class. The class will extend {@link ComposedConfiguration}
  *     or another class if you desire. It will have named fields for each
  *     configuration that you add. Use {@link ComposedConfiguration#as(Class)} to
  *     access the configuration instances.
@@ -28,8 +28,7 @@ public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
 {
     private final CtClass ctClass;
     private final ClassPool ctPool;
-    private final Set<String> classes = Sets.newHashSet();
-    private final Set<String> names = Sets.newHashSet();
+    private final Set<String> types = Sets.newHashSet();
 
     /**
      * The default fully qualified class name. IMPORTANT: each class generated
@@ -110,27 +109,26 @@ public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
     }
 
     /**
-     * Add a configuration field to the class
+     * Add a configuration field of the given type to the configuration class
      *
      * @param name name of the field - must be unique in the class
-     * @param clazz type of the field. The clazz MUST have a public no-arg constructor.
+     * @param type type of the field. The class MUST have a public no-arg constructor.
      */
-    public <C> void add(String name, Class<C> clazz)
+    public <C> void add(String name, Class<C> type)
     {
         name = Preconditions.checkNotNull(name, "name cannot be null");
-        clazz = Preconditions.checkNotNull(clazz, "clazz cannot be null");
+        type = Preconditions.checkNotNull(type, "type cannot be null");
         Preconditions.checkArgument(isJavaIdentifier(name), "Name must be a legal Java identifier: " + name);
-        Preconditions.checkArgument(names.add(name), "There is already a field with the name: " + name);
-        Preconditions.checkArgument(classes.add(clazz.getSimpleName()), "There is already a field of type: " + clazz.getSimpleName());
+        Preconditions.checkArgument(types.add(type.getSimpleName()), "There is already a field of type: " + type.getSimpleName());
 
         try
         {
-            CtClass fieldClass = ctPool.get(clazz.getName());
+            CtClass fieldClass = ctPool.get(type.getName());
             CtField field = new CtField(fieldClass, name, ctClass);
             field.setModifiers(Modifier.PUBLIC);
-            ctClass.addField(field, "new " + clazz.getName() + "()");
+            ctClass.addField(field, "new " + type.getName() + "()");
 
-            CtMethod method = new CtMethod(fieldClass, getterName(clazz), null, ctClass);
+            CtMethod method = new CtMethod(fieldClass, getterName(type), null, ctClass);
             method.setBody("{return this." + name + ";}");
             ctClass.addMethod(method);
         }

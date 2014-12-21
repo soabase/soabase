@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import io.dropwizard.Application;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.configuration.ConfigurationFactoryFactory;
 import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
@@ -27,9 +28,8 @@ import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.config.ComposedConfiguration;
-import io.soabase.config.ComposedConfigurationFactoryFactory;
-import io.soabase.config.FromServices;
 import io.soabase.config.JarFileExtractor;
+import io.soabase.config.service.FromServices;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
@@ -52,7 +52,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
     @Override
     public void initialize(Bootstrap<SoaAdminConfiguration> bootstrap)
     {
-        ComposedConfigurationFactoryFactory<SoaAdminConfiguration> factory = FromServices.<SoaAdminConfiguration>create().withBaseClass(SoaAdminConfiguration.class).factory();
+        ConfigurationFactoryFactory<SoaAdminConfiguration> factory = FromServices.<SoaAdminConfiguration>create().withBaseClass(SoaAdminConfiguration.class).factory();
         bootstrap.setConfigurationFactoryFactory(factory);
 
         ConfiguredBundle<ComposedConfiguration> bundle = new ConfiguredBundle<ComposedConfiguration>()

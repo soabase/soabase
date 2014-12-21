@@ -24,7 +24,7 @@ import java.util.ServiceLoader;
 
 /**
  * <p>
- *     Utility to generate {@link ComposedConfiguration} instance, {@link ComposedConfigurationBuilder}
+ *     Utility to generate {@link ComposedConfiguration} instances, {@link ComposedConfigurationBuilder}
  *     or a Dropwizard {@link ConfigurationFactoryFactory} from {@link ServiceLoader} based
  *     {@link ComposedConfigurationServiceFactory} instances
  * </p>

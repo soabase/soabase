@@ -1,0 +1,47 @@
+FlexibleConfigurationSourceProvider
+
+    A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an external
+    file or a resource in the classpath. Special tokens are used to determine how to treat the argument.
+
+    If the argument is prefixed with the "string prefix" ('%' by default) the argument is passed as the
+    configuration value.
+
+    The argument can also contain the "resource separator" ('|' by default) formatted as [file]SEPARATOR[resource].
+    E.g. "config/app.prefs|config/default/app.prefs". The file portion is optional e.g. "|config/default/app.prefs".
+    When the argument is processed, the file system is checked for the file (if specified) and, if found, is used as
+    the configuration file. Otherwise, the resource is determined from the classpath
+    (via Resources.getResource(String)) and used as the configuration file.
+
+* Usage
+
+    To use the FlexibleConfigurationSourceProvider, add it in the initialization phase of your Application. e.g.
+
++------------------------------------------+
+public class MyApplication extends Application<MyConfig> {
+    ...
+
+    public void initialize(Bootstrap<MyConfig> bootstrap) {
+        bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider());
+            ...
+    }
+}
++------------------------------------------+
+
+* Flexible Argument Examples
+
+    <<<java -jar MyApp.jar server '%\{"server": \{"adminMinThreads": 10\}\}'>>>
+
+    The configuration here is a string literal.
+
+==================================================
+
+    <<<java -jar MyApp.jar server '|com/me/config'>>>
+
+    Loads the config from the classpath resource "com/me/config".
+
+==================================================
+
+    <<<java -jar MyApp.jar server 'conf/override.json|com/me/config'>>>
+
+    Loads the config from the external file "conf/override.json" if it exists,
+    otherwise loads from the classpath resource "com/me/config".

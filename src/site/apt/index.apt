@@ -32,9 +32,9 @@ Soabase
 
         * Built in resources for SOA features
 
-    * {{{./config.html}Configuration Utilities}
+    * {{{./config.html}Configuration Utilities}}
 
-        * Utility that enables specifying command line arguments that can be a resource contained in a JAR or in the file system
+        * A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an external file or a resource in the classpath. Special tokens are used to determine how to treat the argument.
 
         * Utility to dynamically generate Configuration classes that contain custom configuration fields
 

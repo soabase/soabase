@@ -22,8 +22,8 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.client.SoaClientBundle;
 import io.soabase.config.ComposedConfiguration;
+import io.soabase.config.FlexibleConfigurationSourceProvider;
 import io.soabase.config.service.FromServices;
-import io.soabase.config.JarFileExtractor;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaInfo;
@@ -46,6 +46,7 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
 
     public void initialize(Bootstrap<ComposedConfiguration> bootstrap)
     {
+        bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider());
         bootstrap.setConfigurationFactoryFactory(FromServices.standardFactory());
         bootstrap.addBundle(new CuratorBundle<>());
         bootstrap.addBundle(new SqlBundle<>());
@@ -69,11 +70,11 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
             arguments = new String[]
             {
                 "server",
-                "!" + configFqpn
+                "|" + configFqpn
             };
         }
 
-        super.run(JarFileExtractor.filter(arguments));
+        super.run(arguments);
     }
 
     @Override

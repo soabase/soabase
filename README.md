@@ -22,7 +22,7 @@ Features
  * Add Jersey resources to the Admin port
  * Built in resources for SOA features
 * Configuration Utilities
- * Utility that enables specifying command line arguments that can be a resource contained in a JAR or in the file system
+ * A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an external file or a resource in the classpath. Special tokens are used to determine how to treat the argument.
  * Utility to dynamically generate Configuration classes that contain custom configuration fields
 
 Details

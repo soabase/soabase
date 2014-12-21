@@ -51,6 +51,7 @@
             <item name="REST Client" href="client.html"/>
             <item name="Dynamic Attributes" href="attributes.html"/>
             <item name="Administration" href="admin.html"/>
+            <item name="Configuration" href="config.html"/>
         </menu>
 
         <menu name="Details">

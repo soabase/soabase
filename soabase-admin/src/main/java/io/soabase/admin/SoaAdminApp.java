@@ -28,7 +28,6 @@ import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.config.ComposedConfiguration;
-import io.soabase.config.JarFileExtractor;
 import io.soabase.config.service.FromServices;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
@@ -46,7 +45,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         System.setProperty("dw.soa.addCorsFilter", "true");
         System.setProperty("dw.server.rootPath", "/api/*");
 
-        new SoaAdminApp().run(JarFileExtractor.filter(args));
+        new SoaAdminApp().run(args);
     }
 
     @Override

@@ -1,1 +1,23 @@
-TBD
+Soabase Configuration
+
+    Soabase Configuration contains two utilities:
+
+==========================
+
+    <<{{{./jarex.html}FlexibleConfigurationSourceProvider}}>>
+
+    A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an
+    external file or a resource in the classpath. Special tokens are used to determine how to treat the
+    argument.
+
+    Click here {{{./jarex.html}for details on the FlexibleConfigurationSourceProvider}}.
+
+==========================
+
+    <<{{{./genconfig.html}Generated/Composed Configuration}}>>
+
+    Utility to dynamically generate Configuration classes that contain custom configuration fields. Each of
+    the Soabase bundles are configured to automatically add their configurations. You can also define your
+    own custom configurations.
+
+    Click here {{{./genconfig.html}for details on dynamically generated Configuration}}.

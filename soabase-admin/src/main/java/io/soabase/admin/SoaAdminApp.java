@@ -23,11 +23,21 @@ import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.soabase.admin.components.ComponentManager;
+import io.soabase.admin.components.TabComponent;
+import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.config.ComposedConfiguration;
+import io.soabase.config.ComposedConfigurationFactoryFactory;
+import io.soabase.config.FromServices;
 import io.soabase.config.JarFileExtractor;
 import io.soabase.core.SoaBundle;
+import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaFeatures;
+import io.soabase.core.rest.DiscoveryApis;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import java.util.prefs.Preferences;
 
-public class SoaAdminApp extends Application<ComposedConfiguration>
+public class SoaAdminApp extends Application<SoaAdminConfiguration>
 {
     @SuppressWarnings("ParameterCanBeLocal")
     public static void main(String[] args) throws Exception
@@ -40,8 +50,11 @@ public class SoaAdminApp extends Application<ComposedConfiguration>
     }
 
     @Override
-    public void initialize(Bootstrap<ComposedConfiguration> bootstrap)
+    public void initialize(Bootstrap<SoaAdminConfiguration> bootstrap)
     {
+        ComposedConfigurationFactoryFactory<SoaAdminConfiguration> factory = FromServices.<SoaAdminConfiguration>create().withBaseClass(SoaAdminConfiguration.class).factory();
+        bootstrap.setConfigurationFactoryFactory(factory);
+
         ConfiguredBundle<ComposedConfiguration> bundle = new ConfiguredBundle<ComposedConfiguration>()
         {
             @Override
@@ -64,9 +77,8 @@ public class SoaAdminApp extends Application<ComposedConfiguration>
     }
 
     @Override
-    public void run(ComposedConfiguration configuration, Environment environment) throws Exception
+    public void run(SoaAdminConfiguration configuration, Environment environment) throws Exception
     {
-/*
         final ComponentManager componentManager = new ComponentManager(configuration.getAppName(), configuration.getCompany(), configuration.getFooterMessage());
         final Preferences preferences = Preferences.userRoot();
         AbstractBinder binder = new AbstractBinder()
@@ -78,17 +90,16 @@ public class SoaAdminApp extends Application<ComposedConfiguration>
                 bind(componentManager).to(ComponentManager.class);
             }
         };
-        configuration.getSoaConfiguration().putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
-        configuration.getSoaConfiguration().putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
+        configuration.as(SoaConfiguration.class).putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
+        configuration.as(SoaConfiguration.class).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
         componentManager.addTab(new TabComponent("", "Instances", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.<String>newArrayList()));
         componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html"));
 
-        environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("/index.html", "/");
+        environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("");
 
         environment.jersey().register(binder);
         environment.jersey().register(DiscoveryApis.class);
         environment.jersey().register(PreferencesResource.class);
-*/
     }
 }

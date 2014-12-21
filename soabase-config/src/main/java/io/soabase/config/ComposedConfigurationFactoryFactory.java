@@ -5,10 +5,17 @@ import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.ConfigurationFactoryFactory;
 import javax.validation.Validator;
 
+/**
+ * Dropwizard {@link ConfigurationFactoryFactory} that uses a composed configuration builder
+ * to generate the configuration instance
+ */
 public class ComposedConfigurationFactoryFactory<T extends ComposedConfiguration> implements ConfigurationFactoryFactory<T>
 {
     private final ComposedConfigurationBuilder<T> builder;
 
+    /**
+     * @param builder builder to use
+     */
     public ComposedConfigurationFactoryFactory(ComposedConfigurationBuilder<T> builder)
     {
         this.builder = builder;

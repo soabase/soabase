@@ -29,10 +29,9 @@ import io.soabase.client.retry.DefaultRetryHandler;
 import io.soabase.client.retry.RetryComponents;
 import io.soabase.client.retry.RetryExecutor;
 import io.soabase.client.retry.RetryHandler;
-import io.soabase.core.SoaBundle;
+import io.soabase.config.ComposedConfiguration;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
-import io.soabase.core.config.ComposedConfiguration;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
@@ -40,10 +39,9 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import javax.ws.rs.client.Client;
 import java.io.IOException;
 
-public class SoaClientBundle implements ConfiguredBundle<ComposedConfiguration>
+public class SoaClientBundle<T extends ComposedConfiguration> implements ConfiguredBundle<T>
 {
     public static final String HOST_SUBSTITUTION_TOKEN = "00000.";
-    public static final String CONFIGURATION_NAME = "client";
 
     private final String clientName;
 
@@ -81,10 +79,10 @@ public class SoaClientBundle implements ConfiguredBundle<ComposedConfiguration>
     }
 
     @Override
-    public void run(io.soabase.core.config.ComposedConfiguration configuration, Environment environment) throws Exception
+    public void run(T configuration, Environment environment) throws Exception
     {
-        SoaConfiguration soaConfiguration = configuration.access(SoaBundle.CONFIGURATION_NAME, SoaConfiguration.class);
-        SoaClientConfiguration clientConfiguration = configuration.access(CONFIGURATION_NAME, SoaClientConfiguration.class);
+        SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
+        SoaClientConfiguration clientConfiguration = configuration.as(SoaClientConfiguration.class);
 
         RetryExecutor retryExecutor = new RetryExecutor(environment.lifecycle().executorService("RetryHandler-%d"));
         RetryComponents retryComponents = new RetryComponents(retryHandler, soaConfiguration.getDiscovery(), clientConfiguration.getMaxRetries(), clientConfiguration.isRetry500s(), retryExecutor);

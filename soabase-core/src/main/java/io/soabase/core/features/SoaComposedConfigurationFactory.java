@@ -1,6 +1,7 @@
-package io.soabase.core.config;
+package io.soabase.core.features;
 
-import io.soabase.core.SoaBundle;
+import io.soabase.config.ComposedConfigurationBuilder;
+import io.soabase.config.ComposedConfigurationFactory;
 import io.soabase.core.SoaConfiguration;
 
 public class SoaComposedConfigurationFactory implements ComposedConfigurationFactory
@@ -8,6 +9,6 @@ public class SoaComposedConfigurationFactory implements ComposedConfigurationFac
     @Override
     public void addToBuilder(ComposedConfigurationBuilder builder)
     {
-        builder.add(SoaBundle.CONFIGURATION_NAME, new SoaConfiguration());
+        builder.add("soa", SoaConfiguration.class);
     }
 }

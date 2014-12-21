@@ -23,18 +23,9 @@ import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.admin.components.ComponentManager;
-import io.soabase.admin.components.TabComponent;
-import io.soabase.admin.rest.PreferencesResource;
-import io.soabase.core.ConfigurationAccessor;
+import io.soabase.config.ComposedConfiguration;
+import io.soabase.config.JarFileExtractor;
 import io.soabase.core.SoaBundle;
-import io.soabase.core.config.ComposedConfiguration;
-import io.soabase.core.config.SoaCli;
-import io.soabase.core.SoaConfiguration;
-import io.soabase.core.SoaFeatures;
-import io.soabase.core.rest.DiscoveryApis;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import java.util.prefs.Preferences;
 
 public class SoaAdminApp extends Application<ComposedConfiguration>
 {
@@ -45,7 +36,7 @@ public class SoaAdminApp extends Application<ComposedConfiguration>
         System.setProperty("dw.soa.addCorsFilter", "true");
         System.setProperty("dw.server.rootPath", "/api/*");
 
-        new SoaAdminApp().run(SoaCli.filter(args));
+        new SoaAdminApp().run(JarFileExtractor.filter(args));
     }
 
     @Override
@@ -68,7 +59,7 @@ public class SoaAdminApp extends Application<ComposedConfiguration>
             }
         };
         bootstrap.addBundle(bundle);
-        bootstrap.addBundle(new SoaBundle());
+        bootstrap.addBundle(new SoaBundle<>());
         bootstrap.addBundle(new AssetsBundle("/assets", "/assets"));
     }
 

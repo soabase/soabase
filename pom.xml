@@ -105,6 +105,12 @@
         <dependencies>
             <dependency>
                 <groupId>io.soabase</groupId>
+                <artifactId>soabase-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.soabase</groupId>
                 <artifactId>soabase-core</artifactId>
                 <version>${project.version}</version>
             </dependency>

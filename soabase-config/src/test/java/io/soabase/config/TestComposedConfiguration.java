@@ -39,7 +39,7 @@ public class TestComposedConfiguration
     @Test
     public void testViaServices() throws Exception
     {
-        ComposedConfigurationFactoryFactory factoryFactory = ComposedConfigurationFactoryFactory.buildFromServices();
+        ComposedConfigurationFactoryFactory factoryFactory = ComposedConfigurationFactoryFactory.fromServices();
         internalTestViaFactoryFactory(factoryFactory);
     }
 

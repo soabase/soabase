@@ -20,9 +20,8 @@ import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.SoaBundle;
+import io.soabase.config.ComposedConfiguration;
 import io.soabase.core.SoaConfiguration;
-import io.soabase.core.config.ComposedConfiguration;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -31,16 +30,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 
-public class SqlBundle implements ConfiguredBundle<ComposedConfiguration>
+public class SqlBundle<T extends ComposedConfiguration> implements ConfiguredBundle<T>
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public static final String CONFIGURATION_NAME = "sql";
-
     @Override
-    public void run(ComposedConfiguration configuration, Environment environment) throws Exception
+    public void run(T configuration, Environment environment) throws Exception
     {
-        SqlConfiguration sqlConfiguration = configuration.access(CONFIGURATION_NAME, SqlConfiguration.class);
+        SqlConfiguration sqlConfiguration = configuration.as(SqlConfiguration.class);
         try
         {
             try ( InputStream stream = Resources.getResource(sqlConfiguration.getMybatisConfigUrl()).openStream() )
@@ -50,7 +47,7 @@ public class SqlBundle implements ConfiguredBundle<ComposedConfiguration>
                 mybatisConfiguration.addMapper(AttributeEntityMapper.class);
                 final SqlSession session = sqlSessionFactory.openSession(true);
 
-                SoaConfiguration soaConfiguration = configuration.access(SoaBundle.CONFIGURATION_NAME, SoaConfiguration.class);
+                SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
                 soaConfiguration.putNamed(session, SqlSession.class, sqlConfiguration.getSessionName());
                 Managed managed = new Managed()
                 {

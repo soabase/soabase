@@ -19,22 +19,19 @@ import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.SoaBundle;
+import io.soabase.config.ComposedConfiguration;
 import io.soabase.core.SoaConfiguration;
-import io.soabase.core.config.ComposedConfiguration;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.utils.CloseableUtils;
 
-public class CuratorBundle implements ConfiguredBundle<ComposedConfiguration>
+public class CuratorBundle<T extends ComposedConfiguration> implements ConfiguredBundle<T>
 {
-    public static final String CONFIGURATION_NAME = "curator";
-
     @Override
-    public void run(ComposedConfiguration configuration, Environment environment) throws Exception
+    public void run(T configuration, Environment environment) throws Exception
     {
-        CuratorConfiguration curatorConfiguration = configuration.access(CONFIGURATION_NAME, CuratorConfiguration.class);
+        CuratorConfiguration curatorConfiguration = configuration.as(CuratorConfiguration.class);
         // TODO more config
         final CuratorFramework curator = CuratorFrameworkFactory.newClient(curatorConfiguration.getConnectionString(), new RetryOneTime(1));
 
@@ -54,7 +51,7 @@ public class CuratorBundle implements ConfiguredBundle<ComposedConfiguration>
         };
         environment.lifecycle().manage(managed);
 
-        SoaConfiguration soaConfiguration = configuration.access(SoaBundle.CONFIGURATION_NAME, SoaConfiguration.class);
+        SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
         soaConfiguration.putNamed(curator, CuratorFramework.class, curatorConfiguration.getCuratorName());
     }
 

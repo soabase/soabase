@@ -16,7 +16,7 @@
 package io.soabase.example.hello;
 
 import io.dropwizard.setup.Environment;
-import io.soabase.core.config.ComposedConfiguration;
+import io.soabase.config.ComposedConfiguration;
 import io.soabase.example.ExampleAppBase;
 
 public class HelloApp extends ExampleAppBase

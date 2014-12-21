@@ -1,13 +1,13 @@
-package io.soabase.zookeeper.discovery;
+package io.soabase.client;
 
 import io.soabase.config.ComposedConfigurationBuilder;
 import io.soabase.config.ComposedConfigurationFactory;
 
-public class CuratorComposedConfigurationFactory implements ComposedConfigurationFactory
+public class ClientComposedConfigurationFactory implements ComposedConfigurationFactory
 {
     @Override
     public void addToBuilder(ComposedConfigurationBuilder builder)
     {
-        builder.add("curator", CuratorConfiguration.class);
+        builder.add("client", SoaClientConfiguration.class);
     }
 }

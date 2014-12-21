@@ -11,7 +11,7 @@ public class ComposedConfigurationFactoryFactory implements ConfigurationFactory
 {
     private final ComposedConfigurationBuilder builder;
 
-    public static ComposedConfigurationFactoryFactory buildFromServices()
+    public static ComposedConfigurationBuilder builderFromServices()
     {
         ComposedConfigurationBuilder builder = new ComposedConfigurationBuilder();
         ServiceLoader<ComposedConfigurationFactory> serviceLoader = ServiceLoader.load(ComposedConfigurationFactory.class);
@@ -27,7 +27,12 @@ public class ComposedConfigurationFactoryFactory implements ConfigurationFactory
                 throw new RuntimeException(e);
             }
         }
-        return new ComposedConfigurationFactoryFactory(builder);
+        return builder;
+    }
+
+    public static ComposedConfigurationFactoryFactory fromServices()
+    {
+        return new ComposedConfigurationFactoryFactory(builderFromServices());
     }
 
     public ComposedConfigurationFactoryFactory(ComposedConfigurationBuilder builder)

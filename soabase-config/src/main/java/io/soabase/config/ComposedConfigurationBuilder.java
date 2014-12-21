@@ -1,16 +1,18 @@
 package io.soabase.config;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import javassist.ClassPool;
 import javassist.CtClass;
-import javassist.CtConstructor;
 import javassist.CtField;
 import java.lang.reflect.Modifier;
+import java.util.Set;
 
 public class ComposedConfigurationBuilder
 {
     private final CtClass ctClass;
     private final ClassPool ctPool;
+    private final Set<Class<?>> classes = Sets.newHashSet();
 
     public ComposedConfigurationBuilder()
     {
@@ -55,6 +57,7 @@ public class ComposedConfigurationBuilder
         name = Preconditions.checkNotNull(name, "name cannot be null");
         clazz = Preconditions.checkNotNull(clazz, "clazz cannot be null");
         Preconditions.checkArgument(name.length() > 0, "Name cannot be empty: " + name);
+        Preconditions.checkArgument(classes.add(clazz), "There is already a field of type: " + clazz);
 
         try
         {

@@ -17,16 +17,16 @@ package io.soabase.example;
 
 import com.google.common.collect.Lists;
 import io.dropwizard.Application;
-import io.dropwizard.configuration.ConfigurationFactoryFactory;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.client.SoaClientBundle;
+import io.soabase.config.ComposedConfiguration;
+import io.soabase.config.ComposedConfigurationFactoryFactory;
+import io.soabase.config.JarFileExtractor;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaInfo;
-import io.soabase.core.config.ComposedConfiguration;
-import io.soabase.core.config.SoaCli;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 import org.apache.curator.test.InstanceSpec;
@@ -46,12 +46,11 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
 
     public void initialize(Bootstrap<ComposedConfiguration> bootstrap)
     {
-        ConfigurationFactoryFactory<ComposedConfiguration> configurationFactoryFactory = null;
-        bootstrap.setConfigurationFactoryFactory(configurationFactoryFactory);
-        bootstrap.addBundle(new CuratorBundle());
-        bootstrap.addBundle(new SqlBundle());
-        bootstrap.addBundle(new SoaBundle());
-        bootstrap.addBundle(new SoaClientBundle());
+        bootstrap.setConfigurationFactoryFactory(ComposedConfigurationFactoryFactory.fromServices());
+        bootstrap.addBundle(new CuratorBundle<>());
+        bootstrap.addBundle(new SqlBundle<>());
+        bootstrap.addBundle(new SoaBundle<>());
+        bootstrap.addBundle(new SoaClientBundle<>());
     }
 
     @Override
@@ -74,7 +73,7 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
             };
         }
 
-        super.run(SoaCli.filter(arguments));
+        super.run(JarFileExtractor.filter(arguments));
     }
 
     @Override
@@ -84,7 +83,7 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
 
         internalRun(configuration, environment);
 
-        SoaConfiguration soaConfiguration = configuration.access(SoaBundle.CONFIGURATION_NAME, SoaConfiguration.class);
+        SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
         SoaInfo info = soaConfiguration.getSoaInfo();
         System.err.println("Main port: " + info.getMainPort());
         System.err.println("Admin port: " + info.getAdminPort());

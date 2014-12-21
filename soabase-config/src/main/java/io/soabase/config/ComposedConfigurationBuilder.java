@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.CtMethod;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
 {
     private final CtClass ctClass;
     private final ClassPool ctPool;
-    private final Set<Class<?>> classes = Sets.newHashSet();
+    private final Set<String> classes = Sets.newHashSet();
 
     public static final String DEFAULT_COMPOSED_FQ_CLASS_NAME = "io.soabase.core.config.SoaComposedConfiguration";
 
@@ -64,7 +65,7 @@ public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
         name = Preconditions.checkNotNull(name, "name cannot be null");
         clazz = Preconditions.checkNotNull(clazz, "clazz cannot be null");
         Preconditions.checkArgument(name.length() > 0, "Name cannot be empty: " + name);
-        Preconditions.checkArgument(classes.add(clazz), "There is already a field of type: " + clazz);
+        Preconditions.checkArgument(classes.add(clazz.getSimpleName()), "There is already a field of type: " + clazz.getSimpleName());
 
         try
         {
@@ -72,11 +73,20 @@ public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
             CtField field = new CtField(fieldClass, name, ctClass);
             field.setModifiers(Modifier.PUBLIC);
             ctClass.addField(field, "new " + clazz.getName() + "()");
+
+            CtMethod method = new CtMethod(fieldClass, getterName(clazz), null, ctClass);
+            method.setBody("{return this." + name + ";}");
+            ctClass.addMethod(method);
         }
         catch ( Exception e )
         {
             // TODO logging
             throw new RuntimeException(e);
         }
+    }
+
+    public static <C> String getterName(Class<C> clazz)
+    {
+        return "get" + clazz.getSimpleName();
     }
 }

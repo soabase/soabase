@@ -22,7 +22,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.client.SoaClientBundle;
 import io.soabase.config.ComposedConfiguration;
-import io.soabase.config.ComposedConfigurationFactoryFactory;
+import io.soabase.config.FromServices;
 import io.soabase.config.JarFileExtractor;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaConfiguration;
@@ -46,7 +46,7 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
 
     public void initialize(Bootstrap<ComposedConfiguration> bootstrap)
     {
-        bootstrap.setConfigurationFactoryFactory(ComposedConfigurationFactoryFactory.fromServices());
+        bootstrap.setConfigurationFactoryFactory(FromServices.standardFactory());
         bootstrap.addBundle(new CuratorBundle<>());
         bootstrap.addBundle(new SqlBundle<>());
         bootstrap.addBundle(new SoaBundle<>());

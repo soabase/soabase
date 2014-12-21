@@ -23,6 +23,9 @@ public class ComposedConfigurationBuilder<T extends ComposedConfiguration>
 
     public ComposedConfigurationBuilder(String fqClassName, Class<T> baseClass)
     {
+        fqClassName = Preconditions.checkNotNull(fqClassName, "fqClassName cannot be null");
+        baseClass = Preconditions.checkNotNull(baseClass, "baseClass cannot be null");
+
         ClassPool localCtPool;
         CtClass localCtClass;
         try

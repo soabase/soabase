@@ -32,7 +32,7 @@ public class TestComposedConfiguration
         ComposedConfigurationBuilder<ComposedConfiguration> builder = new ComposedConfigurationBuilder<>("x.b", ComposedConfiguration.class);
         builder.add("t1", TestConfiguration1.class);
         builder.add("t2", TestConfiguration2.class);
-        ComposedConfigurationFactoryFactory factoryFactory = new ComposedConfigurationFactoryFactory(builder);
+        ComposedConfigurationFactoryFactory<ComposedConfiguration> factoryFactory = new ComposedConfigurationFactoryFactory<>(builder);
 
         internalTestViaFactoryFactory(factoryFactory);
     }
@@ -40,14 +40,18 @@ public class TestComposedConfiguration
     @Test
     public void testViaServices() throws Exception
     {
-        ComposedConfigurationFactoryFactory factoryFactory = ComposedConfigurationFactoryFactory.fromServices();
+        ComposedConfigurationFactoryFactory<ComposedConfiguration> factoryFactory = FromServices
+            .create()
+            .withFqClassName("x.c")
+            .withBaseClass(ComposedConfiguration.class)
+            .factory();
         internalTestViaFactoryFactory(factoryFactory);
     }
 
     @Test
     public void testExtended() throws Exception
     {
-        ComposedConfigurationBuilder<ExtendedConfiguration> builder = new ComposedConfigurationBuilder<>("x.c", ExtendedConfiguration.class);
+        ComposedConfigurationBuilder<ExtendedConfiguration> builder = new ComposedConfigurationBuilder<>("x.d", ExtendedConfiguration.class);
         Class<ExtendedConfiguration> clazz = builder.build();
         ExtendedConfiguration configuration = clazz.newInstance();
         Assert.assertNotNull(configuration);
@@ -55,7 +59,7 @@ public class TestComposedConfiguration
         Assert.assertEquals(configuration.getField2(), "2");
     }
 
-    private void internalTestViaFactoryFactory(ComposedConfigurationFactoryFactory factoryFactory) throws java.io.IOException, io.dropwizard.configuration.ConfigurationException
+    private void internalTestViaFactoryFactory(ComposedConfigurationFactoryFactory<ComposedConfiguration> factoryFactory) throws java.io.IOException, io.dropwizard.configuration.ConfigurationException
     {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         ConfigurationFactory<ComposedConfiguration> factory = factoryFactory.create(ComposedConfiguration.class, validator, Jackson.newObjectMapper(), "dw");

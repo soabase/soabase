@@ -10,7 +10,7 @@ FlexibleConfigurationSourceProvider
     E.g. "config/app.prefs|config/default/app.prefs". The file portion is optional e.g. "|config/default/app.prefs".
     When the argument is processed, the file system is checked for the file (if specified) and, if found, is used as
     the configuration file. Otherwise, the resource is determined from the classpath
-    (via Resources.getResource(String)) and used as the configuration file.
+    (via Resources.getResource()) and used as the configuration file.
 
 * Usage
 

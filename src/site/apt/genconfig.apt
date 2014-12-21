@@ -1,1 +1,82 @@
-TBD
+Generated Composed Configuration
+
+    Dropwizard makes heavy use of the Configuration object. Unfortunately, its design makes writing
+    configured Bundles difficult. Bundle writers need access to their custom configuration but can't
+    impose a bundle-specific Configuration class. A common idiom is to create accessor interfaces
+    that users of the bundle need to implement. This is cumbersome and clumsy.
+
+    Soabase's ComposedConfiguration provides an alternative whereby a custom Configuration class
+    is generated at runtime. This custom class contains fields for any configuration needed by
+    bundles, etc. Bundles can use Java's ServiceLoader mechanism to automatically add needed
+    custom configuration to the ComposedConfiguration instance. All of Soabases bundles are pre-configured.
+
+* Application Usage
+
+    To use ComposedConfiguration in your application (note: this is required by Soabase's Bundles), your
+    application's configuration class must extend <<<ComposedConfiguration>>> instead of Dropwizard's
+    Configuration. Note: if your application doesn't need custom configuration values, you can use
+    <<<ComposedConfiguration>>> directly. Then, in the initialize() method of your application, set
+    the ConfigurationFactoryFactory. E.g.
+
++------------------------------------------+
+public class MyConfiguration extends ComposedConfiguration {
+    ...
+}
+
+public class MyApplication extends Application<MyConfiguration> {
+    public void initialize(Bootstrap<MyConfiguration> bootstrap) {
+            ...
+        bootstrap.setConfigurationFactoryFactory(FromServices.standardFactory());
+    }
+}
++------------------------------------------+
+
+    <<<FromServices.standardFactory()>>> uses Java's ServiceLoader utility to load any custom
+    configurations. You can then access the custom configurations via the <<<as()>>> method. For
+    example, you can get the <<<SoaConfiguration>>> instance like this:
+
++------------------------------------------+
+public void run(MyConfiguration configuration, Environment environment) throws Exception {
+        ...
+    SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
+}
++------------------------------------------+
+
+* Writing a Custom Configuration
+
+    If you'd like to add your own custom configuration, follow these steps:
+
+    * Create your custom configuration class. It doesn't need to have any particular base class. However, it
+      must have a no-arg constructor.
+
+    * Create a class that implements <<<ComposedConfigurationServiceFactory>>>. This instance
+      is responsible for registering the custom configuration. E.g.
+
++------------------------------------------+
+public class MyFactory implements ComposedConfigurationServiceFactory {
+    public void addToBuilder(ComposedConfigurationBuilder<?> builder) {
+        builder.add("myConfig", MyConfig.class);
+    }
+}
++------------------------------------------+
+
+    * Create a ServiceLoader provider-configuration file
+
+        * The file must be in the directory: <<<META-INF/services>>>
+
+        * The name of the file must be: <<<io.soabase.config.service.ComposedConfigurationServiceFactory>>>
+
+        * The file should have the fully qualified path name of your ComposedConfigurationServiceFactory. Note:
+          you can have multiple ComposedConfigurationServiceFactory instances. List each one on a separate line.
+
+=======================
+
+    Your Dropwizard config file can now reference this custom configuration. E.g.
+
++------------------------------------------+
+{
+    "myConfig": {
+        "myField": 10
+    }
+}
++------------------------------------------+

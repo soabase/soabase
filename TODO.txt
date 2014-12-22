@@ -14,7 +14,7 @@
     limitations under the License.
 ====
 
-* Admin console
+- Admin console
 * Hystrix?
 * Archaius?
 * Eureka?
@@ -29,5 +29,4 @@
 * Don't register Discovery until managed is started
 * Figure out what @Valid means
 * Figure out why admin jersey apis DW info output doesn't include "api"
-* Have SoaCli check for external override file
 * kill isn't working for soa apps

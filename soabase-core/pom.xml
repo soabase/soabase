@@ -11,11 +11,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.soabase</groupId>
-            <artifactId>soabase-config</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
         </dependency>

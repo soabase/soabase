@@ -17,7 +17,6 @@ package io.soabase.admin;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
-import io.soabase.config.ComposedConfiguration;
 import io.soabase.core.SoaConfiguration;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
 import javax.validation.Valid;

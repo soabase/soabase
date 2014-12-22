@@ -37,7 +37,6 @@
         <curator-version>2.7.0</curator-version>
         <mybatis-version>3.2.8</mybatis-version>
         <hsqldb-version>2.3.2</hsqldb-version>
-        <javassist-version>3.18.2-GA</javassist-version>
         <testng-version>6.8.13</testng-version>
     </properties>
 
@@ -102,12 +101,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>io.soabase</groupId>
-                <artifactId>soabase-config</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>io.soabase</groupId>
                 <artifactId>soabase-core</artifactId>
@@ -178,12 +171,6 @@
                 <groupId>org.hsqldb</groupId>
                 <artifactId>hsqldb</artifactId>
                 <version>${hsqldb-version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>${javassist-version}</version>
             </dependency>
 
             <dependency>

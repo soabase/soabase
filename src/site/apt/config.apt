@@ -14,10 +14,8 @@ Soabase Configuration
 
 ==========================
 
-    <<{{{./genconfig.html}Generated/Composed Configuration}}>>
+    <<{{{./genconfig.html}ComposedConfigurationAccessor}}>>
 
-    Utility to dynamically generate Configuration classes that contain custom configuration fields. Each of
-    the Soabase bundles are configured to automatically add their configurations. You can also define your
-    own custom configurations.
+    A simple way of allowing shared bundles, etc. to access their custom configuration objects.
 
-    Click here {{{./genconfig.html}for details on dynamically generated Configuration}}.
+    Click here {{{./genconfig.html}for details on the ComposedConfigurationAccessor}}.

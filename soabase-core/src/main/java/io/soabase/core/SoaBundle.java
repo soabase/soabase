@@ -71,6 +71,11 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return features;
     }
 
+    public static <T> T access(Configuration configuration, Environment environment, Class<T> clazz)
+    {
+        return getAccessor(configuration, environment).access(clazz);
+    }
+
     public static ComposedConfigurationAccessor getAccessor(Configuration configuration, Environment environment)
     {
         ComposedConfigurationAccessor accessor = (ComposedConfigurationAccessor)environment.getApplicationContext().getAttribute(ComposedConfigurationAccessor.class.getName());
@@ -85,7 +90,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     @Override
     public void run(final T configuration, Environment environment) throws Exception
     {
-        final SoaConfiguration soaConfiguration = SoaBundle.getAccessor(configuration, environment).access(SoaConfiguration.class);
+        final SoaConfiguration soaConfiguration = SoaBundle.access(configuration, environment, SoaConfiguration.class);
 
         environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 

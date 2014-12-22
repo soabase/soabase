@@ -20,11 +20,18 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.lang.reflect.Field;
 
+/**
+ * Simple way of allowing shared bundles, etc. to access their custom configuration
+ * objects.
+ */
 public class ComposedConfigurationAccessor
 {
     private final LoadingCache<Class<?>, Field> fieldCache;
     private final Object configuration;
 
+    /**
+     * @param configuration The application configuration object
+     */
     public ComposedConfigurationAccessor(final Object configuration)
     {
         this.configuration = configuration;
@@ -48,6 +55,13 @@ public class ComposedConfigurationAccessor
         fieldCache = CacheBuilder.newBuilder().build(loader);
     }
 
+    /**
+     * Access a custom configuration of the given type. The fields of the configuration object
+     * are searched for one that is of the given type.
+     *
+     * @param clazz type to look for
+     * @return the configuration
+     */
     public <T> T access(Class<T> clazz)
     {
         try
@@ -59,5 +73,16 @@ public class ComposedConfigurationAccessor
             // TODO logging
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Return true if there is a custom configuration of the given type.
+     *
+     * @param clazz type to loof for
+     * @return true/false
+     */
+    public <T> boolean has(Class<T> clazz)
+    {
+        return (fieldCache.getIfPresent(clazz) != null);
     }
 }

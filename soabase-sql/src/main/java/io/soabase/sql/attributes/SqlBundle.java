@@ -36,7 +36,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        SqlConfiguration sqlConfiguration = SoaBundle.getAccessor(configuration, environment).access(SqlConfiguration.class);
+        SqlConfiguration sqlConfiguration = SoaBundle.access(configuration, environment, SqlConfiguration.class);
         try
         {
             try ( InputStream stream = Resources.getResource(sqlConfiguration.getMybatisConfigUrl()).openStream() )

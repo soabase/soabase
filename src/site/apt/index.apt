@@ -36,7 +36,7 @@ Soabase
 
         * A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an external file or a resource in the classpath. Special tokens are used to determine how to treat the argument.
 
-        * Utility to dynamically generate Configuration classes that contain custom configuration fields
+        * A simple way of allowing shared bundles, etc. to access their custom configuration objects
 
 * Usage
 

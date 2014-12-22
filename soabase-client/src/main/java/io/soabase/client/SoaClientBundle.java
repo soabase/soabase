@@ -82,7 +82,7 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     public void run(T configuration, Environment environment) throws Exception
     {
         SoaFeatures features = SoaBundle.getFeatures(environment);
-        SoaClientConfiguration clientConfiguration = SoaBundle.getAccessor(configuration, environment).access(SoaClientConfiguration.class);
+        SoaClientConfiguration clientConfiguration = SoaBundle.access(configuration, environment, SoaClientConfiguration.class);
 
         RetryExecutor retryExecutor = new RetryExecutor(environment.lifecycle().executorService("RetryHandler-%d"));
         RetryComponents retryComponents = new RetryComponents(retryHandler, features.getDiscovery(), clientConfiguration.getMaxRetries(), clientConfiguration.isRetry500s(), retryExecutor);

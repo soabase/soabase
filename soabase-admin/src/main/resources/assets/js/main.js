@@ -2,15 +2,29 @@ var SOA_SERVICE_ID_PREFIX = 'soa-service-';
 
 function soaUpdateInstancesForService(serviceName) {
     $.getJSON('/soa/discovery/all/' + serviceName, function(data){
+        var stoplightGreen = $('#soa-stoplight-set-green').html();
+        var stoplightYellow = $('#soa-stoplight-set-yellow').html();
+        var stoplightRed = $('#soa-stoplight-set-red').html();
+
         var id = SOA_SERVICE_ID_PREFIX + serviceName;
         var divExists = $('#' + id).length > 0;
         if ( data.length > 0 ) {
             if ( !divExists ) {
-                var content = $('#soa-services').html();
-                var template = $('#soa-service-template').html();
-                content = content + template.replace('$SERVICE_NAME$', serviceName);
-                $('#soa-services').html(content);
+                var div = document.createElement('div');
+                $(div).attr('id', id).appendTo('#soa-services');
             }
+
+            var template = $('#soa-service-instance-template').html();
+            var instances = "";
+            for ( var i in data ) {
+                instances = instances + template.replace('$CONTENT$', stoplightGreen + data[i].host + ':' + data[i].port);
+            }
+
+            template = $('#soa-service-template').html();
+            var content = template.replace('$SERVICE_NAME$', serviceName);
+            content = content.replace('$SERVICE_QTY$', data.length);
+            content = content.replace('$INSTANCES$', instances);
+            $('#' + id).html(content);
         } else {
             $('#' + id).remove();
         }

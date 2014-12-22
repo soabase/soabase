@@ -1,14 +1,38 @@
-<h3>Instances</h3>
+<h3>Services</h3>
 
 <div id="soa-services">
 
 </div>
 
+<div class="soa-hidden" id="soa-stoplight-set-green">
+    <div class="soa-stoplight-green-on"></div>
+    <div class="soa-stoplight-yellow-off"></div>
+    <div class="soa-stoplight-red-off"></div>
+</div>
+
+<div class="soa-hidden" id="soa-stoplight-set-yellow">
+    <div class="soa-stoplight-green-off"></div>
+    <div class="soa-stoplight-yellow-on"></div>
+    <div class="soa-stoplight-red-off"></div>
+</div>
+
+<div class="soa-hidden" id="soa-stoplight-set-red">
+    <div class="soa-stoplight-green-off"></div>
+    <div class="soa-stoplight-yellow-off"></div>
+    <div class="soa-stoplight-red-on"></div>
+</div>
+
+<div class="soa-hidden" id="soa-service-instance-template">
+    <li class="list-group-item">$CONTENT$</li>
+</div>
+
 <div class="soa-hidden" id="soa-service-template">
     <div class="panel panel-primary">
-        <div class="panel-heading">$SERVICE_NAME$</div>
+        <div class="panel-heading list-group-item"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> <span>$SERVICE_NAME$</span> <span class="badge">$SERVICE_QTY$</span></div>
         <div class="panel-body">
-            Panel content
+            <ul class="list-group">
+                $INSTANCES$
+            </ul>
         </div>
     </div>
 </div>

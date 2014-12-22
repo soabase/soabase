@@ -97,7 +97,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         configuration.as(SoaConfiguration.class).putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
         configuration.as(SoaConfiguration.class).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
-        componentManager.addTab(new TabComponent("", "Instances", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.<String>newArrayList()));
+        componentManager.addTab(new TabComponent("", "Services", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.<String>newArrayList("assets/css/main.css")));
         componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html"));
 
         environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("");

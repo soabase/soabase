@@ -19,7 +19,6 @@ import com.google.common.collect.Lists;
 import io.dropwizard.Application;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.assets.AssetsBundle;
-import io.dropwizard.configuration.ConfigurationFactoryFactory;
 import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
@@ -28,7 +27,7 @@ import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.config.ComposedConfiguration;
-import io.soabase.config.FlexibleConfigurationSourceProvider;
+import io.soabase.core.config.FlexibleConfigurationSourceProvider;
 import io.soabase.config.service.FromServices;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
@@ -54,13 +53,11 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
     public void initialize(Bootstrap<SoaAdminConfiguration> bootstrap)
     {
         bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider());
-        ConfigurationFactoryFactory<SoaAdminConfiguration> factory = FromServices.<SoaAdminConfiguration>create().withBaseClass(SoaAdminConfiguration.class).factory();
-        bootstrap.setConfigurationFactoryFactory(factory);
 
-        ConfiguredBundle<ComposedConfiguration> bundle = new ConfiguredBundle<ComposedConfiguration>()
+        ConfiguredBundle<SoaAdminConfiguration> bundle = new ConfiguredBundle<SoaAdminConfiguration>()
         {
             @Override
-            public void run(ComposedConfiguration configuration, Environment environment) throws Exception
+            public void run(SoaAdminConfiguration configuration, Environment environment) throws Exception
             {
                 DefaultServerFactory factory = new DefaultServerFactory();
                 factory.setAdminConnectors(Lists.<ConnectorFactory>newArrayList());

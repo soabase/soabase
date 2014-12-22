@@ -20,7 +20,6 @@ import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.config.ComposedConfiguration;
 import io.soabase.core.SoaBundle;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
@@ -30,14 +29,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 
-public class SqlBundle<T extends ComposedConfiguration> implements ConfiguredBundle<T>
+public class SqlBundle<T extends io.dropwizard.Configuration> implements ConfiguredBundle<T>
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        SqlConfiguration sqlConfiguration = configuration.as(SqlConfiguration.class);
+        SqlConfiguration sqlConfiguration = SoaBundle.getAccessor(configuration, environment).access(SqlConfiguration.class);
         try
         {
             try ( InputStream stream = Resources.getResource(sqlConfiguration.getMybatisConfigUrl()).openStream() )

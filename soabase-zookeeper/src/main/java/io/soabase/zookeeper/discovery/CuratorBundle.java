@@ -15,6 +15,7 @@
  */
 package io.soabase.zookeeper.discovery;
 
+import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
@@ -26,12 +27,12 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.utils.CloseableUtils;
 
-public class CuratorBundle<T extends ComposedConfiguration> implements ConfiguredBundle<T>
+public class CuratorBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        CuratorConfiguration curatorConfiguration = configuration.as(CuratorConfiguration.class);
+        CuratorConfiguration curatorConfiguration = SoaBundle.getAccessor(configuration, environment).access(CuratorConfiguration.class);
         // TODO more config
         final CuratorFramework curator = CuratorFrameworkFactory.newClient(curatorConfiguration.getConnectionString(), new RetryOneTime(1));
 

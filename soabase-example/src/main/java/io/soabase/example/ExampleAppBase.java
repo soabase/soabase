@@ -17,13 +17,12 @@ package io.soabase.example;
 
 import com.google.common.collect.Lists;
 import io.dropwizard.Application;
+import io.dropwizard.Configuration;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.client.SoaClientBundle;
-import io.soabase.config.ComposedConfiguration;
-import io.soabase.config.FlexibleConfigurationSourceProvider;
-import io.soabase.config.service.FromServices;
+import io.soabase.core.config.FlexibleConfigurationSourceProvider;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaInfo;
 import io.soabase.sql.attributes.SqlBundle;
@@ -33,7 +32,7 @@ import java.io.Closeable;
 import java.util.List;
 import java.util.Random;
 
-public abstract class ExampleAppBase extends Application<ComposedConfiguration> implements Managed
+public abstract class ExampleAppBase extends Application<ExampleConfiguration> implements Managed
 {
     private final List<Closeable> closeables = Lists.newArrayList();
     private final String configFqpn;
@@ -43,10 +42,9 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
         this.configFqpn = configFqpn;
     }
 
-    public void initialize(Bootstrap<ComposedConfiguration> bootstrap)
+    public void initialize(Bootstrap<ExampleConfiguration> bootstrap)
     {
         bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider());
-        bootstrap.setConfigurationFactoryFactory(FromServices.standardFactory());
         bootstrap.addBundle(new CuratorBundle<>());
         bootstrap.addBundle(new SqlBundle<>());
         bootstrap.addBundle(new SoaBundle<>());
@@ -77,7 +75,7 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
     }
 
     @Override
-    public void run(ComposedConfiguration configuration, Environment environment) throws Exception
+    public void run(ExampleConfiguration configuration, Environment environment) throws Exception
     {
         environment.lifecycle().manage(this);
 
@@ -88,7 +86,7 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
         System.err.println("Admin port: " + info.getAdminPort());
     }
 
-    protected abstract void internalRun(ComposedConfiguration configuration, Environment environment);
+    protected abstract void internalRun(Configuration configuration, Environment environment);
 
     @Override
     public void start() throws Exception

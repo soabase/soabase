@@ -15,8 +15,8 @@
  */
 package io.soabase.example.hello;
 
+import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
-import io.soabase.config.ComposedConfiguration;
 import io.soabase.example.ExampleAppBase;
 
 public class HelloApp extends ExampleAppBase
@@ -32,7 +32,7 @@ public class HelloApp extends ExampleAppBase
     }
 
     @Override
-    protected void internalRun(ComposedConfiguration configuration, Environment environment)
+    protected void internalRun(Configuration configuration, Environment environment)
     {
         environment.jersey().register(HelloResourceJersey.class);
         environment.jersey().register(HelloResourceApache.class);

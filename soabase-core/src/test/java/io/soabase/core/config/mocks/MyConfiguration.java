@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.config.mocks;
+package io.soabase.core.config.mocks;
 
-import io.soabase.config.ComposedConfigurationBuilder;
-import io.soabase.config.service.ComposedConfigurationServiceFactory;
+import io.dropwizard.Configuration;
 
-public class Factory2 implements ComposedConfigurationServiceFactory
+public class MyConfiguration extends Configuration
 {
-    @Override
-    public void addToBuilder(ComposedConfigurationBuilder<?> builder)
-    {
-        builder.add("t2", TestConfiguration2.class);
-    }
+    public String testValue = "unset";
 }

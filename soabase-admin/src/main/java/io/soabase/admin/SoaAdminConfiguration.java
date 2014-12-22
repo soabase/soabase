@@ -16,11 +16,12 @@
 package io.soabase.admin;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.dropwizard.Configuration;
 import io.soabase.config.ComposedConfiguration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-public class SoaAdminConfiguration extends ComposedConfiguration
+public class SoaAdminConfiguration extends Configuration
 {
     @Valid
     @NotNull

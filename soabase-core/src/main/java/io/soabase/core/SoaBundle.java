@@ -16,6 +16,7 @@
 package io.soabase.core;
 
 import com.google.common.collect.Lists;
+import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.jersey.DropwizardResourceConfig;
 import io.dropwizard.jersey.jackson.JacksonMessageBodyProvider;
@@ -29,7 +30,7 @@ import io.dropwizard.server.ServerFactory;
 import io.dropwizard.server.SimpleServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.config.ComposedConfiguration;
+import io.soabase.core.config.ComposedConfigurationAccessor;
 import io.soabase.core.features.attributes.SafeDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
@@ -52,7 +53,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SoaBundle<T extends ComposedConfiguration> implements ConfiguredBundle<T>
+public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     @Override
     public void initialize(Bootstrap<?> bootstrap)
@@ -70,10 +71,21 @@ public class SoaBundle<T extends ComposedConfiguration> implements ConfiguredBun
         return features;
     }
 
+    public static ComposedConfigurationAccessor getAccessor(Configuration configuration, Environment environment)
+    {
+        ComposedConfigurationAccessor accessor = (ComposedConfigurationAccessor)environment.getApplicationContext().getAttribute(ComposedConfigurationAccessor.class.getName());
+        if ( accessor == null )
+        {
+            accessor = new ComposedConfigurationAccessor(configuration);
+            environment.getApplicationContext().setAttribute(ComposedConfigurationAccessor.class.getName(), accessor);
+        }
+        return accessor;
+    }
+
     @Override
     public void run(final T configuration, Environment environment) throws Exception
     {
-        final SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
+        final SoaConfiguration soaConfiguration = SoaBundle.getAccessor(configuration, environment).access(SoaConfiguration.class);
 
         environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
@@ -147,7 +159,7 @@ public class SoaBundle<T extends ComposedConfiguration> implements ConfiguredBun
         }
     }
 
-    private Ports getPorts(ComposedConfiguration configuration)
+    private Ports getPorts(Configuration configuration)
     {
         if ( SoaMainPortAccessor.class.isAssignableFrom(configuration.getClass()) )
         {

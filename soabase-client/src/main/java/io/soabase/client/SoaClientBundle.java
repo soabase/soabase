@@ -16,6 +16,7 @@
 package io.soabase.client;
 
 import com.google.common.base.Preconditions;
+import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.client.HttpClientConfiguration;
@@ -29,7 +30,6 @@ import io.soabase.client.retry.DefaultRetryHandler;
 import io.soabase.client.retry.RetryComponents;
 import io.soabase.client.retry.RetryExecutor;
 import io.soabase.client.retry.RetryHandler;
-import io.soabase.config.ComposedConfiguration;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import org.apache.http.client.HttpClient;
@@ -39,7 +39,7 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import javax.ws.rs.client.Client;
 import java.io.IOException;
 
-public class SoaClientBundle<T extends ComposedConfiguration> implements ConfiguredBundle<T>
+public class SoaClientBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     public static final String HOST_SUBSTITUTION_TOKEN = "00000.";
 
@@ -81,10 +81,11 @@ public class SoaClientBundle<T extends ComposedConfiguration> implements Configu
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        SoaClientConfiguration clientConfiguration = configuration.as(SoaClientConfiguration.class);
+        SoaFeatures features = SoaBundle.getFeatures(environment);
+        SoaClientConfiguration clientConfiguration = SoaBundle.getAccessor(configuration, environment).access(SoaClientConfiguration.class);
 
         RetryExecutor retryExecutor = new RetryExecutor(environment.lifecycle().executorService("RetryHandler-%d"));
-        RetryComponents retryComponents = new RetryComponents(retryHandler, SoaBundle.getFeatures(environment).getDiscovery(), clientConfiguration.getMaxRetries(), clientConfiguration.isRetry500s(), retryExecutor);
+        RetryComponents retryComponents = new RetryComponents(retryHandler, features.getDiscovery(), clientConfiguration.getMaxRetries(), clientConfiguration.isRetry500s(), retryExecutor);
 
         final HttpClient httpClient = buildHttpClient(configuration, clientConfiguration, environment, retryComponents);
         final Client jerseyClient = buildJerseyClient(configuration, clientConfiguration, environment, retryComponents);
@@ -109,19 +110,19 @@ public class SoaClientBundle<T extends ComposedConfiguration> implements Configu
 
     // protected so users can override
     @SuppressWarnings("UnusedParameters")
-    protected JerseyClientBuilder updateJerseyClientBuilder(ComposedConfiguration configuration, Environment environment, JerseyClientBuilder builder)
+    protected JerseyClientBuilder updateJerseyClientBuilder(Configuration configuration, Environment environment, JerseyClientBuilder builder)
     {
         return builder;
     }
 
     // protected so users can override
     @SuppressWarnings("UnusedParameters")
-    protected HttpClientBuilder updateHttpClientBuilder(ComposedConfiguration configuration, Environment environment, HttpClientBuilder httpClientBuilder)
+    protected HttpClientBuilder updateHttpClientBuilder(Configuration configuration, Environment environment, HttpClientBuilder httpClientBuilder)
     {
         return httpClientBuilder;
     }
 
-    private Client buildJerseyClient(ComposedConfiguration configuration, SoaClientConfiguration clientConfiguration, Environment environment, RetryComponents retryComponents)
+    private Client buildJerseyClient(Configuration configuration, SoaClientConfiguration clientConfiguration, Environment environment, RetryComponents retryComponents)
     {
         JerseyClientConfiguration jerseyClientConfiguration = clientConfiguration.getJerseyClientConfiguration();
         if ( jerseyClientConfiguration == null )
@@ -139,7 +140,7 @@ public class SoaClientBundle<T extends ComposedConfiguration> implements Configu
         return client;
     }
 
-    private HttpClient buildHttpClient(ComposedConfiguration configuration, SoaClientConfiguration clientConfiguration, Environment environment, RetryComponents retryComponents)
+    private HttpClient buildHttpClient(Configuration configuration, SoaClientConfiguration clientConfiguration, Environment environment, RetryComponents retryComponents)
     {
         if ( clientConfiguration.getHttpClientConfiguration() == null )
         {

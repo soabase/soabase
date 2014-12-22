@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.config;
+package io.soabase.core.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteStreams;
@@ -21,7 +21,7 @@ import com.google.common.io.Files;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
 import io.dropwizard.jackson.Jackson;
-import io.soabase.config.mocks.MyConfiguration;
+import io.soabase.core.config.mocks.MyConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import javax.validation.Validation;

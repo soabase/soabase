@@ -14,7 +14,6 @@
         <module>soabase-client</module>
         <module>soabase-example</module>
         <module>soabase-admin</module>
-        <module>soabase-config</module>
     </modules>
 
     <properties>

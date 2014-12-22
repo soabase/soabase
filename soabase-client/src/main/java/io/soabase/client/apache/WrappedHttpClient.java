@@ -16,11 +16,11 @@
 package io.soabase.client.apache;
 
 import io.soabase.client.Common;
-import io.soabase.core.features.request.SoaRequestId;
 import io.soabase.client.retry.RetryComponents;
 import io.soabase.client.retry.RetryContext;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import io.soabase.core.features.request.SoaRequestId;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;

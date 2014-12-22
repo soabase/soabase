@@ -50,7 +50,7 @@ public class IndexServlet extends HttpServlet
         String localIndexFile;
         try
         {
-            localIndexFile = Resources.toString(Resources.getResource("assets/index.html"), charset);
+            localIndexFile = Resources.toString(Resources.getResource("index.html"), charset);
             localIndexFile = addTabs(localIndexFile, componentManager);
         }
         catch ( IOException e )

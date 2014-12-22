@@ -330,6 +330,7 @@
                         <exclude>**/RELEASE-NOTES</exclude>
                         <exclude>**/generated/**</exclude>
                         <exclude>**/test-file.txt</exclude>
+                        <exclude>**/assets/**</exclude>
                     </excludes>
                     <strictCheck>true</strictCheck>
                 </configuration>

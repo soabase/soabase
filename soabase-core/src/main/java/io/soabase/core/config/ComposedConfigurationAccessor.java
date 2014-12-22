@@ -37,6 +37,7 @@ public class ComposedConfigurationAccessor
                 {
                     if ( field.getType().equals(clazz) )
                     {
+                        field.setAccessible(true);
                         return field;
                     }
                 }

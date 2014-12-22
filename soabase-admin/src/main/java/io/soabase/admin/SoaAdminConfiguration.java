@@ -18,6 +18,8 @@ package io.soabase.admin;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.soabase.config.ComposedConfiguration;
+import io.soabase.core.SoaConfiguration;
+import io.soabase.zookeeper.discovery.CuratorConfiguration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -34,6 +36,14 @@ public class SoaAdminConfiguration extends Configuration
     @Valid
     @NotNull
     private String footerMessage = "- Internal use only - Proprietary and Confidential";
+
+    @Valid
+    @NotNull
+    private CuratorConfiguration curator = new CuratorConfiguration();
+
+    @Valid
+    @NotNull
+    private SoaConfiguration soa = new SoaConfiguration();
 
     @JsonProperty("appName")
     public String getAppName()
@@ -69,5 +79,29 @@ public class SoaAdminConfiguration extends Configuration
     public void setFooterMessage(String footerMessage)
     {
         this.footerMessage = footerMessage;
+    }
+
+    @JsonProperty("curator")
+    public CuratorConfiguration getCurator()
+    {
+        return curator;
+    }
+
+    @JsonProperty("curator")
+    public void setCurator(CuratorConfiguration curator)
+    {
+        this.curator = curator;
+    }
+
+    @JsonProperty("soa")
+    public SoaConfiguration getSoa()
+    {
+        return soa;
+    }
+
+    @JsonProperty("soa")
+    public void setSoa(SoaConfiguration soa)
+    {
+        this.soa = soa;
     }
 }

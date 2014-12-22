@@ -16,7 +16,6 @@
 package io.soabase.core.features.discovery;
 
 import com.codahale.metrics.health.HealthCheckRegistry;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HealthCheckIntegration implements Runnable
 {
@@ -34,6 +33,6 @@ public class HealthCheckIntegration implements Runnable
     @Override
     public void run()
     {
-        discovery.setHealthyState(health.shouldBeInDiscovery(registry) ? SoaDiscovery.HealthyState.HEALTHY : SoaDiscovery.HealthyState.UNHEALTHY);
+        discovery.setHealthyState(health.shouldBeInDiscovery(registry) ? HealthyState.HEALTHY : HealthyState.UNHEALTHY);
     }
 }

@@ -30,3 +30,5 @@
 * Figure out what @Valid means
 * Figure out why admin jersey apis DW info output doesn't include "api"
 * kill isn't working for soa apps
+* Decide if @XmlRootElement is needed
+* Maybe it's better for all the configs to just have public fields?

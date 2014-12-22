@@ -18,7 +18,8 @@ package io.soabase.core.rest;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import io.soabase.core.SoaFeatures;
-import io.soabase.core.features.discovery.SoaDiscovery;
+import io.soabase.core.features.discovery.ForcedState;
+import io.soabase.core.features.discovery.HealthyState;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import io.soabase.core.rest.entities.ForceType;
 import io.soabase.core.rest.entities.Instance;
@@ -52,7 +53,7 @@ public class DiscoveryApis
     public Response forceRegister(ForceType forceType)
     {
         // TODO logging
-        SoaDiscovery.ForcedState state = forceType.isRegister() ? SoaDiscovery.ForcedState.REGISTER : SoaDiscovery.ForcedState.UNREGISTER;
+        ForcedState state = forceType.isRegister() ? ForcedState.REGISTER : ForcedState.UNREGISTER;
         features.getDiscovery().setForcedState(state);
 
         return Response.ok().build();
@@ -63,7 +64,7 @@ public class DiscoveryApis
     public Response forceClear()
     {
         // TODO logging
-        features.getDiscovery().setForcedState(SoaDiscovery.ForcedState.CLEARED);
+        features.getDiscovery().setForcedState(ForcedState.CLEARED);
 
         return Response.ok().build();
     }
@@ -113,7 +114,7 @@ public class DiscoveryApis
     @GET
     @Path("healthyState")
     @Produces(MediaType.APPLICATION_JSON)
-    public SoaDiscovery.HealthyState getHealthyState()
+    public HealthyState getHealthyState()
     {
         return features.getDiscovery().getHealthyState();
     }
@@ -121,7 +122,7 @@ public class DiscoveryApis
     @GET
     @Path("forcedState")
     @Produces(MediaType.APPLICATION_JSON)
-    public SoaDiscovery.ForcedState getForcedState()
+    public ForcedState getForcedState()
     {
         return features.getDiscovery().getForcedState();
     }

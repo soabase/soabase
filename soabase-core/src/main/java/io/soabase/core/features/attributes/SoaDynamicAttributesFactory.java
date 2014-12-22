@@ -24,5 +24,5 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = NullDynamicAttributesFactory.class)
 public interface SoaDynamicAttributesFactory extends Discoverable
 {
-    public SoaDynamicAttributes build(SoaConfiguration configuration, Environment environment, List<String> scopes);
+    public SoaDynamicAttributes build(Environment environment, List<String> scopes);
 }

@@ -21,7 +21,7 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.config.ComposedConfiguration;
-import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaBundle;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -47,8 +47,7 @@ public class SqlBundle<T extends ComposedConfiguration> implements ConfiguredBun
                 mybatisConfiguration.addMapper(AttributeEntityMapper.class);
                 final SqlSession session = sqlSessionFactory.openSession(true);
 
-                SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
-                soaConfiguration.putNamed(session, SqlSession.class, sqlConfiguration.getSessionName());
+                SoaBundle.getFeatures(environment).putNamed(session, SqlSession.class, sqlConfiguration.getSessionName());
                 Managed managed = new Managed()
                 {
                     @Override

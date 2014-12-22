@@ -31,7 +31,6 @@ import io.soabase.config.ComposedConfiguration;
 import io.soabase.config.FlexibleConfigurationSourceProvider;
 import io.soabase.config.service.FromServices;
 import io.soabase.core.SoaBundle;
-import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.zookeeper.discovery.CuratorBundle;
@@ -94,10 +93,10 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
                 bind(componentManager).to(ComponentManager.class);
             }
         };
-        configuration.as(SoaConfiguration.class).putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
-        configuration.as(SoaConfiguration.class).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
+        SoaBundle.getFeatures(environment).putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
+        SoaBundle.getFeatures(environment).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
-        componentManager.addTab(new TabComponent("", "Services", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.<String>newArrayList("assets/css/main.css")));
+        componentManager.addTab(new TabComponent("", "Services", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.newArrayList("assets/css/main.css")));
         componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html"));
 
         environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("");

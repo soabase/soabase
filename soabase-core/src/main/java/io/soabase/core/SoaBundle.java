@@ -57,7 +57,17 @@ public class SoaBundle<T extends ComposedConfiguration> implements ConfiguredBun
     @Override
     public void initialize(Bootstrap<?> bootstrap)
     {
-        // NOP
+    }
+
+    public static SoaFeatures getFeatures(Environment environment)
+    {
+        SoaFeatures features = (SoaFeatures)environment.getApplicationContext().getAttribute(SoaFeatures.class.getName());
+        if ( features == null )
+        {
+            features = new SoaFeaturesImpl();   // temp version so that named values can be set
+            environment.getApplicationContext().setAttribute(SoaFeatures.class.getName(), features);
+        }
+        return features;
     }
 
     @Override
@@ -75,45 +85,37 @@ public class SoaBundle<T extends ComposedConfiguration> implements ConfiguredBun
 
         Ports ports = getPorts(configuration);
         final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
-        soaConfiguration.setSoaInfo(soaInfo);
 
+        SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(environment, soaInfo));
+        SoaDynamicAttributes attributes = wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)));
+
+        final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo);
         AbstractBinder binder = new AbstractBinder()
         {
             @Override
             protected void configure()
             {
-                bind(soaConfiguration).to(SoaFeatures.class);
-                bind(soaInfo).to(SoaInfo.class);
+                bind(features).to(SoaFeatures.class);
             }
         };
+        setFeaturesInContext(environment, features);
 
         checkCorsFilter(soaConfiguration, environment);
-        initJerseyAdmin(soaConfiguration, ports, environment, binder);
-
-        SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(soaConfiguration, environment, soaInfo));
-        SoaDynamicAttributes attributes = wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(soaConfiguration, environment, scopes)));
-        soaConfiguration.setDiscovery(discovery);
-        soaConfiguration.setAttributes(attributes);
+        initJerseyAdmin(soaConfiguration, features, ports, environment, binder);
 
         startDiscoveryHealth(discovery, soaConfiguration, environment);
 
         environment.jersey().register(binder);
+    }
 
-        Managed managed = new Managed()
+    private void setFeaturesInContext(Environment environment, SoaFeaturesImpl features)
+    {
+        SoaFeaturesImpl tempFeatures = (SoaFeaturesImpl)environment.getApplicationContext().getAttribute(SoaFeatures.class.getName());
+        if ( tempFeatures != null )
         {
-            @Override
-            public void start() throws Exception
-            {
-                soaConfiguration.lock();
-            }
-
-            @Override
-            public void stop() throws Exception
-            {
-                // NOP
-            }
-        };
-        environment.lifecycle().manage(managed);
+            features.setNamed(tempFeatures);
+        }
+        environment.getApplicationContext().setAttribute(SoaFeatures.class.getName(), features);
     }
 
     private SoaDynamicAttributes wrapAttributes(SoaDynamicAttributes attributes)
@@ -239,7 +241,7 @@ public class SoaBundle<T extends ComposedConfiguration> implements ConfiguredBun
         return obj;
     }
 
-    private void initJerseyAdmin(SoaConfiguration configuration, Ports ports, Environment environment, AbstractBinder binder)
+    private void initJerseyAdmin(SoaConfiguration configuration, SoaFeaturesImpl features, Ports ports, Environment environment, AbstractBinder binder)
     {
         if ( (configuration.getAdminJerseyPath() == null) || (ports.adminPort == 0) )
         {
@@ -264,7 +266,7 @@ public class SoaBundle<T extends ComposedConfiguration> implements ConfiguredBun
         environment.admin().addServlet("soa-admin-jersey", jerseyServletContainer.getContainer()).addMapping(jerseyRootPath);
 
         JerseyEnvironment jerseyEnvironment = new JerseyEnvironment(jerseyServletContainer, jerseyConfig);
-        configuration.putNamed(jerseyEnvironment, JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
+        features.putNamed(jerseyEnvironment, JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
         jerseyEnvironment.register(SoaApis.class);
         jerseyEnvironment.register(DiscoveryApis.class);
         jerseyEnvironment.register(DynamicAttributeApis.class);

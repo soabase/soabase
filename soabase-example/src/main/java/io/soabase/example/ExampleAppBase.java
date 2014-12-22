@@ -25,7 +25,6 @@ import io.soabase.config.ComposedConfiguration;
 import io.soabase.config.FlexibleConfigurationSourceProvider;
 import io.soabase.config.service.FromServices;
 import io.soabase.core.SoaBundle;
-import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaInfo;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
@@ -84,8 +83,7 @@ public abstract class ExampleAppBase extends Application<ComposedConfiguration> 
 
         internalRun(configuration, environment);
 
-        SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
-        SoaInfo info = soaConfiguration.getSoaInfo();
+        SoaInfo info = SoaBundle.getFeatures(environment).getSoaInfo();
         System.err.println("Main port: " + info.getMainPort());
         System.err.println("Admin port: " + info.getAdminPort());
     }

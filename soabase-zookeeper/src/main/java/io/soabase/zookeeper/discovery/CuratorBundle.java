@@ -20,7 +20,7 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.config.ComposedConfiguration;
-import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaBundle;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
@@ -51,8 +51,7 @@ public class CuratorBundle<T extends ComposedConfiguration> implements Configure
         };
         environment.lifecycle().manage(managed);
 
-        SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
-        soaConfiguration.putNamed(curator, CuratorFramework.class, curatorConfiguration.getCuratorName());
+        SoaBundle.getFeatures(environment).putNamed(curator, CuratorFramework.class, curatorConfiguration.getCuratorName());
     }
 
     @Override

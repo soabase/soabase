@@ -18,7 +18,7 @@ package io.soabase.sql.attributes;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
@@ -64,9 +64,9 @@ public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
     }
 
     @Override
-    public SoaDynamicAttributes build(SoaConfiguration configuration, Environment environment, List<String> scopes)
+    public SoaDynamicAttributes build(Environment environment, List<String> scopes)
     {
-        SqlSession sqlSession = configuration.getNamedRequired(SqlSession.class, sessionName);
+        SqlSession sqlSession = SoaBundle.getFeatures(environment).getNamedRequired(SqlSession.class, sessionName);
 
         final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(sqlSession, scopes);
         ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("SoaDynamicAttributes-%d", true).build();

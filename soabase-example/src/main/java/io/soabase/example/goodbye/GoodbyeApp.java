@@ -18,7 +18,7 @@ package io.soabase.example.goodbye;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;
 import io.soabase.config.ComposedConfiguration;
-import io.soabase.core.SoaConfiguration;
+import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.example.ExampleAppBase;
 
@@ -37,9 +37,8 @@ public class GoodbyeApp extends ExampleAppBase
     @Override
     protected void internalRun(ComposedConfiguration configuration, Environment environment)
     {
-        SoaConfiguration soaConfiguration = configuration.as(SoaConfiguration.class);
         environment.jersey().register(GoodbyeResource.class);
-        JerseyEnvironment adminJerseyEnvironment = soaConfiguration.getNamedRequired(JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
+        JerseyEnvironment adminJerseyEnvironment = SoaBundle.getFeatures(environment).getNamedRequired(JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
         adminJerseyEnvironment.register(GoodbyeAdminResource.class);
     }
 }

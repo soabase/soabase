@@ -25,6 +25,10 @@ public interface SoaFeatures
 
     public <T> T getNamed(Class<T> clazz, String name);
 
+    public <T> T getNamedRequired(Class<T> clazz, String name);
+
+    public <T> void putNamed(T o, Class<T> clazz, String name);
+
     public SoaDiscovery getDiscovery();
 
     public SoaDynamicAttributes getAttributes();

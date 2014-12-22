@@ -24,5 +24,5 @@ import io.soabase.core.SoaInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = NullDiscoveryFactory.class)
 public interface SoaDiscoveryFactory extends Discoverable
 {
-    public SoaDiscovery build(SoaConfiguration configuration, Environment environment, SoaInfo soaInfo);
+    public SoaDiscovery build(Environment environment, SoaInfo soaInfo);
 }

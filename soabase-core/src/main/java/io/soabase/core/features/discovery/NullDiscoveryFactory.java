@@ -18,7 +18,6 @@ package io.soabase.core.features.discovery;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.common.collect.ImmutableSet;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaInfo;
 import java.util.Collection;
 
@@ -26,7 +25,7 @@ import java.util.Collection;
 public class NullDiscoveryFactory implements SoaDiscoveryFactory
 {
     @Override
-    public SoaDiscovery build(SoaConfiguration configuration, Environment environment, SoaInfo soaInfo)
+    public SoaDiscovery build(Environment environment, SoaInfo soaInfo)
     {
         return new SoaDiscovery()
         {

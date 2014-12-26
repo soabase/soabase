@@ -3,7 +3,6 @@ var SOA_SERVICE_ID_PREFIX = 'soa-service-';
 function soaUpdateInstancesForService(serviceName) {
     $.getJSON('/soa/discovery/all/' + serviceName, function(data){
         var stoplightGreen = $('#soa-stoplight-set-green').html();
-        var stoplightYellow = $('#soa-stoplight-set-yellow').html();
         var stoplightRed = $('#soa-stoplight-set-red').html();
 
         var id = SOA_SERVICE_ID_PREFIX + serviceName;
@@ -17,7 +16,25 @@ function soaUpdateInstancesForService(serviceName) {
             var template = $('#soa-service-instance-template').html();
             var instances = "";
             for ( var i in data ) {
-                instances = instances + template.replace('$CONTENT$', stoplightGreen + data[i].host + ':' + data[i].port);
+                var instance = data[i];
+                var isDiscoverable;
+                if ( instance.forcedState != 'CLEARED' ) {
+                    isDiscoverable = (instance.forcedState === 'REGISTER');
+                } else {
+                    isDiscoverable = (instance.healthyState === 'HEALTHY');
+                }
+                var stopLight = isDiscoverable ? stoplightGreen : stoplightRed;
+                var thisInstance = template.replace('$STOPLIGHT$', stopLight);
+                thisInstance = thisInstance.replace('$INSTANCE_DATA$', instance.host + ':' + instance.port);
+
+                var details = instance.healthyState;
+                if ( instance.forcedState != 'CLEARED' ) {
+                    details = details + " - " + instance.forcedState;
+                }
+                thisInstance = thisInstance.replace('$INSTANCE_DETAILS$', details);
+                thisInstance = thisInstance.replace('$ID$', instance.id);
+
+                instances = instances + thisInstance;
             }
 
             template = $('#soa-service-template').html();
@@ -25,6 +42,13 @@ function soaUpdateInstancesForService(serviceName) {
             content = content.replace('$SERVICE_QTY$', data.length);
             content = content.replace('$INSTANCES$', instances);
             $('#' + id).html(content);
+
+            for ( i in data ) {
+                instance = data[i];
+                $('#soa-force-button-' + instance.id).click(function(){
+                    window.alert('hey');
+                });
+            }
         } else {
             $('#' + id).remove();
         }

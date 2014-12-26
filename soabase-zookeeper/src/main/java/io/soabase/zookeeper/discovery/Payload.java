@@ -76,6 +76,16 @@ public class Payload
         return healthyState;
     }
 
+    public void setForcedState(ForcedState forcedState)
+    {
+        this.forcedState = forcedState;
+    }
+
+    public void setHealthyState(HealthyState healthyState)
+    {
+        this.healthyState = healthyState;
+    }
+
     @Override
     public boolean equals(Object o)
     {

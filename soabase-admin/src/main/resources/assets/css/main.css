@@ -14,15 +14,6 @@
     background: #660000;
 }
 
-.soa-stoplight-yellow-on {
-    background: #FFFF00;
-    box-shadow: 0 0 8px #444411 inset, 0 0 4px #FFFF99;
-}
-
-.soa-stoplight-yellow-off {
-    background: #777733;
-}
-
 .soa-stoplight-green-on {
     background: #00FF00;
     box-shadow: 0 0 8px #001100 inset, 0 0 4px #00CC00;
@@ -30,4 +21,13 @@
 
 .soa-stoplight-green-off {
     background: #004400;
+}
+
+.soa-instance-data {
+    margin-left: 8px;
+    font-weight: bold;
+}
+
+.soa-instance-details {
+    margin-left: 16px;
 }

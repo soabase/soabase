@@ -15,15 +15,12 @@
  */
 package io.soabase.core.rest;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import io.soabase.core.rest.entities.ForceType;
-import io.soabase.core.rest.entities.Instance;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -34,6 +31,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 import java.util.List;
 
 @Path("/soa/discovery")
@@ -82,25 +80,15 @@ public class DiscoveryApis
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        Instance instanceEntity = new Instance(instance.getHost(), instance.getPort(), instance.getAdminPort(), instance.isForceSsl(), instance.getMetaData());
-        return Response.ok(instanceEntity).build();
+        return Response.ok(instance).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("all/{name}")
-    public List<Instance> getInstances(@PathParam("name") String serviceName)
+    public Collection<SoaDiscoveryInstance> getInstances(@PathParam("name") String serviceName)
     {
-        List<SoaDiscoveryInstance> allInstances = Lists.newArrayList(features.getDiscovery().getAllInstances(serviceName));
-        return Lists.transform(allInstances, new Function<SoaDiscoveryInstance, Instance>()
-        {
-            @Nullable
-            @Override
-            public Instance apply(SoaDiscoveryInstance instance)
-            {
-                return new Instance(instance.getHost(), instance.getPort(), instance.getAdminPort(), instance.isForceSsl(), instance.getMetaData());
-            }
-        });
+        return features.getDiscovery().getAllInstances(serviceName);
     }
 
     @GET

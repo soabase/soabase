@@ -27,13 +27,21 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
     private final int port;
     private final boolean forceSsl;
     private final Payload payload;
+    private final String id;
 
-    public SoaDiscoveryInstanceImpl(String host, int port, boolean forceSsl, Payload payload)
+    public SoaDiscoveryInstanceImpl(String id, String host, int port, boolean forceSsl, Payload payload)
     {
+        this.id = Preconditions.checkNotNull(id, "id cannot be null");
         this.payload = Preconditions.checkNotNull(payload, "payload cannot be null");
         this.host = Preconditions.checkNotNull(host, "host cannot be null");
         this.port = port;
         this.forceSsl = forceSsl;
+    }
+
+    @Override
+    public String getId()
+    {
+        return id;
     }
 
     @Override
@@ -104,6 +112,10 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
         {
             return false;
         }
+        if ( !id.equals(that.id) )
+        {
+            return false;
+        }
         //noinspection RedundantIfStatement
         if ( !payload.equals(that.payload) )
         {
@@ -120,6 +132,7 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
         result = 31 * result + port;
         result = 31 * result + (forceSsl ? 1 : 0);
         result = 31 * result + payload.hashCode();
+        result = 31 * result + id.hashCode();
         return result;
     }
 
@@ -131,6 +144,7 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
             ", port=" + port +
             ", forceSsl=" + forceSsl +
             ", payload=" + payload +
+            ", id='" + id + '\'' +
             '}';
     }
 }

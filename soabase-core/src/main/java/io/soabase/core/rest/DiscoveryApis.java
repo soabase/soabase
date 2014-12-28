@@ -15,12 +15,12 @@
  */
 package io.soabase.core.rest;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.discovery.ForcedState;
-import io.soabase.core.features.discovery.HealthyState;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
-import io.soabase.core.rest.entities.ForceType;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -46,23 +46,27 @@ public class DiscoveryApis
     }
 
     @PUT
-    @Path("force")
+    @Path("force/{name}/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response forceRegister(ForceType forceType)
+    public Response forceRegister(@PathParam("name") String serviceName, @PathParam("id") String instanceId, ForcedState forcedState)
     {
         // TODO logging
-        ForcedState state = forceType.isRegister() ? ForcedState.REGISTER : ForcedState.UNREGISTER;
-        features.getDiscovery().setForcedState(state);
+        SoaDiscoveryInstance instance = findInstance(serviceName, instanceId);
+        if ( instance == null )
+        {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        features.getDiscovery().setForcedState(serviceName, instance, forcedState);
 
         return Response.ok().build();
     }
 
     @DELETE
-    @Path("force")
-    public Response forceClear()
+    @Path("force/{name}/{id}")
+    public Response forceClear(@PathParam("name") String serviceName, @PathParam("id") String instanceId)
     {
         // TODO logging
-        features.getDiscovery().setForcedState(ForcedState.CLEARED);
+        features.getDiscovery().setForcedState(serviceName, null, ForcedState.CLEARED);
 
         return Response.ok().build();
     }
@@ -99,19 +103,15 @@ public class DiscoveryApis
         return Lists.newArrayList(features.getDiscovery().getCurrentServiceNames());
     }
 
-    @GET
-    @Path("healthyState")
-    @Produces(MediaType.APPLICATION_JSON)
-    public HealthyState getHealthyState()
+    private SoaDiscoveryInstance findInstance(String serviceName, final String instanceId)
     {
-        return features.getDiscovery().getHealthyState();
-    }
-
-    @GET
-    @Path("forcedState")
-    @Produces(MediaType.APPLICATION_JSON)
-    public ForcedState getForcedState()
-    {
-        return features.getDiscovery().getForcedState();
+        return Iterables.find(features.getDiscovery().getAllInstances(serviceName), new Predicate<SoaDiscoveryInstance>()
+        {
+            @Override
+            public boolean apply(SoaDiscoveryInstance instance)
+            {
+                return instance.getId().equals(instanceId);
+            }
+        }, null);
     }
 }

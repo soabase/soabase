@@ -13,6 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+function soaShowInfiniteProgressBar(message) {
+    if ( message === undefined ) {
+        message = 'Processing...';
+    }
+    $('#soa-infinite-progress-bar-message').html(message);
+
+    $('#soa-infinite-progress-bar-container').modal({
+        'backdrop': 'static',
+        'keyboard': false,
+        'show': true
+    });
+}
+
+function soaHideInfiniteProgressBar() {
+    $('#soa-infinite-progress-bar-container').modal('hide');
+}
+
 function soaShowPage() {
     var h = location.hash;
     var command = '';

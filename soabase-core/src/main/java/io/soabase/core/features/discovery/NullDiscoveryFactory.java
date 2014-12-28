@@ -36,18 +36,6 @@ public class NullDiscoveryFactory implements SoaDiscoveryFactory
             }
 
             @Override
-            public HealthyState getHealthyState()
-            {
-                return HealthyState.HEALTHY;
-            }
-
-            @Override
-            public ForcedState getForcedState()
-            {
-                return ForcedState.CLEARED;
-            }
-
-            @Override
             public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
             {
                 return ImmutableSet.of();
@@ -72,7 +60,7 @@ public class NullDiscoveryFactory implements SoaDiscoveryFactory
             }
 
             @Override
-            public void setForcedState(ForcedState forcedState)
+            public void setForcedState(String serviceName, SoaDiscoveryInstance instance, ForcedState forcedState)
             {
                 // NOP
             }

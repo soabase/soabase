@@ -75,7 +75,7 @@ curl http://localhost:HelloMainPort/hello
 | Request Id                | In an SOA system, a single external user request will result in many internal service       |
 |                           | calls. A method for tying all of them together back to the original request is vital.       |
 |                           | Sobase adds a Request Id header which the wrapped REST Clients are aware of. In the example |
-|                           | you see that the Hello app's REST call tp the Goodbye app maintained the same Request Id.   |
+|                           | you see that the Hello app's REST call to the Goodbye app maintained the same Request Id.   |
 *---------------------------*---------------------------------------------------------------------------------------------*
 
     * Dynamic Attributes
@@ -128,14 +128,14 @@ curl http://localhost:HelloAdminPort/api/soa/attributes/test
 
         This example shows the following features:
 
-*-----------------------*-------------------------------------------------------------------------------------------------*
-| Scoped Attributes     | Soabase dynamic attributes can be scoped. There are three default scopes: Global, service and   |
-|                       | instance. You can also define your own scopes. In the example, the attribute "test" is set at   |
-|                       | the global scope so is the same for both Goodbye and Hello apps. The attribute "test2" is set   |
-|                       | differently for the service scope and so Goodbye and Hello return different values.             |
-*-----------------------*-------------------------------------------------------------------------------------------------*
-| Jersey for Admin      | Soabase adds Jersey support to Dropwizard's admin port. Soabase defines a few APIs and you can  |
-|                       | add your own.                                                                                   |
-*-----------------------*-------------------------------------------------------------------------------------------------*
-| Local Overrides       | Through the admin API you can set instance specific overrides for dynamic attributes.           |
-*-----------------------*-------------------------------------------------------------------------------------------------*
+*-----------------------*--------------------------------------------------------------------------------------------------*
+| Scoped Attributes     | Soabase dynamic attributes can be scoped. There are three default scopes: Global, service and    |
+|                       | instance. You can also define your own scopes. In the example, the attribute "test" is set at    |
+|                       | the global scope so it is the same for both Goodbye and Hello apps. The attribute "test2" is set |
+|                       | differently for the service scope and so Goodbye and Hello return different values.              |
+*-----------------------*--------------------------------------------------------------------------------------------------*
+| Jersey for Admin      | Soabase adds Jersey support to Dropwizard's admin port. Soabase defines a few APIs and you can   |
+|                       | add your own.                                                                                    |
+*-----------------------*--------------------------------------------------------------------------------------------------*
+| Local Overrides       | Through the admin API you can set instance specific overrides for dynamic attributes.            |
+*-----------------------*--------------------------------------------------------------------------------------------------*

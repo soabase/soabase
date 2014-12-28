@@ -4,6 +4,29 @@
 
 </div>
 
+<div class="soa-hidden" id="soa-force-buttons">
+    <form>
+    <div class="radio">
+        <label>
+            <input type="radio" name="soa-force-radios-$ID$" value="CLEARED" checked>
+            Clear any forced state
+        </label>
+    </div>
+    <div class="radio">
+        <label>
+            <input type="radio" name="soa-force-radios-$ID$" value="REGISTER">
+            Force the instance to be registered/available
+        </label>
+    </div>
+    <div class="radio">
+        <label>
+            <input type="radio" name="soa-force-radios-$ID$" value="UNREGISTER">
+            Force the instance to be unregistered/unavailable
+        </label>
+    </div>
+    </form>
+</div>
+
 <div class="soa-hidden" id="soa-stoplight-set-green">
     <div class="soa-stoplight-green-on"></div>
     <div class="soa-stoplight-red-off"></div>

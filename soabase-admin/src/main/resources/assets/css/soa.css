@@ -34,3 +34,11 @@ body {
 .panel-heading span {
     font-weight: bold;
 }
+
+#soa-infinite-progress-bar {
+    width: 400px;
+}
+
+#soa-infinite-progress-bar .progress-bar {
+    width: 100%;
+}

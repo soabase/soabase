@@ -32,3 +32,5 @@
 * kill isn't working for soa apps
 * Decide if @XmlRootElement is needed
 * Maybe it's better for all the configs to just have public fields?
+* Discovery registration should be in background
+* Separate Discovery mutable APIs for admin

@@ -6,8 +6,8 @@
 }
 
 .soa-stoplight-red-on {
-    background: #FF0000;
-    box-shadow: 0 0 8px #110000 inset, 0 0 4px #FF0000;
+    background: #FF3333;
+    box-shadow: 0 0 8px #882222 inset, 0 0 4px #FF3333;
 }
 
 .soa-stoplight-red-off {

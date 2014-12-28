@@ -1,5 +1,26 @@
 var SOA_SERVICE_ID_PREFIX = 'soa-service-';
 
+function soaToName(instance) {
+    return instance.host + ':' + instance.port
+}
+
+function soaForceInstance(serviceName, instanceId, forceValue) {
+    soaShowInfiniteProgressBar();
+    $.ajax({
+        type: "PUT",
+        url: '/soa/discovery/force/' + serviceName + '/' + instanceId,
+        contentType: "application/json",
+        data: JSON.stringify(forceValue),
+        success: function() {
+            soaHideInfiniteProgressBar();
+        },
+        error: function() {
+            soaHideInfiniteProgressBar();
+            // TODO
+        }
+    });
+}
+
 function soaUpdateInstancesForService(serviceName) {
     $.getJSON('/soa/discovery/all/' + serviceName, function(data){
         var stoplightGreen = $('#soa-stoplight-set-green').html();
@@ -25,14 +46,14 @@ function soaUpdateInstancesForService(serviceName) {
                 }
                 var stopLight = isDiscoverable ? stoplightGreen : stoplightRed;
                 var thisInstance = template.replace('$STOPLIGHT$', stopLight);
-                thisInstance = thisInstance.replace('$INSTANCE_DATA$', instance.host + ':' + instance.port);
+                thisInstance = thisInstance.replace('$INSTANCE_DATA$', soaToName(instance));
 
                 var details = instance.healthyState;
                 if ( instance.forcedState != 'CLEARED' ) {
                     details = details + " - " + instance.forcedState;
                 }
                 thisInstance = thisInstance.replace('$INSTANCE_DETAILS$', details);
-                thisInstance = thisInstance.replace('$ID$', instance.id);
+                thisInstance = thisInstance.replace(/\$ID\$/g, instance.id);
 
                 instances = instances + thisInstance;
             }
@@ -44,9 +65,31 @@ function soaUpdateInstancesForService(serviceName) {
             $('#' + id).html(content);
 
             for ( i in data ) {
-                instance = data[i];
-                $('#soa-force-button-' + instance.id).click(function(){
-                    window.alert('hey');
+                var localInstance = data[i];
+                $('#soa-force-button-' + localInstance.id).click(function(){
+                    var buttonTemplate = $('#soa-force-buttons').html();
+                    buttonTemplate = buttonTemplate.replace(/\$ID\$/g, localInstance.id);
+                    bootbox.dialog({
+                        'message': buttonTemplate,
+                        'title': 'Force status of ' + soaToName(localInstance),
+                        'onEscape': function(){
+                            $('#soa-force-button-' + localInstance.id).modal('hide');
+                        },
+                        'buttons': {
+                            'cancel': {
+                                label: "Cancel",
+                                className: "btn-default"
+                            },
+                            'ok': {
+                                label: "OK",
+                                className: "btn-primary",
+                                callback: function () {
+                                    var value = $('input:radio[name=' + ('soa-force-radios-' + localInstance.id) + ']:checked').val();
+                                    soaForceInstance(serviceName, localInstance.id, value);
+                                }
+                            }
+                        }
+                    });
                 });
             }
         } else {

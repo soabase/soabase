@@ -29,9 +29,5 @@ public interface SoaDiscovery
 
     public void setHealthyState(HealthyState healthyState);
 
-    public HealthyState getHealthyState();
-
-    public void setForcedState(ForcedState forcedState);
-
-    public ForcedState getForcedState();
+    public void setForcedState(String serviceName, SoaDiscoveryInstance instance, ForcedState forcedState);
 }

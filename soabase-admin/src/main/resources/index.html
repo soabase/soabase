@@ -58,8 +58,22 @@
     </div>
 </footer>
 
+<div id="soa-infinite-progress-bar-container" class="soa-hidden modal fade">
+    <div id="soa-infinite-progress-bar" class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p id="soa-infinite-progress-bar-message" class="lead">Processing...</p>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script src="/assets/js/bootbox.min.js"></script>
 <script src="/assets/js/soa.js"></script>
 $SOA_JS$
 

@@ -54,6 +54,18 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     private final String bindAddress;
     private final SoaInfo soaInfo;
 
+    private static class FoundInstance
+    {
+        final ServiceInstance<Payload> instance;
+        final ServiceProvider<Payload> provider;
+
+        FoundInstance(ServiceInstance<Payload> instance, ServiceProvider<Payload> provider)
+        {
+            this.instance = instance;
+            this.provider = provider;
+        }
+    }
+
     public ZooKeeperDiscovery(CuratorFramework curator, ZooKeeperDiscoveryFactory factory, SoaInfo soaInfo)
     {
         this.soaInfo = soaInfo;
@@ -104,21 +116,23 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public HealthyState getHealthyState()
+    public void setForcedState(String serviceName, SoaDiscoveryInstance instance, ForcedState forcedState)
     {
-        return us.get().getPayload().getHealthyState();
-    }
-
-    @Override
-    public void setForcedState(ForcedState forcedState)
-    {
-        updateRegistration(us.get().getPayload().getHealthyState(), forcedState);
-    }
-
-    @Override
-    public ForcedState getForcedState()
-    {
-        return us.get().getPayload().getForcedState();
+        // TODO logging
+        try
+        {
+            ServiceInstance<Payload> foundInstance = discovery.queryForInstance(serviceName, instance.getId());
+            if ( foundInstance != null )
+            {
+                ServiceInstance<Payload> updatedInstance = buildInstance(serviceName, instance.getPort(), foundInstance.getPayload(), foundInstance.getId());
+                discovery.registerService(updatedInstance);
+            } // TODO else?
+        }
+        catch ( Exception e )
+        {
+            // TODO logging
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -197,43 +211,10 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     @Override
     public void noteError(String serviceName, final SoaDiscoveryInstance errorInstance)
     {
-        ServiceProvider<Payload> provider = providers.getUnchecked(serviceName);
-        if ( provider != null )
+        FoundInstance foundInstance = findInstanceFromProvider(serviceName, errorInstance);
+        if ( foundInstance != null )
         {
-            try
-            {
-                ServiceInstance<Payload> foundInstance = Iterables.find
-                    (
-                        provider.getAllInstances(),
-                        new Predicate<ServiceInstance<Payload>>()
-                        {
-                            @Override
-                            public boolean apply(ServiceInstance<Payload> instance)
-                            {
-                                if ( instance.getAddress().equals(errorInstance.getHost()) )
-                                {
-                                    //noinspection SimplifiableIfStatement
-                                    if ( errorInstance.getPort() != 0 )
-                                    {
-                                        return errorInstance.isForceSsl() ? (errorInstance.getPort() == instance.getSslPort()) : (errorInstance.getPort() == instance.getPort());
-                                    }
-                                    return true;
-                                }
-                                return false;
-                            }
-                        },
-                        null
-                    );
-                if ( foundInstance != null )
-                {
-                    provider.noteError(foundInstance);
-                }
-            }
-            catch ( Exception e )
-            {
-                // TODO logging
-                throw new RuntimeException(e);
-            }
+            foundInstance.provider.noteError(foundInstance.instance);
         }
     }
 
@@ -252,6 +233,48 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     {
         providers.invalidateAll();
         CloseableUtils.closeQuietly(discovery);
+    }
+
+    private FoundInstance findInstanceFromProvider(String serviceName, final SoaDiscoveryInstance instanceToFind)
+    {
+        ServiceInstance<Payload> foundInstance = null;
+        ServiceProvider<Payload> provider = providers.getUnchecked(serviceName);
+        if ( provider != null )
+        {
+            try
+            {
+                foundInstance = Iterables.find
+                    (
+                        provider.getAllInstances(),
+                        new Predicate<ServiceInstance<Payload>>()
+                        {
+                            @Override
+                            public boolean apply(ServiceInstance<Payload> instance)
+                            {
+/*
+                                if ( instance.getAddress().equals(instanceToFind.getHost()) )
+                                {
+                                    //noinspection SimplifiableIfStatement
+                                    if ( instanceToFind.getPort() != 0 )
+                                    {
+                                        return instanceToFind.isForceSsl() ? (instanceToFind.getPort() == instance.getSslPort()) : (instanceToFind.getPort() == instance.getPort());
+                                    }
+                                    return true;
+                                }
+*/
+                                return instanceToFind.getId().equals(instance.getId());
+                            }
+                        },
+                        null
+                    );
+            }
+            catch ( Exception e )
+            {
+                // TODO logging
+                throw new RuntimeException(e);
+            }
+        }
+        return (foundInstance != null) ? new FoundInstance(foundInstance, provider) : null;
     }
 
     private SoaDiscoveryInstance toSoaInstance(ServiceInstance<Payload> instance)
@@ -294,10 +317,15 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
 
     private ServiceInstance<Payload> buildInstance(Payload payload, String id) throws Exception
     {
+        return buildInstance(soaInfo.getServiceName(), soaInfo.getMainPort(), payload, id);
+    }
+
+    private ServiceInstance<Payload> buildInstance(String serviceName, int mainPort, Payload payload, String id) throws Exception
+    {
         ServiceInstanceBuilder<Payload> builder = ServiceInstance.<Payload>builder()
-            .name(soaInfo.getServiceName())
+            .name(serviceName)
             .payload(payload)
-            .port(soaInfo.getMainPort());
+            .port(mainPort);
         if ( id != null )
         {
             builder = builder.id(id);

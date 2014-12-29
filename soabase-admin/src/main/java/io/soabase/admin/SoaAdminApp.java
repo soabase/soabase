@@ -30,6 +30,7 @@ import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.config.FlexibleConfigurationSourceProvider;
 import io.soabase.core.rest.DiscoveryApis;
+import io.soabase.core.rest.LoggingApis;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import java.util.prefs.Preferences;

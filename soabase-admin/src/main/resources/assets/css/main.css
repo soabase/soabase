@@ -16,7 +16,6 @@
 }
 
 .soa-instance-data {
-    margin-left: 8px;
     font-weight: bold;
 }
 
@@ -27,4 +26,9 @@
 .soa-service-body-toggle, .soa-service-instance-details {
     cursor: pointer;
     font-weight: normal !important;
+}
+
+.soa-service-instance-details {
+    margin-left: 8px;
+    margin-right: 3px;
 }

@@ -29,11 +29,9 @@
 
 <div class="soa-hidden" id="soa-stoplight-set-green">
     <div class="soa-stoplight-green-on"></div>
-    <div class="soa-stoplight-red-off"></div>
 </div>
 
 <div class="soa-hidden" id="soa-stoplight-set-red">
-    <div class="soa-stoplight-green-off"></div>
     <div class="soa-stoplight-red-on"></div>
 </div>
 
@@ -46,8 +44,8 @@
 
 <div class="soa-hidden" id="soa-service-template">
     <div class="panel panel-primary">
-        <div class="panel-heading list-group-item"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> <span>$SERVICE_NAME$</span> <span class="badge">$SERVICE_QTY$</span></div>
-        <div class="panel-body">
+        <div class="panel-heading list-group-item"><span id="soa-service-body-toggle-$SERVICE_NAME$" class="soa-service-body-toggle glyphicon glyphicon-chevron-down" aria-hidden="true"></span> <span>$SERVICE_NAME$</span> <span class="badge">$SERVICE_QTY$</span></div>
+        <div id="soa-service-body-$SERVICE_NAME$" class="panel-body">
             <ul class="list-group">
                 $INSTANCES$
             </ul>

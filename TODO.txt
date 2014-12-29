@@ -34,3 +34,4 @@
 * Maybe it's better for all the configs to just have public fields?
 * Discovery registration should be in background
 * Separate Discovery mutable APIs for admin
+* Get rid of soa-hidden

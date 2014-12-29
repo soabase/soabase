@@ -1,4 +1,4 @@
-.soa-stoplight-red-on, .soa-stoplight-yellow-on, .soa-stoplight-green-on, .soa-stoplight-red-off, .soa-stoplight-yellow-off, .soa-stoplight-green-off {
+.soa-stoplight-red-on, .soa-stoplight-green-on {
     display: inline-block;
     width: 25px;
     height: 25px;
@@ -10,17 +10,9 @@
     box-shadow: 0 0 8px #882222 inset, 0 0 4px #FF3333;
 }
 
-.soa-stoplight-red-off {
-    background: #660000;
-}
-
 .soa-stoplight-green-on {
     background: #00FF00;
     box-shadow: 0 0 8px #001100 inset, 0 0 4px #00CC00;
-}
-
-.soa-stoplight-green-off {
-    background: #004400;
 }
 
 .soa-instance-data {
@@ -30,4 +22,8 @@
 
 .soa-instance-details {
     margin-left: 16px;
+}
+
+.soa-service-body-toggle {
+    cursor: pointer;
 }

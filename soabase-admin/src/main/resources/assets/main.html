@@ -6,24 +6,24 @@
 
 <div class="soa-hidden" id="soa-force-buttons">
     <form>
-    <div class="radio">
-        <label>
-            <input type="radio" name="soa-force-radios-$ID$" value="CLEARED" checked>
-            Clear any forced state
-        </label>
-    </div>
-    <div class="radio">
-        <label>
-            <input type="radio" name="soa-force-radios-$ID$" value="REGISTER">
-            Force the instance to be registered/available
-        </label>
-    </div>
-    <div class="radio">
-        <label>
-            <input type="radio" name="soa-force-radios-$ID$" value="UNREGISTER">
-            Force the instance to be unregistered/unavailable
-        </label>
-    </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="soa-force-radios-$ID$" value="CLEARED" checked>
+                Clear any forced state
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="soa-force-radios-$ID$" value="REGISTER">
+                Force the instance to be registered/available
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="soa-force-radios-$ID$" value="UNREGISTER">
+                Force the instance to be unregistered/unavailable
+            </label>
+        </div>
     </form>
 </div>
 
@@ -37,18 +37,23 @@
 
 <div class="soa-hidden" id="soa-service-instance-template">
     <div class="list-group-item container-fluid">
-        <span>$STOPLIGHT$</span> <span class="soa-instance-data lead">$INSTANCE_DATA$</span> <span class="soa-instance-details">$INSTANCE_DETAILS$</span>
-        <div class="pull-right text-right"><button id="soa-force-button-$ID$" type="button" class="btn btn-default">Force...</button></div>
+        <span>$STOPLIGHT$</span> <span class="soa-instance-data large">$INSTANCE_DATA$</span> <span class="soa-service-instance-details glyphicon glyphicon-zoom-in large"></span> <span class="soa-instance-details">$INSTANCE_DETAILS$</span>
+
+        <div class="pull-right text-right">
+            <button id="soa-force-button-$ID$" type="button" class="btn btn-default">Force...</button>
+        </div>
     </div>
 </div>
 
 <div class="soa-hidden" id="soa-service-template">
     <div class="panel panel-primary">
-        <div class="panel-heading list-group-item"><span id="soa-service-body-toggle-$SERVICE_NAME$" class="soa-service-body-toggle glyphicon glyphicon-chevron-down" aria-hidden="true"></span> <span>$SERVICE_NAME$</span> <span class="badge">$SERVICE_QTY$</span></div>
-        <div id="soa-service-body-$SERVICE_NAME$" class="panel-body">
-            <ul class="list-group">
-                $INSTANCES$
-            </ul>
+        <div class="panel-heading list-group-item"><span id="soa-service-body-toggle-$SERVICE_NAME$" data-toggle="collapse" data-target="#soa-service-body-collapse-$SERVICE_NAME$" class="soa-service-body-toggle glyphicon glyphicon-collapse-down large" aria-hidden="true"></span> <span class="large">$SERVICE_NAME$</span> <span class="badge">$SERVICE_QTY$</span></div>
+        <div class="collapse in" id="soa-service-body-collapse-$SERVICE_NAME$">
+            <div id="soa-service-body-$SERVICE_NAME$" class="panel-body">
+                <ul class="list-group ">
+                    $INSTANCES$
+                </ul>
+            </div>
         </div>
     </div>
 </div>

@@ -1,13 +1,13 @@
 .soa-stoplight-red-on, .soa-stoplight-green-on {
     display: inline-block;
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
 }
 
 .soa-stoplight-red-on {
     background: #FF3333;
-    box-shadow: 0 0 8px #882222 inset, 0 0 4px #FF3333;
+    box-shadow: 0 0 8px #441111 inset, 0 0 4px #FF3333;
 }
 
 .soa-stoplight-green-on {
@@ -24,6 +24,7 @@
     margin-left: 16px;
 }
 
-.soa-service-body-toggle {
+.soa-service-body-toggle, .soa-service-instance-details {
     cursor: pointer;
+    font-weight: normal !important;
 }

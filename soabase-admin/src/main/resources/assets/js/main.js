@@ -21,11 +21,6 @@ function soaForceInstance(serviceName, instanceId, forceValue) {
     });
 }
 
-function soaToggleBody(serviceName) {
-    $('#soa-service-body-toggle-' + serviceName).toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
-    $('#soa-service-body-' + serviceName).toggleClass('soa-hidden');
-}
-
 function soaUpdateInstancesForService(serviceName) {
     $.getJSON('/soa/discovery/all/' + serviceName, function(data){
         var stoplightGreen = $('#soa-stoplight-set-green').html();
@@ -69,7 +64,7 @@ function soaUpdateInstancesForService(serviceName) {
             content = content.replace('$INSTANCES$', instances);
             $('#' + id).html(content);
             $('#soa-service-body-toggle-' + serviceName).click(function(){
-                soaToggleBody(serviceName);
+                $(this).toggleClass('glyphicon-expand glyphicon-collapse-down');
             });
 
             for ( i in data ) {

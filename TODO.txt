@@ -15,6 +15,9 @@
 ====
 
 - Admin console
+    - Instances (discovery) tab
+    * Attributes tab
+    * Admin console should have a "logs" feature to get individual service logs
 * Hystrix?
 * Archaius?
 * Eureka?

@@ -38,4 +38,4 @@
 * Separate Discovery mutable APIs for admin
 * Get rid of soa-hidden
 * Write out GCs? Threads?
-* Get rid of bootbox - it ends up doubling IDs
+* Get rid of or limit bootbox - it ends up doubling IDs

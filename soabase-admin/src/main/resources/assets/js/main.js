@@ -84,6 +84,9 @@ function soaUpdateInstancesForService(serviceName) {
     $.getJSON('/soa/discovery/all/' + serviceName, function(data){
         var stoplightGreen = $('#soa-stoplight-set-green').html();
         var stoplightRed = $('#soa-stoplight-set-red').html();
+        var healthy = $('#soa-service-healthy').html();
+        var unHealthy = $('#soa-service-unhealthy').html();
+        var forced = $('#soa-service-forced').html();
 
         var id = SOA_SERVICE_ID_PREFIX + serviceName;
         var divExists = $('#' + id).length > 0;
@@ -107,9 +110,9 @@ function soaUpdateInstancesForService(serviceName) {
                 var thisInstance = template.replace('$STOPLIGHT$', stopLight);
                 thisInstance = thisInstance.replace('$INSTANCE_DATA$', soaToName(instance));
 
-                var details = instance.healthyState;
+                var details = (instance.healthyState === 'HEALTHY') ? healthy : unHealthy;
                 if ( instance.forcedState != 'CLEARED' ) {
-                    details = details + " - " + instance.forcedState;
+                    details = details + forced.replace('$VALUE$', instance.forcedState.toLowerCase());
                 }
                 thisInstance = thisInstance.replace('$INSTANCE_DETAILS$', details);
                 thisInstance = thisInstance.replace(/\$ID\$/g, instance.id);

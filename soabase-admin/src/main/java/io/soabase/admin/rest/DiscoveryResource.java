@@ -16,7 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +48,9 @@ public class DiscoveryResource
     public Collection<SoaDiscoveryInstance> getInstances(@PathParam("name") String serviceName)
     {
         SoaExtendedDiscovery discovery = getDiscovery();
-        return discovery.queryForAllInstances(serviceName);
+        List<SoaDiscoveryInstance> instances = Lists.newArrayList(discovery.queryForAllInstances(serviceName));
+        Collections.sort(instances);
+        return instances;
     }
 
     @PUT

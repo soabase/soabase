@@ -55,7 +55,7 @@
 
 <div class="soa-hidden" id="soa-service-instance-template">
     <div class="list-group-item container-fluid">
-        <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data large">$INSTANCE_DATA$</span> <span class="soa-instance-details">$INSTANCE_DETAILS$</span>
+        <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data large">$INSTANCE_DATA$</span> $INSTANCE_DETAILS$
 
         <div class="pull-right text-right">
             <button id="soa-logs-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> Logs</button>
@@ -81,4 +81,17 @@
     <select id="soa-service-logs-file" class="form-control">
         $FILES$
     </select>
+</div>
+
+<div class="soa-hidden" id="soa-service-healthy">
+    <span class="soa-instance-details"><span class="glyphicon glyphicon-heart soa-service-healthy" aria-hidden="true"></span> Healthy</span>
+</div>
+
+
+<div class="soa-hidden" id="soa-service-unhealthy">
+    <span class="soa-instance-details"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> Unhealthy</span>
+</div>
+
+<div class="soa-hidden" id="soa-service-forced">
+    <span class="soa-instance-details"><span class="glyphicon glyphicon-pushpin soa-service-forced" aria-hidden="true"></span> Force $VALUE$</span>
 </div>

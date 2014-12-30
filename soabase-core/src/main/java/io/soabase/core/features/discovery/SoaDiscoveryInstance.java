@@ -17,7 +17,7 @@ package io.soabase.core.features.discovery;
 
 import java.util.Map;
 
-public interface SoaDiscoveryInstance
+public interface SoaDiscoveryInstance extends Comparable<SoaDiscoveryInstance>
 {
     public String getId();
 

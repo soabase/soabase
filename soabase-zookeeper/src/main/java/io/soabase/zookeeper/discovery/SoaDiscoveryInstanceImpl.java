@@ -87,6 +87,20 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
     }
 
     @Override
+    public int compareTo(SoaDiscoveryInstance o)
+    {
+        if ( o == null )
+        {
+            return -1;
+        }
+        if ( this.equals(o) )
+        {
+            return 0;
+        }
+        return host.compareTo(o.getHost());
+    }
+
+    @Override
     public boolean equals(Object o)
     {
         if ( this == o )

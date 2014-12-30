@@ -5,6 +5,10 @@
     border-radius: 50%;
 }
 
+.soa-service-healthy {
+    color: #FF3333;
+}
+
 .soa-stoplight-red-on {
     background: #FF3333;
     box-shadow: 0 0 8px #441111 inset, 0 0 4px #FF3333;
@@ -15,12 +19,12 @@
     box-shadow: 0 0 8px #001100 inset, 0 0 4px #00CC00;
 }
 
-.soa-instance-data {
-    font-weight: bold;
+.soa-service-forced {
+    color: #00008b;
 }
 
-.soa-instance-details {
-    margin-left: 16px;
+.soa-instance-data {
+    font-weight: bold;
 }
 
 .soa-service-body-toggle {
@@ -38,4 +42,8 @@
 
 #soa-service-logs select {
     height: 10em;
+}
+
+.soa-instance-details {
+    margin-left: 16px;
 }

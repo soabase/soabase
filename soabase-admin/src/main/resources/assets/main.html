@@ -8,19 +8,19 @@
     <form>
         <div class="radio">
             <label>
-                <input type="radio" name="soa-force-radios-$ID$" value="CLEARED" checked>
+                <input type="radio" name="soa-force-radios" value="CLEARED" checked>
                 Clear any forced state
             </label>
         </div>
         <div class="radio">
             <label>
-                <input type="radio" name="soa-force-radios-$ID$" value="REGISTER">
+                <input type="radio" name="soa-force-radios" value="REGISTER">
                 Force the instance to be registered/available
             </label>
         </div>
         <div class="radio">
             <label>
-                <input type="radio" name="soa-force-radios-$ID$" value="UNREGISTER">
+                <input type="radio" name="soa-force-radios" value="UNREGISTER">
                 Force the instance to be unregistered/unavailable
             </label>
         </div>
@@ -37,10 +37,11 @@
 
 <div class="soa-hidden" id="soa-service-instance-template">
     <div class="list-group-item container-fluid">
-        <span>$STOPLIGHT$</span> <span class="soa-service-instance-details glyphicon glyphicon-fullscreen"></span><span class="soa-instance-data large">$INSTANCE_DATA$</span> <span class="soa-instance-details">$INSTANCE_DETAILS$</span>
+        <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data large">$INSTANCE_DATA$</span> <span class="soa-instance-details">$INSTANCE_DETAILS$</span>
 
         <div class="pull-right text-right">
-            <button id="soa-force-button-$ID$" type="button" class="btn btn-default">Force...</button>
+            <button id="soa-logs-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> Logs</button>
+            <button id="soa-force-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Force...</button>
         </div>
     </div>
 </div>
@@ -56,4 +57,10 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="soa-hidden" id="soa-service-logs">
+    <select id="soa-service-logs-file" class="form-control">
+        $FILES$
+    </select>
 </div>

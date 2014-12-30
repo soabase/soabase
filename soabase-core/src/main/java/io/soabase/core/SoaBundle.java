@@ -25,6 +25,7 @@ import io.dropwizard.jersey.setup.JerseyContainerHolder;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.jetty.HttpConnectorFactory;
+import io.dropwizard.jetty.setup.ServletEnvironment;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.logging.AppenderFactory;
 import io.dropwizard.logging.FileAppenderFactory;
@@ -126,7 +127,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         };
         setFeaturesInContext(environment, features);
 
-        checkCorsFilter(soaConfiguration, environment);
+        checkCorsFilter(soaConfiguration, environment.servlets());
         initJerseyAdmin(soaConfiguration, features, ports, environment, binder);
 
         startDiscoveryHealth(discovery, soaConfiguration, environment);
@@ -234,13 +235,13 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         service.scheduleAtFixedRate(new HealthCheckIntegration(environment.healthChecks(), discovery, discoveryHealth), soaConfiguration.getDiscoveryHealthCheckPeriodMs(), soaConfiguration.getDiscoveryHealthCheckPeriodMs(), TimeUnit.MILLISECONDS);
     }
 
-    private void checkCorsFilter(SoaConfiguration configuration, Environment environment)
+    private void checkCorsFilter(SoaConfiguration configuration, ServletEnvironment servlets)
     {
         if ( configuration.isAddCorsFilter() )
         {
             // from http://jitterted.com/tidbits/2014/09/12/cors-for-dropwizard-0-7-x/
 
-            FilterRegistration.Dynamic filter = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+            FilterRegistration.Dynamic filter = servlets.addFilter("CORS", CrossOriginFilter.class);
             filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
             filter.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,PUT,POST,DELETE,OPTIONS");
             filter.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
@@ -300,6 +301,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         jerseyEnvironment.register(binder);
         jerseyEnvironment.setUrlPattern(jerseyConfig.getUrlPattern());
         jerseyEnvironment.register(new JacksonMessageBodyProvider(environment.getObjectMapper(), environment.getValidator()));
+
+        checkCorsFilter(configuration, environment.admin());
     }
 
     private LoggingReader initLogging(Configuration configuration) throws IOException

@@ -23,12 +23,19 @@
     margin-left: 16px;
 }
 
-.soa-service-body-toggle, .soa-service-instance-details {
+.soa-service-body-toggle {
     cursor: pointer;
     font-weight: normal !important;
 }
 
-.soa-service-instance-details {
-    margin-left: 8px;
-    margin-right: 3px;
+.soa-instance-stoplight {
+    margin-right: 8px;
+}
+
+#soa-service-logs-output {
+    margin-top: 8px;
+}
+
+#soa-service-logs select {
+    height: 10em;
 }

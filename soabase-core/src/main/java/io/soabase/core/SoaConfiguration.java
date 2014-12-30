@@ -63,7 +63,7 @@ public class SoaConfiguration
     private List<String> scopes = ImmutableList.of();
 
     @Valid
-    private boolean addCorsFilter = false;
+    private boolean addCorsFilter = true;
 
     @Valid
     private boolean registerInDiscovery = true;

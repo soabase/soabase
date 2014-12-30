@@ -5,18 +5,31 @@ function soaToName(instance) {
 }
 
 function soaHandleForceButton(serviceName, localInstance) {
-    $('#soa-force-dialog-instance-id').val(localInstance.id);
-    $('#soa-force-dialog-service-name').val(serviceName);
-    $('#soa-force-dialog .modal-title').text('Force status of ' + soaToName(localInstance));
-    $('#soa-force-dialog .soa-force-radios').filter('[value="CLEARED"]').prop('checked', true);
-    $('#soa-force-dialog').modal('show');
+    var template = soaGetTemplate('soa-force-dialog-content');
+    bootbox.dialog({
+        'message': template,
+        'title': 'Force status of ' + soaToName(localInstance),
+        'onEscape': function () {
+            bootbox.hideAll();
+        },
+        'buttons': {
+            'cancel': {
+                label: "Cancel",
+                className: "btn-default"
+            },
+            'ok': {
+                label: "Submit",
+                className: "btn-primary",
+                callback: function () {
+                    var forceValue = $('.soa-force-radios').filter(':checked').val();
+                    soaForceDialogSubmit(serviceName, localInstance.id, forceValue);
+                }
+            }
+        }
+    });
 }
 
-function soaForceDialogSubmit() {
-    var serviceName = $('#soa-force-dialog-service-name').val();
-    var instanceId = $('#soa-force-dialog-instance-id').val();
-    var forceValue = $('#soa-force-dialog .soa-force-radios').filter(':checked').val();
-
+function soaForceDialogSubmit(serviceName, instanceId, forceValue) {
     soaShowInfiniteProgressBar();
     $.ajax({
         type: "PUT",
@@ -33,7 +46,6 @@ function soaForceDialogSubmit() {
     });
 }
 
-var soaLogsDialogTemplate = '';
 function soaShowLogWindow(localInstance, filesData) {
     if ( filesData.length == 0 ) {
         bootbox.alert('No log files found.');
@@ -45,7 +57,9 @@ function soaShowLogWindow(localInstance, filesData) {
         logFiles = logFiles + '<option>' + filesData[i].name + '</option>';
     }
 
-    var localTemplate = soaLogsDialogTemplate.replace('$FILES$', logFiles);
+    var localTemplate = soaGetTemplate('soa-service-logs', {
+        '$FILES$': logFiles
+    });
     bootbox.dialog({
         'message': localTemplate,
         'title': 'Logs for ' + soaToName(localInstance),
@@ -82,11 +96,11 @@ function soaHandleLogButton(serviceName, localInstance) {
 
 function soaUpdateInstancesForService(serviceName) {
     $.getJSON('/soa/discovery/all/' + serviceName, function(data){
-        var stoplightGreen = $('#soa-stoplight-set-green').html();
-        var stoplightRed = $('#soa-stoplight-set-red').html();
-        var healthy = $('#soa-service-healthy').html();
-        var unHealthy = $('#soa-service-unhealthy').html();
-        var forced = $('#soa-service-forced').html();
+        var stoplightGreen = soaGetTemplate('soa-stoplight-set-green');
+        var stoplightRed = soaGetTemplate('soa-stoplight-set-red');
+        var healthy = soaGetTemplate('soa-service-healthy');
+        var unHealthy = soaGetTemplate('soa-service-unhealthy');
+        var forced = soaGetTemplate('soa-service-forced');
 
         var id = SOA_SERVICE_ID_PREFIX + serviceName;
         var divExists = $('#' + id).length > 0;
@@ -96,7 +110,6 @@ function soaUpdateInstancesForService(serviceName) {
                 $(div).attr('id', id).appendTo('#soa-services');
             }
 
-            var template = $('#soa-service-instance-template').html();
             var instances = "";
             for ( var i in data ) {
                 var instance = data[i];
@@ -107,23 +120,24 @@ function soaUpdateInstancesForService(serviceName) {
                     isDiscoverable = (instance.healthyState === 'HEALTHY');
                 }
                 var stopLight = isDiscoverable ? stoplightGreen : stoplightRed;
-                var thisInstance = template.replace('$STOPLIGHT$', stopLight);
-                thisInstance = thisInstance.replace('$INSTANCE_DATA$', soaToName(instance));
-
                 var details = (instance.healthyState === 'HEALTHY') ? healthy : unHealthy;
                 if ( instance.forcedState != 'CLEARED' ) {
                     details = details + forced.replace('$VALUE$', instance.forcedState.toLowerCase());
                 }
-                thisInstance = thisInstance.replace('$INSTANCE_DETAILS$', details);
-                thisInstance = thisInstance.replace(/\$ID\$/g, instance.id);
-
+                var thisInstance = soaGetTemplate('soa-service-instance-template', {
+                    '$STOPLIGHT$': stopLight,
+                    '$INSTANCE_DATA$': soaToName(instance),
+                    '$INSTANCE_DETAILS$': details,
+                    '$ID$': instance.id
+                });
                 instances = instances + thisInstance;
             }
 
-            template = $('#soa-service-template').html();
-            var content = template.replace(/\$SERVICE_NAME\$/g, serviceName);
-            content = content.replace('$SERVICE_QTY$', data.length);
-            content = content.replace('$INSTANCES$', instances);
+            var content = soaGetTemplate('soa-service-template', {
+                '$SERVICE_NAME$': serviceName,
+                '$SERVICE_QTY$': data.length,
+                '$INSTANCES$': instances
+            });
             $('#' + id).html(content);
             $('#soa-service-body-toggle-' + serviceName).click(function(){
                 $(this).toggleClass('glyphicon-expand glyphicon-collapse-down');
@@ -155,15 +169,6 @@ function soaUpdateInstances() {
 }
 
 $(function() {
-    soaLogsDialogTemplate = $('#soa-service-logs').html();
-    $('#soa-service-logs').remove();
-
-    $('#soa-force-dialog-submit').click(function(){
-        $('#soa-force-dialog').modal('hide');
-        soaForceDialogSubmit();
-        return true;
-    });
-
     $('#soa-tab-').bind('soa-show', function(){
         soaUpdateInstances();
     });

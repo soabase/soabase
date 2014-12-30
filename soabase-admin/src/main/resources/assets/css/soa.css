@@ -6,7 +6,8 @@ body {
     padding-top: 70px;
     margin-bottom: 37px;
 }
-.soa-hidden {
+
+.soa-hidden, .soa-template {
     display: none;
 }
 

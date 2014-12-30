@@ -4,56 +4,38 @@
 
 </div>
 
-<div class="modal fade" id="soa-force-dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"></h4>
-            </div>
-
-            <div class="modal-body">
-                <form name="soa-force-dialog">
-                    <input type="hidden" id="soa-force-dialog-instance-id">
-                    <input type="hidden" id="soa-force-dialog-service-name">
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="soa-force-radios" class="soa-force-radios" value="CLEARED" checked>
-                            Clear any forced state
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="soa-force-radios" class="soa-force-radios" value="REGISTER">
-                            Force the instance to be registered/available
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="soa-force-radios" class="soa-force-radios" value="UNREGISTER">
-                            Force the instance to be unregistered/unavailable
-                        </label>
-                    </div>
-                </form>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="soa-force-dialog-submit">Submit</button>
-            </div>
+<div class="soa-template" id="soa-force-dialog-content">
+    <form name="soa-force-dialog">
+        <div class="radio">
+            <label>
+                <input type="radio" name="soa-force-radios" class="soa-force-radios" value="CLEARED" checked>
+                Clear any forced state
+            </label>
         </div>
-    </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="soa-force-radios" class="soa-force-radios" value="REGISTER">
+                Force the instance to be registered/available
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="soa-force-radios" class="soa-force-radios" value="UNREGISTER">
+                Force the instance to be unregistered/unavailable
+            </label>
+        </div>
+    </form>
 </div>
 
-<div class="soa-hidden" id="soa-stoplight-set-green">
+<div class="soa-template" id="soa-stoplight-set-green">
     <div class="soa-stoplight-green-on"></div>
 </div>
 
-<div class="soa-hidden" id="soa-stoplight-set-red">
+<div class="soa-template" id="soa-stoplight-set-red">
     <div class="soa-stoplight-red-on"></div>
 </div>
 
-<div class="soa-hidden" id="soa-service-instance-template">
+<div class="soa-template" id="soa-service-instance-template">
     <div class="list-group-item row">
         <div class="col-md-7 soa-service-instance-cell">
             <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data large">$INSTANCE_DATA$</span>
@@ -70,7 +52,7 @@
     </div>
 </div>
 
-<div class="soa-hidden" id="soa-service-template">
+<div class="soa-template" id="soa-service-template">
     <div class="panel panel-primary">
         <div class="panel-heading list-group-item"><span id="soa-service-body-toggle-$SERVICE_NAME$" data-toggle="collapse" data-target="#soa-service-body-collapse-$SERVICE_NAME$" class="soa-service-body-toggle glyphicon glyphicon-collapse-down large" aria-hidden="true"></span> <span class="large">$SERVICE_NAME$</span> <span class="badge">$SERVICE_QTY$</span></div>
         <div class="collapse in" id="soa-service-body-collapse-$SERVICE_NAME$">
@@ -83,21 +65,21 @@
     </div>
 </div>
 
-<div class="soa-hidden" id="soa-service-logs">
-    <select id="soa-service-logs-file" class="form-control">
-        $FILES$
-    </select>
-</div>
-
-<div class="soa-hidden" id="soa-service-healthy">
+<div class="soa-template" id="soa-service-healthy">
     <span class="glyphicon glyphicon-heart soa-service-healthy" aria-hidden="true"></span> Healthy
 </div>
 
 
-<div class="soa-hidden" id="soa-service-unhealthy">
+<div class="soa-template" id="soa-service-unhealthy">
     <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> Unhealthy
 </div>
 
-<div class="soa-hidden" id="soa-service-forced">
+<div class="soa-template" id="soa-service-forced">
     <span class="glyphicon glyphicon-pushpin soa-service-forced" aria-hidden="true"></span> Force $VALUE$
+</div>
+
+<div class="soa-template" id="soa-service-logs">
+    <select id="soa-service-logs-file" class="form-control">
+        $FILES$
+    </select>
 </div>

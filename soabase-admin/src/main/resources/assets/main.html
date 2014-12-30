@@ -4,27 +4,45 @@
 
 </div>
 
-<div class="soa-hidden" id="soa-force-buttons">
-    <form>
-        <div class="radio">
-            <label>
-                <input type="radio" name="soa-force-radios" value="CLEARED" checked>
-                Clear any forced state
-            </label>
+<div class="modal fade" id="soa-force-dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"></h4>
+            </div>
+
+            <div class="modal-body">
+                <form name="soa-force-dialog">
+                    <input type="hidden" id="soa-force-dialog-instance-id">
+                    <input type="hidden" id="soa-force-dialog-service-name">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="soa-force-radios" class="soa-force-radios" value="CLEARED" checked>
+                            Clear any forced state
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="soa-force-radios" class="soa-force-radios" value="REGISTER">
+                            Force the instance to be registered/available
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="soa-force-radios" class="soa-force-radios" value="UNREGISTER">
+                            Force the instance to be unregistered/unavailable
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="soa-force-dialog-submit">Submit</button>
+            </div>
         </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="soa-force-radios" value="REGISTER">
-                Force the instance to be registered/available
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="soa-force-radios" value="UNREGISTER">
-                Force the instance to be unregistered/unavailable
-            </label>
-        </div>
-    </form>
+    </div>
 </div>
 
 <div class="soa-hidden" id="soa-stoplight-set-green">

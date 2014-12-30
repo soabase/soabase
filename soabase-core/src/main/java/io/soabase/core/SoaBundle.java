@@ -39,8 +39,10 @@ import io.soabase.core.features.attributes.SafeDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
 import io.soabase.core.features.discovery.HealthCheckIntegration;
+import io.soabase.core.features.discovery.SafeSoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryHealth;
+import io.soabase.core.features.discovery.SoaExtendedDiscovery;
 import io.soabase.core.features.logging.LoggingReader;
 import io.soabase.core.features.request.SoaClientFilter;
 import io.soabase.core.rest.DiscoveryApis;
@@ -64,6 +66,23 @@ import java.util.concurrent.TimeUnit;
 
 public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
+    private static final boolean hasAdminKey;
+    static
+    {
+        boolean localHasAdminKey = false;
+        try
+        {
+            // presence of this key allows mutable attributes
+            Class.forName("io.soabase.admin.SoaAdminKey");
+            localHasAdminKey = true;
+        }
+        catch ( ClassNotFoundException e )
+        {
+            // ignore
+        }
+        hasAdminKey = localHasAdminKey;
+    }
+
     @Override
     public void initialize(Bootstrap<?> bootstrap)
     {
@@ -112,7 +131,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         Ports ports = getPorts(configuration);
         final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
 
-        SoaDiscovery discovery = checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(environment, soaInfo));
+        SoaDiscovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(environment, soaInfo)));
         SoaDynamicAttributes attributes = wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)));
         LoggingReader loggingReader = initLogging(configuration);
 
@@ -145,19 +164,20 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         environment.getApplicationContext().setAttribute(SoaFeatures.class.getName(), features);
     }
 
+    private SoaDiscovery wrapDiscovery(SoaDiscovery discovery)
+    {
+        if ( (discovery instanceof SoaExtendedDiscovery) && !hasAdminKey )
+        {
+            return new SafeSoaDiscovery(discovery);
+        }
+        return discovery;
+    }
+
     private SoaDynamicAttributes wrapAttributes(SoaDynamicAttributes attributes)
     {
-        if ( attributes instanceof SoaWritableDynamicAttributes )
+        if ( (attributes instanceof SoaWritableDynamicAttributes) && !hasAdminKey )
         {
-            try
-            {
-                // presence of this key allows mutable attributes
-                Class.forName("io.soabase.admin.SoaAdminKey");
-            }
-            catch ( ClassNotFoundException e )
-            {
-                return new SafeDynamicAttributes(attributes);
-            }
+            return new SafeDynamicAttributes(attributes);
         }
         return attributes;
     }

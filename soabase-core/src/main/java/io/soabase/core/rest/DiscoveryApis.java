@@ -15,15 +15,12 @@
  */
 package io.soabase.core.rest;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -43,32 +40,6 @@ public class DiscoveryApis
     public DiscoveryApis(SoaFeatures features)
     {
         this.features = features;
-    }
-
-    @PUT
-    @Path("force/{name}/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response forceRegister(@PathParam("name") String serviceName, @PathParam("id") String instanceId, ForcedState forcedState)
-    {
-        // TODO logging
-        SoaDiscoveryInstance instance = findInstance(serviceName, instanceId);
-        if ( instance == null )
-        {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        features.getDiscovery().setForcedState(serviceName, instance, forcedState);
-
-        return Response.ok().build();
-    }
-
-    @DELETE
-    @Path("force/{name}/{id}")
-    public Response forceClear(@PathParam("name") String serviceName, @PathParam("id") String instanceId)
-    {
-        // TODO logging
-        features.getDiscovery().setForcedState(serviceName, null, ForcedState.CLEARED);
-
-        return Response.ok().build();
     }
 
     @GET
@@ -100,18 +71,6 @@ public class DiscoveryApis
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getServiceNames()
     {
-        return Lists.newArrayList(features.getDiscovery().getCurrentServiceNames());
-    }
-
-    private SoaDiscoveryInstance findInstance(String serviceName, final String instanceId)
-    {
-        return Iterables.find(features.getDiscovery().getAllInstances(serviceName), new Predicate<SoaDiscoveryInstance>()
-        {
-            @Override
-            public boolean apply(SoaDiscoveryInstance instance)
-            {
-                return instance.getId().equals(instanceId);
-            }
-        }, null);
+        return Lists.newArrayList(features.getDiscovery().getServiceNames());
     }
 }

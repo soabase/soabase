@@ -17,6 +17,7 @@
 - Admin console
     - Instances (discovery) tab
     * Attributes tab
+    * Show "no services" message
 * Hystrix?
 * Archaius?
 * Eureka?

@@ -23,6 +23,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -30,8 +31,8 @@ import io.dropwizard.lifecycle.Managed;
 import io.soabase.core.SoaInfo;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
-import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import io.soabase.core.features.discovery.SoaExtendedDiscovery;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.x.discovery.InstanceFilter;
@@ -46,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 // TODO
-public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payload>> implements SoaDiscovery, Managed, RemovalListener<String, ServiceProvider<Payload>>
+public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payload>> implements SoaExtendedDiscovery, Managed, RemovalListener<String, ServiceProvider<Payload>>
 {
     private final ServiceDiscovery<Payload> discovery;
     private final LoadingCache<String, ServiceProvider<Payload>> providers;
@@ -95,7 +96,13 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public Collection<String> getCurrentServiceNames()
+    public Collection<String> getServiceNames()
+    {
+        return providers.asMap().keySet();
+    }
+
+    @Override
+    public Collection<String> queryForServiceNames()
     {
         try
         {
@@ -116,15 +123,18 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public void setForcedState(String serviceName, SoaDiscoveryInstance instance, ForcedState forcedState)
+    public void setForcedState(String serviceName, String instanceId, ForcedState forcedState)
     {
         // TODO logging
         try
         {
-            ServiceInstance<Payload> foundInstance = discovery.queryForInstance(serviceName, instance.getId());
+            ServiceInstance<Payload> foundInstance = discovery.queryForInstance(serviceName, instanceId);
             if ( foundInstance != null )
             {
-                ServiceInstance<Payload> updatedInstance = buildInstance(serviceName, instance.getPort(), foundInstance.getPayload(), foundInstance.getId());
+                SoaDiscoveryInstance soaInstance = toSoaInstance(foundInstance);
+                Payload oldPayload = foundInstance.getPayload();
+                Payload newPayload = new Payload(oldPayload.getAdminPort(), oldPayload.getMetaData(), forcedState, oldPayload.getHealthyState());
+                ServiceInstance<Payload> updatedInstance = buildInstance(serviceName, soaInstance.getPort(), newPayload, instanceId);
                 discovery.registerService(updatedInstance);
             } // TODO else?
         }
@@ -167,11 +177,11 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
+    public Collection<SoaDiscoveryInstance> queryForAllInstances(String serviceName)
     {
         try
         {
-            Collection<ServiceInstance<Payload>> serviceInstances = discovery.queryForInstances(serviceName);   // TODO caching?
+            Collection<ServiceInstance<Payload>> serviceInstances = discovery.queryForInstances(serviceName);
             Iterable<SoaDiscoveryInstance> transformed = Iterables.transform(serviceInstances, new Function<ServiceInstance<Payload>, SoaDiscoveryInstance>()
             {
                 @Nullable
@@ -182,6 +192,31 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
                 }
             });
             return Lists.newArrayList(transformed);
+        }
+        catch ( Exception e )
+        {
+            // TODO logging
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
+    {
+        try
+        {
+            // TODO - validate service name
+            ServiceProvider<Payload> provider = providers.get(serviceName);
+            Collection<ServiceInstance<Payload>> allInstances = provider.getAllInstances();
+            return Collections2.transform(allInstances, new Function<ServiceInstance<Payload>, SoaDiscoveryInstance>()
+            {
+                @Nullable
+                @Override
+                public SoaDiscoveryInstance apply(@Nullable ServiceInstance<Payload> instance)
+                {
+                    return toSoaInstance(instance);
+                }
+            });
         }
         catch ( Exception e )
         {

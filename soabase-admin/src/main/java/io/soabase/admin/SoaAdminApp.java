@@ -25,6 +25,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.TabComponent;
+import io.soabase.admin.rest.DiscoveryResource;
 import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
@@ -98,7 +99,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("");
 
         environment.jersey().register(binder);
-        environment.jersey().register(DiscoveryApis.class);
+        environment.jersey().register(DiscoveryResource.class);
         environment.jersey().register(PreferencesResource.class);
     }
 }

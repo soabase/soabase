@@ -4,7 +4,19 @@ function soaToName(instance) {
     return instance.host + ':' + instance.port
 }
 
-function soaForceInstance(serviceName, instanceId, forceValue) {
+function soaHandleForceButton(serviceName, localInstance) {
+    $('#soa-force-dialog-instance-id').val(localInstance.id);
+    $('#soa-force-dialog-service-name').val(serviceName);
+    $('#soa-force-dialog .modal-title').text('Force status of ' + soaToName(localInstance));
+    $('#soa-force-dialog .soa-force-radios').filter('[value="CLEARED"]').prop('checked', true);
+    $('#soa-force-dialog').modal('show');
+}
+
+function soaForceDialogSubmit() {
+    var serviceName = $('#soa-force-dialog-service-name').val();
+    var instanceId = $('#soa-force-dialog-instance-id').val();
+    var forceValue = $('#soa-force-dialog .soa-force-radios').filter(':checked').val();
+
     soaShowInfiniteProgressBar();
     $.ajax({
         type: "PUT",
@@ -22,7 +34,7 @@ function soaForceInstance(serviceName, instanceId, forceValue) {
 }
 
 var soaLogsDialogTemplate = '';
-function soaShowLogWindow(serviceName, localInstance, filesData) {
+function soaShowLogWindow(localInstance, filesData) {
     if ( filesData.length == 0 ) {
         bootbox.alert('No log files found.');
         return;
@@ -64,34 +76,7 @@ function soaHandleLogButton(serviceName, localInstance) {
     var url = 'http://' + localInstance.host + ':' + localInstance.adminPort + '/api/soa/logging/files';
     $.getJSON(url, function(data){
         soaHideInfiniteProgressBar();
-        soaShowLogWindow(serviceName, localInstance, data);
-    });
-}
-
-function soaHandleForceButton(serviceName, localInstance) {
-    var buttonTemplate = $('#soa-force-buttons').html();
-    bootbox.dialog({
-        'message': buttonTemplate,
-        'title': 'Force status of ' + soaToName(localInstance),
-        'onEscape': function () {
-            bootbox.hideAll();
-        },
-        'buttons': {
-            'cancel': {
-                label: "Cancel",
-                className: "btn-default"
-            },
-            'ok': {
-                label: "OK",
-                className: "btn-primary",
-                callback: function () {
-                    var value = $('input:radio[name=' + (
-                    'soa-force-radios-' + localInstance.id
-                    ) + ']:checked').val();
-                    soaForceInstance(serviceName, localInstance.id, value);
-                }
-            }
-        }
+        soaShowLogWindow(localInstance, data);
     });
 }
 
@@ -169,6 +154,12 @@ function soaUpdateInstances() {
 $(function() {
     soaLogsDialogTemplate = $('#soa-service-logs').html();
     $('#soa-service-logs').remove();
+
+    $('#soa-force-dialog-submit').click(function(){
+        $('#soa-force-dialog').modal('hide');
+        soaForceDialogSubmit();
+        return true;
+    });
 
     $('#soa-tab-').bind('soa-show', function(){
         soaUpdateInstances();

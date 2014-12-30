@@ -19,7 +19,7 @@ import java.util.Collection;
 
 public interface SoaDiscovery
 {
-    public Collection<String> getCurrentServiceNames();
+    public Collection<String> getServiceNames();
 
     public SoaDiscoveryInstance getInstance(String serviceName);
 
@@ -28,6 +28,4 @@ public interface SoaDiscovery
     public void noteError(String serviceName, SoaDiscoveryInstance errorInstance);
 
     public void setHealthyState(HealthyState healthyState);
-
-    public void setForcedState(String serviceName, SoaDiscoveryInstance instance, ForcedState forcedState);
 }

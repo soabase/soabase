@@ -54,10 +54,16 @@
 </div>
 
 <div class="soa-hidden" id="soa-service-instance-template">
-    <div class="list-group-item container-fluid">
-        <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data large">$INSTANCE_DATA$</span> $INSTANCE_DETAILS$
+    <div class="list-group-item row">
+        <div class="col-md-7 soa-service-instance-cell">
+            <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data large">$INSTANCE_DATA$</span>
+        </div>
 
-        <div class="pull-right text-right">
+        <div class="col-md-3 soa-service-instance-cell">
+            $INSTANCE_DETAILS$
+        </div>
+
+        <div class="text-right col-md-2 soa-service-instance-cell">
             <button id="soa-logs-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> Logs</button>
             <button id="soa-force-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Force...</button>
         </div>
@@ -68,8 +74,8 @@
     <div class="panel panel-primary">
         <div class="panel-heading list-group-item"><span id="soa-service-body-toggle-$SERVICE_NAME$" data-toggle="collapse" data-target="#soa-service-body-collapse-$SERVICE_NAME$" class="soa-service-body-toggle glyphicon glyphicon-collapse-down large" aria-hidden="true"></span> <span class="large">$SERVICE_NAME$</span> <span class="badge">$SERVICE_QTY$</span></div>
         <div class="collapse in" id="soa-service-body-collapse-$SERVICE_NAME$">
-            <div id="soa-service-body-$SERVICE_NAME$" class="panel-body">
-                <ul class="list-group ">
+            <div id="soa-service-body-$SERVICE_NAME$" class="panel-body soa-service-indented">
+                <ul class="list-group">
                     $INSTANCES$
                 </ul>
             </div>
@@ -84,14 +90,14 @@
 </div>
 
 <div class="soa-hidden" id="soa-service-healthy">
-    <span class="soa-instance-details"><span class="glyphicon glyphicon-heart soa-service-healthy" aria-hidden="true"></span> Healthy</span>
+    <span class="glyphicon glyphicon-heart soa-service-healthy" aria-hidden="true"></span> Healthy
 </div>
 
 
 <div class="soa-hidden" id="soa-service-unhealthy">
-    <span class="soa-instance-details"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> Unhealthy</span>
+    <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> Unhealthy
 </div>
 
 <div class="soa-hidden" id="soa-service-forced">
-    <span class="soa-instance-details"><span class="glyphicon glyphicon-pushpin soa-service-forced" aria-hidden="true"></span> Force $VALUE$</span>
+    <span class="glyphicon glyphicon-pushpin soa-service-forced" aria-hidden="true"></span> Force $VALUE$
 </div>

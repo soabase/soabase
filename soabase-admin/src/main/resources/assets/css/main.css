@@ -21,6 +21,7 @@
 
 .soa-service-forced {
     color: #00008b;
+    margin-left: 16px;
 }
 
 .soa-instance-data {
@@ -44,6 +45,12 @@
     height: 10em;
 }
 
-.soa-instance-details {
-    margin-left: 16px;
+.soa-service-instance-cell {
+    height: 40px;
+    line-height: 40px;
+}
+
+.soa-service-indented {
+    margin-left: 8px;
+    margin-right: 8px;
 }

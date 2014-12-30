@@ -34,7 +34,7 @@
         <maven-shade-plugin-version>2.3</maven-shade-plugin-version>
 
         <dropwizard-version>0.8.0-rc2-SNAPSHOT</dropwizard-version>
-        <curator-version>2.7.0</curator-version>
+        <curator-version>2.7.1-SNAPSHOT</curator-version>
         <mybatis-version>3.2.8</mybatis-version>
         <hsqldb-version>2.3.2</hsqldb-version>
         <testng-version>6.8.13</testng-version>

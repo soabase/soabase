@@ -97,7 +97,12 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
         {
             return 0;
         }
-        return host.compareTo(o.getHost());
+        int diff = host.compareTo(o.getHost());
+        if ( diff == 0 )
+        {
+            diff = port - o.getPort();
+        }
+        return diff;
     }
 
     @Override

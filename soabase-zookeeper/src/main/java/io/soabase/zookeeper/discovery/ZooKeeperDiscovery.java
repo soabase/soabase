@@ -135,7 +135,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
                 Payload oldPayload = foundInstance.getPayload();
                 Payload newPayload = new Payload(oldPayload.getAdminPort(), oldPayload.getMetaData(), forcedState, oldPayload.getHealthyState());
                 ServiceInstance<Payload> updatedInstance = buildInstance(serviceName, soaInstance.getPort(), newPayload, instanceId, soaInstance.getHost());
-                discovery.registerService(updatedInstance);
+                discovery.updateService(updatedInstance);
             } // TODO else?
         }
         catch ( Exception e )
@@ -259,7 +259,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         discovery.start();
         if ( soaInfo.isRegisterInDiscovery() )
         {
-            discovery.registerService(us.get());
+            discovery.registerServiceWatched(us.get());
         }
     }
 

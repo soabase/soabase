@@ -38,10 +38,11 @@ function soaForceDialogSubmit(serviceName, instanceId, forceValue) {
         data: JSON.stringify(forceValue),
         success: function() {
             soaHideInfiniteProgressBar();
+            soaUpdateInstances();
         },
-        error: function() {
+        error: function(jqXHR, textStatus, errorThrown) {
             soaHideInfiniteProgressBar();
-            // TODO
+            bootbox.alert('Operation failed: ' + errorThrown);
         }
     });
 }
@@ -143,14 +144,17 @@ function soaUpdateInstancesForService(serviceName) {
                 $(this).toggleClass('glyphicon-expand glyphicon-collapse-down');
             });
 
-            for ( i in data ) {
-                var localInstance = data[i];
-                $('#soa-force-button-' + localInstance.id).click(function(){
-                    soaHandleForceButton(serviceName, localInstance);
+            function setHandlers(instance) {
+                $('#soa-force-button-' + instance.id).click(function(){
+                    soaHandleForceButton(serviceName, instance);
                 });
-                $('#soa-logs-button-' + localInstance.id).click(function(){
-                    soaHandleLogButton(serviceName, localInstance);
+                $('#soa-logs-button-' + instance.id).click(function(){
+                    soaHandleLogButton(serviceName, instance);
                 });
+            }
+
+            for ( var j in data ) {
+                setHandlers(data[j]);
             }
         } else {
             $('#' + id).remove();
@@ -169,7 +173,16 @@ function soaUpdateInstances() {
 }
 
 $(function() {
-    $('#soa-tab-').bind('soa-show', function(){
+    var ourTab = $('#soa-tab-');
+    var ourInterval;
+    ourTab.bind('soa-show', function(){
         soaUpdateInstances();
+        ourInterval = setInterval(soaUpdateInstances, 5000);
+    });
+    ourTab.bind('soa-hide', function(){
+        if ( ourInterval ) {
+            clearInterval(ourInterval);
+            ourInterval = null;
+        }
     });
 });

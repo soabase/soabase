@@ -25,6 +25,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.TabComponent;
+import io.soabase.admin.rest.AttributesResource;
 import io.soabase.admin.rest.DiscoveryResource;
 import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.core.SoaBundle;
@@ -94,12 +95,13 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         SoaBundle.getFeatures(environment).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
         componentManager.addTab(new TabComponent("", "Services", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.newArrayList("assets/css/main.css")));
-        componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html"));
+        componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html", Lists.newArrayList("assets/js/attributes.js"), Lists.<String>newArrayList()));
 
         environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("");
 
         environment.jersey().register(binder);
         environment.jersey().register(DiscoveryResource.class);
+        environment.jersey().register(AttributesResource.class);
         environment.jersey().register(PreferencesResource.class);
     }
 }

@@ -8,7 +8,7 @@ function soaHandleForceButton(serviceName, localInstance) {
     var template = soaGetTemplate('soa-force-dialog-content');
     bootbox.dialog({
         'message': template,
-        'title': 'Force status of ' + soaToName(localInstance),
+        'title': 'Force status of "' + serviceName + '" instance: ' + soaToName(localInstance),
         'onEscape': function () {
             bootbox.hideAll();
         },

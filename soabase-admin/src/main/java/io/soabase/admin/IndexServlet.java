@@ -66,6 +66,11 @@ public class IndexServlet extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+        if ( "force".equals(request.getQueryString()) )
+        {
+            init();
+        }
+
         response.setStatus(200);
         response.setContentType("text/html");
         response.setContentLength(indexFile.length());

@@ -103,6 +103,14 @@ function soaUpdateInstancesForService(serviceName) {
         var unHealthy = soaGetTemplate('soa-service-unhealthy');
         var forced = soaGetTemplate('soa-service-forced');
 
+        function trim(s) {
+            var max = 20;
+            if ( s.length >= max ) {
+                return s.substring(0, max / 2) + '&hellip;' + s.substring(s.length - (max / 2));
+            }
+            return s;
+        }
+
         var id = SOA_SERVICE_ID_PREFIX + serviceName;
         var divExists = $('#' + id).length > 0;
         if ( data.length > 0 ) {
@@ -127,7 +135,7 @@ function soaUpdateInstancesForService(serviceName) {
                 }
                 var thisInstance = soaGetTemplate('soa-service-instance-template', {
                     '$STOPLIGHT$': stopLight,
-                    '$INSTANCE_DATA$': soaToName(instance),
+                    '$INSTANCE_DATA$': trim(soaToName(instance)),
                     '$INSTANCE_DETAILS$': details,
                     '$ID$': instance.id
                 });

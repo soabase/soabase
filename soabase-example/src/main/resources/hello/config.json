@@ -21,8 +21,8 @@
     "appenders": [
       {
         "type": "file",
-        "currentLogFilename": "./logs/example.log",
-        "archivedLogFilenamePattern": "./logs/example-%d.log.gz",
+        "currentLogFilename": "./logs/hello.log",
+        "archivedLogFilenamePattern": "./logs/hello-%d.log.gz",
         "archivedFileCount": "5",
         "timeZone": "UTC"
       }

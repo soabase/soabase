@@ -48,6 +48,8 @@
 .soa-service-instance-cell {
     height: 40px;
     line-height: 40px;
+    overflow: hidden;
+    text-wrap: none;
 }
 
 .soa-service-indented {

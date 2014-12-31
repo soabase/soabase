@@ -15,58 +15,36 @@
  */
 package io.soabase.admin.components;
 
-import com.google.common.base.Charsets;
-import io.dropwizard.ConfiguredBundle;
-import io.dropwizard.servlets.assets.AssetServlet;
+import com.google.common.collect.ImmutableList;
+import io.dropwizard.Bundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.admin.IndexServlet;
-import io.soabase.admin.SoaAdminConfiguration;
+import io.soabase.admin.details.IndexServlet;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import java.util.List;
 import java.util.prefs.Preferences;
 
-public class ComponentBundle<T extends SoaAdminConfiguration> implements ConfiguredBundle<T>
+public class ComponentBundle implements Bundle
 {
-    public static void addStandardTabs(ComponentManager componentManager)
-    {
-        addServicesTab(componentManager);
-        addAttributesTab(componentManager);
-    }
+    private final String appName;
+    private final String companyName;
+    private final String footerMessage;
+    private final List<TabComponent> tabs;
 
-    public static void addServicesTab(ComponentManager componentManager)
+    public ComponentBundle(String appName, String companyName, String footerMessage, List<TabComponent> tabs)
     {
-        TabComponent component = TabComponentBuilder.builder()
-            .withId("soa-services")
-            .withName("Services")
-            .withContentResourcePath("assets/services/services.html")
-            .addingJavascriptUriPath("/assets/services/js/services.js")
-            .addingCssUriPath("/assets/services/css/services.css")
-            .addingAssetsPath("/assets/services/js")
-            .addingAssetsPath("/assets/services/css")
-            .build();
-        componentManager.addTab(component);
-    }
-
-    public static void addAttributesTab(ComponentManager componentManager)
-    {
-        TabComponent component = TabComponentBuilder.builder()
-            .withId("soa-attributes")
-            .withName("Attributes")
-            .withContentResourcePath("assets/attributes/attributes.html")
-            .addingJavascriptUriPath("/assets/attributes/js/attributes.js")
-            .addingCssUriPath("/assets/attributes/css/attributes.css")
-            .addingAssetsPath("/assets/attributes/js")
-            .addingAssetsPath("/assets/attributes/css")
-            .build();
-        componentManager.addTab(component);
+        this.appName = appName;
+        this.companyName = companyName;
+        this.footerMessage = footerMessage;
+        this.tabs = ImmutableList.copyOf(tabs);
     }
 
     @Override
-    public void run(T configuration, Environment environment) throws Exception
+    public void run(Environment environment)
     {
-        final ComponentManager componentManager = new ComponentManager(configuration.getAppName(), configuration.getCompany(), configuration.getFooterMessage());
+        final ComponentManager componentManager = new ComponentManager(appName, companyName, footerMessage);
         final Preferences preferences = Preferences.userRoot();
         AbstractBinder binder = new AbstractBinder()
         {
@@ -80,7 +58,10 @@ public class ComponentBundle<T extends SoaAdminConfiguration> implements Configu
         SoaBundle.getFeatures(environment).putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
         SoaBundle.getFeatures(environment).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
-        addStandardTabs(componentManager);
+        for ( TabComponent component : tabs )
+        {
+            componentManager.addTab(component);
+        }
 
         IndexServlet servlet = new IndexServlet(componentManager);
         environment.servlets().addServlet("index", servlet).addMapping("");

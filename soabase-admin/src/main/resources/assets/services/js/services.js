@@ -185,5 +185,5 @@ function soaUpdateInstances() {
 $(function() {
     var ourTab = $('#soa-tab-');
     soaUpdateInstances();
-    setInterval(soaUpdateInstances, 5000);
+    setInterval(soaUpdateInstances, 12345);
 });

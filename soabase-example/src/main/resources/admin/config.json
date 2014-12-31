@@ -1,7 +1,4 @@
 {
-  "appName": "Sample Corp",
-  "company": "Sample Corp",
-
   "server": {
     "applicationConnectors": [
       {

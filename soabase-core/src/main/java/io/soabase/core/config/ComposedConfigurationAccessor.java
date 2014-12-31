@@ -69,6 +69,11 @@ public class ComposedConfigurationAccessor
      */
     public <T> T access(Class<T> clazz)
     {
+        if ( configuration.getClass().equals(clazz) )
+        {
+            return clazz.cast(configuration);
+        }
+
         try
         {
             return clazz.cast(fieldCache.get(clazz).get(configuration));
@@ -88,6 +93,6 @@ public class ComposedConfigurationAccessor
      */
     public <T> boolean has(Class<T> clazz)
     {
-        return (fieldCache.getIfPresent(clazz) != null);
+        return configuration.getClass().equals(clazz) || (fieldCache.getIfPresent(clazz) != null);
     }
 }

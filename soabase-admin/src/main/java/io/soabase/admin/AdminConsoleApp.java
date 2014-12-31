@@ -18,6 +18,7 @@ package io.soabase.admin;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import io.dropwizard.Application;
+import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.jetty.ConnectorFactory;
@@ -29,6 +30,7 @@ import io.soabase.admin.components.AssetsPath;
 import io.soabase.admin.components.ComponentBundle;
 import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.TabComponent;
+import io.soabase.admin.details.BundleSpec;
 import io.soabase.admin.rest.AttributesResource;
 import io.soabase.admin.rest.DiscoveryResource;
 import io.soabase.admin.rest.PreferencesResource;
@@ -36,14 +38,18 @@ import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.config.FlexibleConfigurationSourceProvider;
 
-public abstract class SoaAdminApp<T extends SoaAdminConfiguration> extends Application<T>
+public abstract class AdminConsoleApp<T extends Configuration> extends Application<T>
 {
-    public SoaAdminApp()
+    private final AdminConsoleAppBuilder<T> builder;
+
+    public AdminConsoleApp(AdminConsoleAppBuilder<T> builder)
     {
-        System.setProperty("dw.soa.serviceName", "soabaseadmin");
-        System.setProperty("dw.soa.addCorsFilter", "true");
-        System.setProperty("dw.soa.registerInDiscovery", "false");
+        System.setProperty(makeSoaConfig(builder, "serviceName"), "soabaseadmin");
+        System.setProperty(makeSoaConfig(builder, "addCorsFilter"), "true");
+        System.setProperty(makeSoaConfig(builder, "registerInDiscovery"), "false");
         System.setProperty("dw.server.rootPath", "/api/*");
+
+        this.builder = builder;
     }
 
     @Override
@@ -51,10 +57,10 @@ public abstract class SoaAdminApp<T extends SoaAdminConfiguration> extends Appli
     {
         bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider());
 
-        ConfiguredBundle<SoaAdminConfiguration> bundle = new ConfiguredBundle<SoaAdminConfiguration>()
+        ConfiguredBundle<T> bundle = new ConfiguredBundle<T>()
         {
             @Override
-            public void run(SoaAdminConfiguration configuration, Environment environment) throws Exception
+            public void run(T configuration, Environment environment) throws Exception
             {
                 DefaultServerFactory factory = new DefaultServerFactory();
                 factory.setAdminConnectors(Lists.<ConnectorFactory>newArrayList());
@@ -67,12 +73,13 @@ public abstract class SoaAdminApp<T extends SoaAdminConfiguration> extends Appli
                 // NOP
             }
         };
-        internalInitializePre(bootstrap);
+
+        addBundles(bootstrap, BundleSpec.Phase.PRE_SOA);
         bootstrap.addBundle(bundle);
         bootstrap.addBundle(new SoaBundle<>());
-        bootstrap.addBundle(new ComponentBundle<T>());
+        bootstrap.addBundle(new ComponentBundle(builder.getAppName(), builder.getCompanyName(), builder.getFooterMessage(), builder.getTabs()));
         bootstrap.addBundle(new AssetsBundle("/assets/soa"));
-        internalInitializePost(bootstrap);
+        addBundles(bootstrap, BundleSpec.Phase.POST_SOA);
     }
 
     @Override
@@ -92,13 +99,34 @@ public abstract class SoaAdminApp<T extends SoaAdminConfiguration> extends Appli
                 environment.servlets().addServlet(component.getName() + index++, servlet).addMapping(assetsPath.getUriPath() + '*');
             }
         }
-
-        internalRun(configuration, environment);
     }
 
-    protected abstract void internalInitializePre(Bootstrap<T> bootstrap);
+    private void addBundles(Bootstrap<T> bootstrap, BundleSpec.Phase phase)
+    {
+        for ( BundleSpec<T> bundleSpec : builder.getBundles() )
+        {
+            if ( bundleSpec.getPhase() == phase )
+            {
+                if ( bundleSpec.getBundle() != null )
+                {
+                    bootstrap.addBundle(bundleSpec.getBundle());
+                }
+                else
+                {
+                    bootstrap.addBundle(bundleSpec.getConfiguredBundle());
+                }
+            }
+        }
+    }
 
-    protected abstract void internalInitializePost(Bootstrap<T> bootstrap);
-
-    protected abstract void internalRun(T configuration, Environment environment);
+    private static String makeSoaConfig(AdminConsoleAppBuilder<?> builder, String name)
+    {
+        StringBuilder str = new StringBuilder("dw.");
+        if ( builder.getSoaConfigFieldName().length() > 0 )
+        {
+            str.append(builder.getSoaConfigFieldName()).append(".");
+        }
+        str.append(name);
+        return str.toString();
+    }
 }

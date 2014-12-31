@@ -15,12 +15,14 @@
  */
 package io.soabase.example.admin;
 
-import io.soabase.admin.SoaAdminConfiguration;
+import io.dropwizard.Configuration;
+import io.soabase.core.SoaConfiguration;
 import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
 
-public class ExampleAdminConfiguration extends SoaAdminConfiguration
+public class ExampleAdminConfiguration extends Configuration
 {
+    public SoaConfiguration soa = new SoaConfiguration();
     public CuratorConfiguration curator = new CuratorConfiguration();
     public SqlConfiguration sql = new SqlConfiguration();
 }

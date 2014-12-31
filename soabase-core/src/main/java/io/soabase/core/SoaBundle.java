@@ -73,7 +73,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         try
         {
             // presence of this key allows mutable attributes
-            Class.forName("io.soabase.admin.SoaAdminKey");
+            Class.forName("io.soabase.admin.details.SoaAdminKey");
             localHasAdminKey = true;
         }
         catch ( ClassNotFoundException e )

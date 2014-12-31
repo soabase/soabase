@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.admin;
+package io.soabase.admin.details;
 
 import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;

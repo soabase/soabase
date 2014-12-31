@@ -19,7 +19,7 @@ import io.soabase.admin.SoaAdminConfiguration;
 import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
 
-public class AdminConfiguration extends SoaAdminConfiguration
+public class ExampleAdminConfiguration extends SoaAdminConfiguration
 {
     public CuratorConfiguration curator = new CuratorConfiguration();
     public SqlConfiguration sql = new SqlConfiguration();

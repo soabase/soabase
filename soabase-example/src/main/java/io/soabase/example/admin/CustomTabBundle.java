@@ -20,16 +20,25 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.TabComponent;
+import io.soabase.admin.components.TabComponentBuilder;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 
-public class CustomTabBundle implements ConfiguredBundle<AdminConfiguration>
+public class CustomTabBundle implements ConfiguredBundle<ExampleAdminConfiguration>
 {
     @Override
-    public void run(AdminConfiguration configuration, Environment environment) throws Exception
+    public void run(ExampleAdminConfiguration configuration, Environment environment) throws Exception
     {
         ComponentManager componentManager = SoaBundle.getFeatures(environment).getNamed(ComponentManager.class, SoaFeatures.DEFAULT_NAME);
-        componentManager.addTab(new TabComponent("custom", "Custom Tab", "admin/custom/assets/custom.html"));
+        TabComponent component = TabComponentBuilder.builder()
+            .withId("custom")
+            .withName("Custom Tab")
+            .withContentResourcePath("admin/custom/assets/custom.html")
+            .addingAssetsPath("/admin/custom/assets")
+            .addingJavascriptUriPath("/admin/custom/assets/js/custom.js")
+            .addingCssUriPath("/admin/custom/assets/css/custom.css")
+            .build();
+        componentManager.addTab(component);
     }
 
     @Override

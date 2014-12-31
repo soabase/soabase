@@ -22,29 +22,29 @@ import io.soabase.example.ExampleAppBase;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 
-public class AppMain extends SoaAdminApp<AdminConfiguration>
+public class ExampleAdminMain extends SoaAdminApp<ExampleAdminConfiguration>
 {
     @SuppressWarnings("ParameterCanBeLocal")
     public static void main(String[] args) throws Exception
     {
-        new AppMain().run(ExampleAppBase.setSystemAndAdjustArgs("admin/config.json"));
+        new ExampleAdminMain().run(ExampleAppBase.setSystemAndAdjustArgs("admin/config.json"));
     }
 
     @Override
-    protected void internalInitializePre(Bootstrap<AdminConfiguration> bootstrap)
+    protected void internalInitializePre(Bootstrap<ExampleAdminConfiguration> bootstrap)
     {
         bootstrap.addBundle(new CuratorBundle<>());
         bootstrap.addBundle(new SqlBundle<>());
     }
 
     @Override
-    protected void internalInitializePost(Bootstrap<AdminConfiguration> bootstrap)
+    protected void internalInitializePost(Bootstrap<ExampleAdminConfiguration> bootstrap)
     {
         bootstrap.addBundle(new CustomTabBundle());
     }
 
     @Override
-    protected void internalRun(AdminConfiguration configuration, Environment environment)
+    protected void internalRun(ExampleAdminConfiguration configuration, Environment environment)
     {
         // NOP
     }

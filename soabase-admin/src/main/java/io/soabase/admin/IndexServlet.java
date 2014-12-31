@@ -101,16 +101,16 @@ public class IndexServlet extends HttpServlet
             tabs.append("<li id='").append(id).append("-li").append("'><a href=\"#").append(tab.getId()).append("\">").append(tab.getName()).append("</a></li>\n");
             ids.append("soaTabIds.push('").append(id).append("');\n");
 
-            for ( String cssFile : tab.getCssPaths() )
+            for ( String cssFile : tab.getCssUriPaths() )
             {
-                css.append("<link rel=\"stylesheet\" href=\"").append(cssFile).append("\">");
+                css.append("<link rel=\"stylesheet\" href=\"").append(cssFile).append("\">\n");
             }
-            for ( String jssFile : tab.getScriptPaths() )
+            for ( String jssFile : tab.getJavascriptUriPaths() )
             {
-                jss.append("<script src=\"").append(jssFile).append("\"></script>");
+                jss.append("<script src=\"").append(jssFile).append("\"></script>\n");
             }
 
-            String tabContent = Resources.toString(Resources.getResource(tab.getContentPath()), charset);   // TODO - handle classloader issues
+            String tabContent = Resources.toString(Resources.getResource(tab.getContentResourcePath()), charset);   // TODO - handle classloader issues
             content.append("<div class=\"soa-hidden\" id=\"" + SOA_TAB_PREFIX).append(tab.getId()).append("\">").append(tabContent).append("</div>\n");
         }
         localIndexFile = localIndexFile.replace("$SOA_TABS$", tabs.toString());

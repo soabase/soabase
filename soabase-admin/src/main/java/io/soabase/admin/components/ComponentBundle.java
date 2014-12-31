@@ -15,8 +15,9 @@
  */
 package io.soabase.admin.components;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Charsets;
 import io.dropwizard.ConfiguredBundle;
+import io.dropwizard.servlets.assets.AssetServlet;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.admin.IndexServlet;
@@ -36,12 +37,30 @@ public class ComponentBundle<T extends SoaAdminConfiguration> implements Configu
 
     public static void addServicesTab(ComponentManager componentManager)
     {
-        componentManager.addTab(new TabComponent("soa-services", "Services", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.newArrayList("assets/css/main.css")));
+        TabComponent component = TabComponentBuilder.builder()
+            .withId("soa-services")
+            .withName("Services")
+            .withContentResourcePath("assets/services/services.html")
+            .addingJavascriptUriPath("/assets/services/js/services.js")
+            .addingCssUriPath("/assets/services/css/services.css")
+            .addingAssetsPath("/assets/services/js")
+            .addingAssetsPath("/assets/services/css")
+            .build();
+        componentManager.addTab(component);
     }
 
     public static void addAttributesTab(ComponentManager componentManager)
     {
-        componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html", Lists.newArrayList("assets/js/attributes.js"), Lists.newArrayList("assets/css/attributes.css")));
+        TabComponent component = TabComponentBuilder.builder()
+            .withId("soa-attributes")
+            .withName("Attributes")
+            .withContentResourcePath("assets/attributes/attributes.html")
+            .addingJavascriptUriPath("/assets/attributes/js/attributes.js")
+            .addingCssUriPath("/assets/attributes/css/attributes.css")
+            .addingAssetsPath("/assets/attributes/js")
+            .addingAssetsPath("/assets/attributes/css")
+            .build();
+        componentManager.addTab(component);
     }
 
     @Override

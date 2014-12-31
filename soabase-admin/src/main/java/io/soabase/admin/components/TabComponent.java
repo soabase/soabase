@@ -17,40 +17,38 @@ package io.soabase.admin.components;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import java.util.List;
 
 public class TabComponent
 {
     private final String id;
     private final String name;
-    private final List<String> scriptPaths;
-    private final List<String> cssPaths;
-    private final String contentPath;
+    private final String contentResourcePath;
+    private final List<String> javascriptUriPaths;
+    private final List<String> cssUriPaths;
+    private final List<AssetsPath> assetsPaths;
 
-    public TabComponent(String id, String name, String contentPath)
+    TabComponent(String id)
     {
-        this(id, name, contentPath, Lists.<String>newArrayList(), Lists.<String>newArrayList());
-    }
-
-    public TabComponent(String id, String name, String contentPath, List<String> scriptPaths, List<String> cssPaths)
-    {
-        scriptPaths = Preconditions.checkNotNull(scriptPaths, "scriptPaths cannot be null");
-        cssPaths = Preconditions.checkNotNull(cssPaths, "cssPaths cannot be null");
-
-        id = Preconditions.checkNotNull(id, "id cannot be null");
-        Preconditions.checkArgument(isValidId(id), "id must be a valid unicode identifier: " + id);
-
         this.id = id;
-        this.contentPath = Preconditions.checkNotNull(contentPath, "contentPath cannot be null");
-        this.name = Preconditions.checkNotNull(name, "name cannot be null");
-        this.scriptPaths = ImmutableList.copyOf(scriptPaths);
-        this.cssPaths = ImmutableList.copyOf(cssPaths);
+        name = null;
+        contentResourcePath = null;
+        javascriptUriPaths = null;
+        cssUriPaths = null;
+        assetsPaths = null;
     }
 
-    public String getContentPath()
+    TabComponent(String id, String name, String contentResourcePath, List<String> javascriptUriPaths, List<String> cssUriPaths, List<AssetsPath> assetsPaths)
     {
-        return contentPath;
+        this.id = Preconditions.checkNotNull(id, "id cannot be null");
+        this.name = Preconditions.checkNotNull(name, "name cannot be null");
+        this.contentResourcePath = Preconditions.checkNotNull(contentResourcePath, "contentResourcePath cannot be null");
+        javascriptUriPaths = Preconditions.checkNotNull(javascriptUriPaths, "javascriptUriPaths cannot be null");
+        cssUriPaths = Preconditions.checkNotNull(cssUriPaths, "cssUriPaths cannot be null");
+        assetsPaths = Preconditions.checkNotNull(assetsPaths, "assetsPaths cannot be null");
+        this.javascriptUriPaths = ImmutableList.copyOf(javascriptUriPaths);
+        this.cssUriPaths = ImmutableList.copyOf(cssUriPaths);
+        this.assetsPaths = ImmutableList.copyOf(assetsPaths);
     }
 
     public String getId()
@@ -63,14 +61,24 @@ public class TabComponent
         return name;
     }
 
-    public List<String> getScriptPaths()
+    public String getContentResourcePath()
     {
-        return scriptPaths;
+        return contentResourcePath;
     }
 
-    public List<String> getCssPaths()
+    public List<String> getJavascriptUriPaths()
     {
-        return cssPaths;
+        return javascriptUriPaths;
+    }
+
+    public List<String> getCssUriPaths()
+    {
+        return cssUriPaths;
+    }
+
+    public List<AssetsPath> getAssetsPaths()
+    {
+        return assetsPaths;
     }
 
     // IMPORTANT: must only equal id
@@ -110,30 +118,10 @@ public class TabComponent
         return "TabComponent{" +
             "id='" + id + '\'' +
             ", name='" + name + '\'' +
-            ", scriptPaths=" + scriptPaths +
-            ", cssPaths=" + cssPaths +
-            ", contentPath='" + contentPath + '\'' +
+            ", contentResourcePath='" + contentResourcePath + '\'' +
+            ", javascriptUriPaths=" + javascriptUriPaths +
+            ", cssUriPaths=" + cssUriPaths +
+            ", assetsPaths=" + assetsPaths +
             '}';
-    }
-
-    private boolean isValidId(String id)
-    {
-        boolean isFirst = true;
-        for ( char c : id.toCharArray() )
-        {
-            if ( isFirst )
-            {
-                isFirst = false;
-                if ( !Character.isUnicodeIdentifierStart(c) )
-                {
-                    return false;
-                }
-            }
-            else if ( !Character.isUnicodeIdentifierPart(c) && (c != '-') )
-            {
-                return false;
-            }
-        }
-        return true;
     }
 }

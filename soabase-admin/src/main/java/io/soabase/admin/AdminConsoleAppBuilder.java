@@ -16,17 +16,29 @@ public class AdminConsoleAppBuilder<T extends Configuration>
     private String companyName = "";
     private String footerMessage = "- Internal use only - Proprietary and Confidential";
     private String soaConfigFieldName = "soa";
+    private Class<? extends Configuration> configurationClass = Configuration.class;
     private final List<TabComponent> tabs = Lists.newArrayList();
     private final List<BundleSpec<T>> bundles = Lists.newArrayList();
 
     public static <T extends Configuration> AdminConsoleAppBuilder<T> builder()
     {
-        return new AdminConsoleAppBuilder<T>();
+        return new AdminConsoleAppBuilder<>();
+    }
+
+    public AdminConsoleApp<T> build()
+    {
+        return new AdminConsoleApp<>(this);
     }
 
     public AdminConsoleAppBuilder<T> withSoaConfigFieldName(String soaConfigFieldName)
     {
         this.soaConfigFieldName = soaConfigFieldName;
+        return this;
+    }
+
+    public AdminConsoleAppBuilder<T> withConfigurationClass(Class<T> configurationClass)
+    {
+        this.configurationClass = configurationClass;
         return this;
     }
 
@@ -116,6 +128,11 @@ public class AdminConsoleAppBuilder<T extends Configuration>
     List<BundleSpec<T>> getBundles()
     {
         return bundles;
+    }
+
+    Class<? extends Configuration> getConfigurationClass()
+    {
+        return configurationClass;
     }
 
     private AdminConsoleAppBuilder()

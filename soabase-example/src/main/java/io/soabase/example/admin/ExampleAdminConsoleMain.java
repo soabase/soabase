@@ -37,16 +37,16 @@ public class ExampleAdminConsoleMain
             .addingCssUriPath("/admin/custom/assets/css/custom.css")
             .build();
 
-        AdminConsoleAppBuilder<ExampleAdminConfiguration> builder = AdminConsoleAppBuilder.<ExampleAdminConfiguration>builder()
+        AdminConsoleApp<ExampleAdminConfiguration> app = AdminConsoleAppBuilder.<ExampleAdminConfiguration>builder()
             .withAppName("Example")
             .withCompanyName("My Company")
+            .withConfigurationClass(ExampleAdminConfiguration.class)
             .addingStandardTabs()
             .addingTabComponent(component)
             .addingPreSoaBundle(new CuratorBundle<ExampleAdminConfiguration>())
             .addingPreSoaBundle(new SqlBundle<ExampleAdminConfiguration>())
+            .build()
             ;
-
-        AdminConsoleApp<ExampleAdminConfiguration> app = new AdminConsoleApp<ExampleAdminConfiguration>(builder){};
         app.run(ExampleAppBase.setSystemAndAdjustArgs("admin/config.json"));
     }
 }

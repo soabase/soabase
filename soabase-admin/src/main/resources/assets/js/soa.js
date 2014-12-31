@@ -45,30 +45,25 @@ function soaGetTemplate(id, replacements) {
 }
 
 function soaShowInfiniteProgressBar(message) {
-    if ( message === undefined ) {
-        message = 'Processing...';
-    }
-    $('#soa-infinite-progress-bar-message').html(message);
-
-    $('#soa-infinite-progress-bar-container').modal({
-        'backdrop': 'static',
-        'keyboard': false,
-        'show': true
-    });
+    $('#soa-progress-container').show();
 }
 
 function soaHideInfiniteProgressBar() {
-    $('#soa-infinite-progress-bar-container').modal('hide');
+    $('#soa-progress-container').hide();
 }
 
 function soaShowPage() {
     var h = location.hash;
     var command = '';
     if ( !h || (h === '#') ) {
-        command = 'soa-tab-';
+        command = soaDefaultTabId;
+        if ( history.pushState ) {
+            history.pushState(null, null, '#' + soaDefaultTabId);
+        }
     } else {
-        command = 'soa-tab-' + h.slice(1);
+        command = h.slice(1);
     }
+    command = 'soa-tab-' + command;
 
     for (var i in soaTabIds) {
         var id = soaTabIds[i];

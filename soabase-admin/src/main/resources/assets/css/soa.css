@@ -36,10 +36,14 @@ body {
     font-weight: bold;
 }
 
-#soa-infinite-progress-bar {
-    width: 400px;
+.soa-progress {
+    margin-top: 12px;
+    width: 100px;
+    height: 1em;
+    float: right;
+    display: inline;
 }
 
-#soa-infinite-progress-bar .progress-bar {
-    width: 100%;
+.soa-progress-bar {
+    width: 100px;
 }

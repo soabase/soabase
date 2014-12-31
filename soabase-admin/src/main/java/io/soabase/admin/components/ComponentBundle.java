@@ -28,6 +28,22 @@ import java.util.prefs.Preferences;
 
 public class ComponentBundle<T extends SoaAdminConfiguration> implements ConfiguredBundle<T>
 {
+    public static void addStandardTabs(ComponentManager componentManager)
+    {
+        addServicesTab(componentManager);
+        addAttributesTab(componentManager);
+    }
+
+    public static void addServicesTab(ComponentManager componentManager)
+    {
+        componentManager.addTab(new TabComponent("soa-services", "Services", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.newArrayList("assets/css/main.css")));
+    }
+
+    public static void addAttributesTab(ComponentManager componentManager)
+    {
+        componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html", Lists.newArrayList("assets/js/attributes.js"), Lists.newArrayList("assets/css/attributes.css")));
+    }
+
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
@@ -45,10 +61,11 @@ public class ComponentBundle<T extends SoaAdminConfiguration> implements Configu
         SoaBundle.getFeatures(environment).putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
         SoaBundle.getFeatures(environment).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
-        componentManager.addTab(new TabComponent("", "Services", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.newArrayList("assets/css/main.css")));
-        componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html", Lists.newArrayList("assets/js/attributes.js"), Lists.newArrayList("assets/css/attributes.css")));
+        addStandardTabs(componentManager);
 
-        environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("");
+        IndexServlet servlet = new IndexServlet(componentManager);
+        environment.servlets().addServlet("index", servlet).addMapping("");
+        environment.servlets().addServlet("forced", servlet).addMapping("/force");
 
         environment.jersey().register(binder);
     }

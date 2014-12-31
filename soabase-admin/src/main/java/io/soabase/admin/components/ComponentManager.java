@@ -16,6 +16,9 @@
 package io.soabase.admin.components;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.util.List;
 
@@ -41,7 +44,7 @@ public class ComponentManager
 
     public List<TabComponent> getTabs()
     {
-        return tabs;
+        return ImmutableList.copyOf(tabs);
     }
 
     public String getAppName()
@@ -57,5 +60,21 @@ public class ComponentManager
     public String getFooterMessage()
     {
         return footerMessage;
+    }
+
+    public void removeAll()
+    {
+        tabs.clear();
+    }
+
+    public TabComponent getTab(String id)
+    {
+        int index = tabs.indexOf(new TabComponent(id, "", ""));
+        return (index >= 0) ? tabs.get(index) : null;
+    }
+
+    public boolean remove(String id)
+    {
+        return tabs.remove(new TabComponent(id, "", ""));
     }
 }

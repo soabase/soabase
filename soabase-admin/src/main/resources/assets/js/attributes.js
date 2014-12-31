@@ -115,7 +115,11 @@ function soaAttributesSort(columnIndex) {
 
 function soaSetAttributeRows() {
     soaAttributesSortColumn = -1;
+    soaShowInfiniteProgressBar();
+
     $.getJSON('/soa/attributes/all', function(data){
+        soaHideInfiniteProgressBar();
+
         soaAttributesData = data;
         soaAttributesSort(0);
         $('#soa-attributes-last-updated').text('Last updated ' + (new Date()).toLocaleString());

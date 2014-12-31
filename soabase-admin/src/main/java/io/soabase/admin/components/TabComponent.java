@@ -73,6 +73,7 @@ public class TabComponent
         return cssPaths;
     }
 
+    // IMPORTANT: must only equal id
     @Override
     public boolean equals(Object o)
     {
@@ -96,6 +97,7 @@ public class TabComponent
         return true;
     }
 
+    // IMPORTANT: must only equal id
     @Override
     public int hashCode()
     {

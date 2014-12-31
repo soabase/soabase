@@ -66,7 +66,7 @@ public class IndexServlet extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        if ( "force".equals(request.getQueryString()) )
+        if ( "/force".equals(request.getRequestURI()) )
         {
             init();
         }
@@ -84,6 +84,7 @@ public class IndexServlet extends HttpServlet
     {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
+        String firstId = "";
         StringBuilder tabs = new StringBuilder();
         StringBuilder ids = new StringBuilder();
         StringBuilder css = new StringBuilder();
@@ -91,6 +92,11 @@ public class IndexServlet extends HttpServlet
         StringBuilder content = new StringBuilder();
         for ( TabComponent tab : componentManager.getTabs() )
         {
+            if ( firstId.length() == 0 )
+            {
+                firstId = tab.getId();
+            }
+
             String id = SOA_TAB_PREFIX + tab.getId();
             tabs.append("<li id='").append(id).append("-li").append("'><a href=\"#").append(tab.getId()).append("\">").append(tab.getName()).append("</a></li>\n");
             ids.append("soaTabIds.push('").append(id).append("');\n");
@@ -109,6 +115,7 @@ public class IndexServlet extends HttpServlet
         }
         localIndexFile = localIndexFile.replace("$SOA_TABS$", tabs.toString());
         localIndexFile = localIndexFile.replace("$SOA_TABS_CONTENT$", content.toString());
+        localIndexFile = localIndexFile.replace("$SOA_DEFAULT_TAB_ID$", firstId);
         localIndexFile = localIndexFile.replace("$SOA_TAB_IDS$", ids.toString());
         localIndexFile = localIndexFile.replace("$SOA_CSS$", css.toString());
         localIndexFile = localIndexFile.replace("$SOA_JS$", jss.toString());

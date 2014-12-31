@@ -150,6 +150,7 @@ function soaUpdateInstancesForService(serviceName) {
             $('#' + id).html(content);
             $('#soa-service-body-toggle-' + serviceName).click(function(){
                 $(this).toggleClass('glyphicon-expand glyphicon-collapse-down');
+                return true;
             });
 
             function setHandlers(instance) {

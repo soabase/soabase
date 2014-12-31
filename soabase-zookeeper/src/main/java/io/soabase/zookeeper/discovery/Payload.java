@@ -20,10 +20,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Map;
 
-@XmlRootElement
 public class Payload
 {
     private int adminPort;

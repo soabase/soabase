@@ -16,13 +16,10 @@
 package io.soabase.core.features.attributes;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.listening.Listenable;
-import io.soabase.core.rest.entities.Attribute;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 @JsonTypeName("default")
@@ -37,12 +34,6 @@ public class NullDynamicAttributesFactory implements SoaDynamicAttributesFactory
     private static class NullAttributes implements SoaDynamicAttributes
     {
         private final StandardAttributesContainer container = new StandardAttributesContainer(Lists.<String>newArrayList());
-
-        @Override
-        public Iterator<Attribute> iterator()
-        {
-            return ImmutableList.<Attribute>of().iterator();
-        }
 
         @Override
         public String getAttribute(String key)

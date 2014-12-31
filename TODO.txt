@@ -33,10 +33,10 @@
 * Figure out what @Valid means
 * Figure out why admin jersey apis DW info output doesn't include "api"
 * kill isn't working for soa apps
-* Decide if @XmlRootElement is needed
 * Maybe it's better for all the configs to just have public fields?
 * Discovery registration should be in background
-* Separate Discovery mutable APIs for admin
 * Get rid of soa-hidden
 * Write out GCs? Threads?
-* Get rid of or limit bootbox - it ends up doubling IDs
+* Rename SoaDynamicAttributes to DynamicAttributes
+* Get rid of Soa prefix on classes?
+* Support user identity on attributes for auditing

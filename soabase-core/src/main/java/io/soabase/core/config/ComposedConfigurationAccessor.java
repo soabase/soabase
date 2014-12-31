@@ -40,13 +40,18 @@ public class ComposedConfigurationAccessor
             @Override
             public Field load(Class<?> clazz) throws Exception
             {
-                for( Field field : configuration.getClass().getDeclaredFields() )
+                Class<?> configurationClass = configuration.getClass();
+                while ( configurationClass != null )
                 {
-                    if ( field.getType().equals(clazz) )
+                    for ( Field field : configurationClass.getDeclaredFields() )
                     {
-                        field.setAccessible(true);
-                        return field;
+                        if ( field.getType().equals(clazz) )
+                        {
+                            field.setAccessible(true);
+                            return field;
+                        }
                     }
+                    configurationClass = configurationClass.getSuperclass();
                 }
                 // TODO logging
                 throw new Exception("Could not find a field of the type: " + clazz);

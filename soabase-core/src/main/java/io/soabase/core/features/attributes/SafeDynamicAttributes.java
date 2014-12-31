@@ -16,9 +16,7 @@
 package io.soabase.core.features.attributes;
 
 import io.soabase.core.listening.Listenable;
-import io.soabase.core.rest.entities.Attribute;
 import java.util.Collection;
-import java.util.Iterator;
 
 public class SafeDynamicAttributes implements SoaDynamicAttributes
 {
@@ -117,11 +115,5 @@ public class SafeDynamicAttributes implements SoaDynamicAttributes
     public Listenable<SoaDynamicAttributeListener> getListenable()
     {
         return implementation.getListenable();
-    }
-
-    @Override
-    public Iterator<Attribute> iterator()
-    {
-        return implementation.iterator();
     }
 }

@@ -31,27 +31,21 @@ import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.config.FlexibleConfigurationSourceProvider;
-import io.soabase.core.rest.DiscoveryApis;
-import io.soabase.core.rest.LoggingApis;
-import io.soabase.zookeeper.discovery.CuratorBundle;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import java.util.prefs.Preferences;
 
-public class SoaAdminApp extends Application<SoaAdminConfiguration>
+public abstract class SoaAdminApp<T extends SoaAdminConfiguration> extends Application<T>
 {
-    @SuppressWarnings("ParameterCanBeLocal")
-    public static void main(String[] args) throws Exception
+    public SoaAdminApp()
     {
         System.setProperty("dw.soa.serviceName", "soabaseadmin");
         System.setProperty("dw.soa.addCorsFilter", "true");
         System.setProperty("dw.soa.registerInDiscovery", "false");
         System.setProperty("dw.server.rootPath", "/api/*");
-
-        new SoaAdminApp().run(args);
     }
 
     @Override
-    public void initialize(Bootstrap<SoaAdminConfiguration> bootstrap)
+    public final void initialize(Bootstrap<T> bootstrap)
     {
         bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider());
 
@@ -72,13 +66,13 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
             }
         };
         bootstrap.addBundle(bundle);
-        bootstrap.addBundle(new CuratorBundle<>());
+        internalInitialize(bootstrap);
         bootstrap.addBundle(new SoaBundle<>());
         bootstrap.addBundle(new AssetsBundle("/assets", "/assets"));
     }
 
     @Override
-    public void run(SoaAdminConfiguration configuration, Environment environment) throws Exception
+    public final void run(T configuration, Environment environment) throws Exception
     {
         final ComponentManager componentManager = new ComponentManager(configuration.getAppName(), configuration.getCompany(), configuration.getFooterMessage());
         final Preferences preferences = Preferences.userRoot();
@@ -95,7 +89,7 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         SoaBundle.getFeatures(environment).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
         componentManager.addTab(new TabComponent("", "Services", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.newArrayList("assets/css/main.css")));
-        componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html", Lists.newArrayList("assets/js/attributes.js"), Lists.<String>newArrayList()));
+        componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html", Lists.newArrayList("assets/js/attributes.js"), Lists.newArrayList("assets/css/attributes.css")));
 
         environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("");
 
@@ -103,5 +97,11 @@ public class SoaAdminApp extends Application<SoaAdminConfiguration>
         environment.jersey().register(DiscoveryResource.class);
         environment.jersey().register(AttributesResource.class);
         environment.jersey().register(PreferencesResource.class);
+
+        internalRun(configuration, environment);
     }
+
+    protected abstract void internalInitialize(Bootstrap<T> bootstrap);
+
+    protected abstract void internalRun(T configuration, Environment environment);
 }

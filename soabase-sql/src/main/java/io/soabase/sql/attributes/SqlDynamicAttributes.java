@@ -21,11 +21,10 @@ import io.soabase.core.features.attributes.SoaDynamicAttributeListener;
 import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
 import io.soabase.core.features.attributes.StandardAttributesContainer;
 import io.soabase.core.listening.Listenable;
-import io.soabase.core.rest.entities.Attribute;
 import org.apache.ibatis.session.SqlSession;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class SqlDynamicAttributes implements SoaWritableDynamicAttributes, Managed
 {
@@ -39,16 +38,34 @@ public class SqlDynamicAttributes implements SoaWritableDynamicAttributes, Manag
     }
 
     @Override
-    public void put(AttributeKey key, Object value)
+    public Map<AttributeKey, Object> getAll()
     {
-        AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
-        mapper.insert(new AttributeEntity(key.getKey(), key.getScope(), String.valueOf(value)));
+        return container.getAll();
     }
 
     @Override
-    public Iterator<Attribute> iterator()
+    public void remove(AttributeKey key)
     {
-        return container.iterator();
+        AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
+        AttributeEntity attribute = new AttributeEntity(key.getKey(), key.getScope(), "");  // value isn't used
+        mapper.delete(attribute);
+        update();
+    }
+
+    @Override
+    public void put(AttributeKey key, Object value)
+    {
+        AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
+        AttributeEntity attribute = new AttributeEntity(key.getKey(), key.getScope(), String.valueOf(value));
+        if ( container.hasKey(key) )
+        {
+            mapper.update(attribute);
+        }
+        else
+        {
+            mapper.insert(attribute);
+        }
+        update();
     }
 
     @Override

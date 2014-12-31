@@ -16,6 +16,7 @@
 package io.soabase.sql.attributes;
 
 import org.apache.ibatis.annotations.CacheNamespace;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -33,6 +34,9 @@ public interface AttributeEntityMapper
     @Insert("INSERT INTO SoaAttributes (fKEY, fSCOPE, fVALUE, fTIMESTAMP) VALUES (#{fKEY}, #{fSCOPE}, #{fVALUE}, #{fTIMESTAMP})")
     public int insert(AttributeEntity attribute);
 
-    @Update("UPDATE SoaAttributes SET fVALUE = #{fVALUE} WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE} AND fTIMESTAMP = #{fTIMESTAMP}")
+    @Update("UPDATE SoaAttributes SET fVALUE = #{fVALUE} WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE}")  // TODO fTIMESTAMP
     public int update(AttributeEntity attribute);
+
+    @Delete("DELETE FROM SoaAttributes WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE}")  // TODO fTIMESTAMP
+    public int delete(AttributeEntity attribute);
 }

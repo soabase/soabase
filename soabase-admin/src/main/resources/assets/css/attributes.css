@@ -1,0 +1,22 @@
+.soa-attributes-clickable-header {
+    cursor: pointer;
+}
+
+.soa-attributes-clickable-header:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.soa-attributes-icon-button {
+    cursor: pointer;
+    font-weight: normal !important;
+}
+
+.soa-attributes-button-margin {
+    margin-left: 10px;
+}
+
+.soa-attributes-delete-button-cell {
+    width: 85px;
+    text-align: center;
+}

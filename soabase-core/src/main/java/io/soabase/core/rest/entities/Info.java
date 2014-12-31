@@ -18,10 +18,8 @@ package io.soabase.core.rest.entities;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement
 public class Info
 {
     private List<String> scopes;

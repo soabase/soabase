@@ -15,7 +15,13 @@
  */
 package io.soabase.core.features.attributes;
 
+import java.util.Map;
+
 public interface SoaWritableDynamicAttributes extends SoaDynamicAttributes
 {
     public void put(AttributeKey key, Object value);
+
+    public void remove(AttributeKey key);
+
+    public Map<AttributeKey, Object> getAll();
 }

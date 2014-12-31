@@ -1,14 +1,48 @@
 <h3>Attributes</h3>
 
-<table class="table table-condensed table-striped">
-    <thead>
-        <tr>
-            <th>Attribute</th>
-            <th>Scope</th>
-            <th>Value</th>
-        </tr>
-    </thead>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <form class="form-inline">
+            <div class="form-group">
+                <label class="sr-only" for="soa-attributes-new-key">Key</label>
+                <input type="text" class="form-control" id="soa-attributes-new-key" placeholder="Key">
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="soa-attributes-new-scope">Scope</label>
+                <input type="text" class="form-control" id="soa-attributes-new-scope" placeholder="Scope">
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="soa-attributes-new-value">Value</label>
+                <input type="text" class="form-control" id="soa-attributes-new-value" placeholder="Value">
+            </div>
+            <button id="soa-attributes-add-button" class="btn btn-default soa-attributes-button-margin">Add/Update</button>
+        </form>
+    </div>
+</div>
 
-    <tbody id="soa-attributes-rows">
-    </tbody>
-</table>
+<div class="panel panel-primary">
+    <div class="panel-heading list-group-item">
+        <span id="soa-attributes-collapse-current" class="soa-attributes-icon-button glyphicon glyphicon-collapse-down large" aria-hidden="true"></span>
+        <span class="large">Current</span>
+        <div class="pull-right">
+            <span id="soa-attributes-refresh" class="soa-attributes-icon-button glyphicon glyphicon-refresh" aria-hidden="true"></span>
+        </div>
+    </div>
+    <div class="collapse in" id="soa-attributes-current">
+        <div class="panel-body">
+            <table class="table table-condensed table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th id="soa-attributes-header-attribute" class="soa-attributes-clickable-header"><span class="glyphicon glyphicon-sort" aria-hidden="true"></span> Key</th>
+                    <th id="soa-attributes-header-scope" class="soa-attributes-clickable-header"><span class="glyphicon glyphicon-sort" aria-hidden="true"></span> Scope</th>
+                    <th id="soa-attributes-header-value" class="soa-attributes-clickable-header"><span class="glyphicon glyphicon-sort" aria-hidden="true"></span> Value</th>
+                    <th class="soa-attributes-delete-button-cell"></th>
+                </tr>
+                </thead>
+
+                <tbody id="soa-attributes-rows">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -16,10 +16,9 @@
 package io.soabase.core.features.attributes;
 
 import io.soabase.core.listening.Listenable;
-import io.soabase.core.rest.entities.Attribute;
 import java.util.Collection;
 
-public interface SoaDynamicAttributes extends Iterable<Attribute>
+public interface SoaDynamicAttributes
 {
     public String getAttribute(String key);
 

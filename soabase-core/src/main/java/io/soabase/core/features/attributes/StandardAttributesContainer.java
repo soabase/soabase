@@ -23,12 +23,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.soabase.core.listening.Listenable;
 import io.soabase.core.listening.ListenerContainer;
-import io.soabase.core.rest.entities.Attribute;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -56,42 +53,6 @@ public class StandardAttributesContainer
         public void put(String key, String scope, Object value);
 
         public void commit();
-    }
-
-    public Iterator<Attribute> iterator()
-    {
-        return new Iterator<Attribute>()
-        {
-            Iterator<Map.Entry<String, Object>> overridesIterator = overrides.entrySet().iterator();
-            Iterator<Map.Entry<AttributeKey, Object>> attributesIterator = attributes.entrySet().iterator();
-
-            public boolean hasNext()
-            {
-                return overridesIterator.hasNext() || attributesIterator.hasNext();
-            }
-
-            @Override
-            public Attribute next()
-            {
-                if ( overridesIterator.hasNext() )
-                {
-                    Map.Entry<String, Object> next = overridesIterator.next();
-                    return new Attribute(next.getKey(), "", String.valueOf(next.getValue()), true);
-                }
-                if ( attributesIterator.hasNext() )
-                {
-                    Map.Entry<AttributeKey, Object> next = attributesIterator.next();
-                    return new Attribute(next.getKey().getKey(), next.getKey().getScope(), String.valueOf(next.getValue()), false);
-                }
-                throw new NoSuchElementException();
-            }
-
-            @Override
-            public void remove()
-            {
-                throw new UnsupportedOperationException();
-            }
-        };
     }
 
     public Updater newUpdater()
@@ -137,9 +98,10 @@ public class StandardAttributesContainer
             @Override
             public void commit()
             {
-                if ( notifyListeners )
+                for ( final AttributeKey attributeKey : deletingKeys )
                 {
-                    for ( final AttributeKey attributeKey : deletingKeys )
+                    attributes.remove(attributeKey);
+                    if ( notifyListeners )
                     {
                         Function<SoaDynamicAttributeListener, Void> notify = new Function<SoaDynamicAttributeListener, Void>()
                         {
@@ -232,6 +194,16 @@ public class StandardAttributesContainer
     public Collection<String> getKeys()
     {
         return overrides.keySet();
+    }
+
+    public boolean hasKey(AttributeKey key)
+    {
+        return attributes.containsKey(key);
+    }
+
+    public Map<AttributeKey, Object> getAll()
+    {
+        return Maps.newHashMap(attributes);
     }
 
     public Listenable<SoaDynamicAttributeListener> getListenable()

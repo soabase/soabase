@@ -1,18 +1,15 @@
 {
   "soa": {
-    "serviceName": "soabaseadmin",
     "discovery": {
       "type": "zookeeper"
+    },
+    "attributes": {
+      "type": "sql"
     }
   },
 
   "sql": {
-    "mybatisConfigUrl": "tbd"
-  },
-
-  "server": {
-    "rootPath": "/api/*",
-    "adminConnectors": []
+    "mybatisConfigUrl": "mybatis.xml"
   },
 
   "curator": {

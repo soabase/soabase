@@ -22,9 +22,9 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.client.SoaClientBundle;
-import io.soabase.core.config.FlexibleConfigurationSourceProvider;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaInfo;
+import io.soabase.core.config.FlexibleConfigurationSourceProvider;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 import org.apache.curator.test.InstanceSpec;
@@ -56,22 +56,29 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
     {
         if ( arguments.length == 0 )
         {
-            System.setProperty("dw.curator.connectionString", "localhost:2181");
-            System.setProperty("dw.soa.instanceName", "instance-" + new Random().nextInt(10000));
-            System.setProperty("dw.soa.discovery.type", "zookeeper");
-            System.setProperty("dw.soa.discovery.bindAddress", "localhost");
-            System.setProperty("dw.sql.mybatisConfigUrl", "example-mybatis.xml");
-            System.setProperty("dw.soa.attributes.type", "sql");
-            System.setProperty("dw.server.applicationConnectors[0].port", "" + InstanceSpec.getRandomPort());
-            System.setProperty("dw.server.adminConnectors[0].port", "" + InstanceSpec.getRandomPort());
-            arguments = new String[]
-            {
-                "server",
-                "|" + configFqpn
-            };
+            super.run(setSystemAndAdjustArgs(configFqpn));
         }
+        else
+        {
+            super.run(arguments);
+        }
+    }
 
-        super.run(arguments);
+    public static String[] setSystemAndAdjustArgs(String configFqpn)
+    {
+        System.setProperty("dw.curator.connectionString", "localhost:2181");
+        System.setProperty("dw.soa.instanceName", "instance-" + new Random().nextInt(10000));
+        System.setProperty("dw.soa.discovery.type", "zookeeper");
+        System.setProperty("dw.soa.discovery.bindAddress", "localhost");
+        System.setProperty("dw.sql.mybatisConfigUrl", "example-mybatis.xml");
+        System.setProperty("dw.soa.attributes.type", "sql");
+        System.setProperty("dw.server.applicationConnectors[0].port", "" + InstanceSpec.getRandomPort());
+        System.setProperty("dw.server.adminConnectors[0].port", "" + InstanceSpec.getRandomPort());
+        return new String[]
+        {
+            "server",
+            "|" + configFqpn
+        };
     }
 
     @Override

@@ -17,6 +17,11 @@
 
         <dependency>
             <groupId>io.soabase</groupId>
+            <artifactId>soabase-admin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.soabase</groupId>
             <artifactId>soabase-zookeeper</artifactId>
         </dependency>
 

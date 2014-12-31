@@ -165,6 +165,7 @@ function soaUpdateInstancesForService(serviceName) {
             for ( var j in data ) {
                 setHandlers(data[j]);
             }
+            $('#soa-services-last-updated').text('Last updated ' + (new Date()).toLocaleString());
         } else {
             $('#' + id).remove();
         }
@@ -183,15 +184,6 @@ function soaUpdateInstances() {
 
 $(function() {
     var ourTab = $('#soa-tab-');
-    var ourInterval;
-    ourTab.bind('soa-show', function(){
-        soaUpdateInstances();
-        ourInterval = setInterval(soaUpdateInstances, 5000);
-    });
-    ourTab.bind('soa-hide', function(){
-        if ( ourInterval ) {
-            clearInterval(ourInterval);
-            ourInterval = null;
-        }
-    });
+    soaUpdateInstances();
+    setInterval(soaUpdateInstances, 5000);
 });

@@ -3,6 +3,9 @@
 <div id="soa-services">
 
 </div>
+<div class="pull-right small">
+    <em id="soa-services-last-updated"></em>
+</div>
 
 <div class="soa-template" id="soa-force-dialog-content">
     <form name="soa-force-dialog">
@@ -38,7 +41,7 @@
 <div class="soa-template" id="soa-service-instance-template">
     <div class="list-group-item row">
         <div class="col-md-3 soa-service-instance-cell">
-            <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data large">$INSTANCE_DATA$</span>
+            <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data h4">$INSTANCE_DATA$</span>
         </div>
 
         <div class="col-md-5 soa-service-instance-cell">
@@ -54,7 +57,7 @@
 
 <div class="soa-template" id="soa-service-template">
     <div class="panel panel-primary">
-        <div class="panel-heading list-group-item"><span id="soa-service-body-toggle-$SERVICE_NAME$" data-toggle="collapse" data-target="#soa-service-body-collapse-$SERVICE_NAME$" class="soa-service-body-toggle glyphicon glyphicon-collapse-down large" aria-hidden="true"></span> <span class="large">$SERVICE_NAME$</span> <span class="badge">$SERVICE_QTY$</span></div>
+        <div class="panel-heading list-group-item"><span id="soa-service-body-toggle-$SERVICE_NAME$" data-toggle="collapse" data-target="#soa-service-body-collapse-$SERVICE_NAME$" class="soa-service-body-toggle glyphicon glyphicon-collapse-down panel-title" aria-hidden="true"></span> <span class="panel-title">$SERVICE_NAME$</span> <span class="badge">$SERVICE_QTY$</span></div>
         <div class="collapse in" id="soa-service-body-collapse-$SERVICE_NAME$">
             <div id="soa-service-body-$SERVICE_NAME$" class="panel-body soa-service-indented">
                 <ul class="list-group">

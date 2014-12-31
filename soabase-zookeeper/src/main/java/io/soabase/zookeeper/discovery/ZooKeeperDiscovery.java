@@ -86,6 +86,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
                 .builder(Payload.class)
                 .basePath(factory.getZookeeperPath())
                 .client(curator)
+                .watchInstances(true)
                 .build();
         }
         catch ( Exception e )
@@ -259,7 +260,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         discovery.start();
         if ( soaInfo.isRegisterInDiscovery() )
         {
-            discovery.registerServiceWatched(us.get());
+            discovery.registerService(us.get());
         }
     }
 

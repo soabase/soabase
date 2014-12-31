@@ -23,16 +23,12 @@ import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.admin.components.ComponentManager;
-import io.soabase.admin.components.TabComponent;
+import io.soabase.admin.components.ComponentBundle;
 import io.soabase.admin.rest.AttributesResource;
 import io.soabase.admin.rest.DiscoveryResource;
 import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.core.SoaBundle;
-import io.soabase.core.SoaFeatures;
 import io.soabase.core.config.FlexibleConfigurationSourceProvider;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import java.util.prefs.Preferences;
 
 public abstract class SoaAdminApp<T extends SoaAdminConfiguration> extends Application<T>
 {
@@ -65,35 +61,17 @@ public abstract class SoaAdminApp<T extends SoaAdminConfiguration> extends Appli
                 // NOP
             }
         };
+        internalInitializePre(bootstrap);
         bootstrap.addBundle(bundle);
-        internalInitialize(bootstrap);
         bootstrap.addBundle(new SoaBundle<>());
+        bootstrap.addBundle(new ComponentBundle<T>());
         bootstrap.addBundle(new AssetsBundle("/assets", "/assets"));
+        internalInitializePost(bootstrap);
     }
 
     @Override
     public final void run(T configuration, Environment environment) throws Exception
     {
-        final ComponentManager componentManager = new ComponentManager(configuration.getAppName(), configuration.getCompany(), configuration.getFooterMessage());
-        final Preferences preferences = Preferences.userRoot();
-        AbstractBinder binder = new AbstractBinder()
-        {
-            @Override
-            protected void configure()
-            {
-                bind(preferences).to(Preferences.class);
-                bind(componentManager).to(ComponentManager.class);
-            }
-        };
-        SoaBundle.getFeatures(environment).putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
-        SoaBundle.getFeatures(environment).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
-
-        componentManager.addTab(new TabComponent("", "Services", "assets/main.html", Lists.newArrayList("assets/js/main.js"), Lists.newArrayList("assets/css/main.css")));
-        componentManager.addTab(new TabComponent("soa-attributes", "Attributes", "assets/attributes.html", Lists.newArrayList("assets/js/attributes.js"), Lists.newArrayList("assets/css/attributes.css")));
-
-        environment.servlets().addServlet("index", new IndexServlet(componentManager)).addMapping("");
-
-        environment.jersey().register(binder);
         environment.jersey().register(DiscoveryResource.class);
         environment.jersey().register(AttributesResource.class);
         environment.jersey().register(PreferencesResource.class);
@@ -101,7 +79,9 @@ public abstract class SoaAdminApp<T extends SoaAdminConfiguration> extends Appli
         internalRun(configuration, environment);
     }
 
-    protected abstract void internalInitialize(Bootstrap<T> bootstrap);
+    protected abstract void internalInitializePre(Bootstrap<T> bootstrap);
+
+    protected abstract void internalInitializePost(Bootstrap<T> bootstrap);
 
     protected abstract void internalRun(T configuration, Environment environment);
 }

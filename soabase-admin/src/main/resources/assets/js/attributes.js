@@ -118,6 +118,7 @@ function soaSetAttributeRows() {
     $.getJSON('/soa/attributes/all', function(data){
         soaAttributesData = data;
         soaAttributesSort(0);
+        $('#soa-attributes-last-updated').text('Last updated ' + (new Date()).toLocaleString());
     });
 }
 

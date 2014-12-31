@@ -95,6 +95,29 @@ function soaHandleLogButton(serviceName, localInstance) {
     });
 }
 
+function soaHandleTraceButton(localInstance) {
+    var url = 'http://' + localInstance.host + ':' + localInstance.adminPort + '/api/soa/logging/stack';
+    window.open(url, '_blank');
+}
+
+function soaServicesBuildContainer(serviceName) {
+    var id = SOA_SERVICE_ID_PREFIX + serviceName;
+
+    var div = document.createElement('div');
+    $(div).attr('id', id).appendTo('#soa-services');
+
+    var content = soaGetTemplate('soa-service-template', {
+        '$SERVICE_NAME$': serviceName
+    });
+    $('#' + id).html(content);
+
+    $('#soa-service-body-toggle-' + serviceName).click(function(){
+        $('#soa-service-body-toggle-' + serviceName).toggleClass('glyphicon-expand glyphicon-collapse-down');
+        $('#soa-service-body-collapse-' + serviceName).collapse('toggle');
+        return true;
+    });
+}
+
 function soaUpdateInstancesForService(serviceName) {
     $.getJSON('/soa/discovery/all/' + serviceName, function(data){
         var stoplightGreen = soaGetTemplate('soa-stoplight-set-green');
@@ -112,13 +135,7 @@ function soaUpdateInstancesForService(serviceName) {
         }
 
         var id = SOA_SERVICE_ID_PREFIX + serviceName;
-        var divExists = $('#' + id).length > 0;
         if ( data.length > 0 ) {
-            if ( !divExists ) {
-                var div = document.createElement('div');
-                $(div).attr('id', id).appendTo('#soa-services');
-            }
-
             var instances = "";
             for ( var i in data ) {
                 var instance = data[i];
@@ -142,16 +159,8 @@ function soaUpdateInstancesForService(serviceName) {
                 instances = instances + thisInstance;
             }
 
-            var content = soaGetTemplate('soa-service-template', {
-                '$SERVICE_NAME$': serviceName,
-                '$SERVICE_QTY$': data.length,
-                '$INSTANCES$': instances
-            });
-            $('#' + id).html(content);
-            $('#soa-service-body-toggle-' + serviceName).click(function(){
-                $(this).toggleClass('glyphicon-expand glyphicon-collapse-down');
-                return true;
-            });
+            $('#soa-service-instance-qty-' + serviceName).text(data.length);
+            $('#soa-service-instances-' + serviceName).html(instances);
 
             function setHandlers(instance) {
                 $('#soa-force-button-' + instance.id).click(function(){
@@ -160,11 +169,14 @@ function soaUpdateInstancesForService(serviceName) {
                 $('#soa-logs-button-' + instance.id).click(function(){
                     soaHandleLogButton(serviceName, instance);
                 });
+                $('#soa-trace-button-' + instance.id).click(function(){
+                    soaHandleTraceButton(instance);
+                });
             }
-
             for ( var j in data ) {
                 setHandlers(data[j]);
             }
+
             $('#soa-services-last-updated').text('Last updated ' + (new Date()).toLocaleString());
         } else {
             $('#' + id).remove();
@@ -172,13 +184,36 @@ function soaUpdateInstancesForService(serviceName) {
     });
 }
 
+var soaServices = [];
+
+function soaServiceDivExists(serviceName) {
+    var id = SOA_SERVICE_ID_PREFIX + serviceName;
+    return $('#' + id).length > 0;
+}
+
 function soaUpdateInstances() {
     $.getJSON('/soa/discovery/services', function(data){
-        // TODO remove services that don't exist anymore
-        for (var i in data) {
-            var serviceName = data[i];
+        var id = SOA_SERVICE_ID_PREFIX + serviceName;
+        var serviceName;
+        var i;
+
+        // remove services that don't exist anymore
+        for ( i in soaServices ) {
+            serviceName = soaServices[i];
+            if ( !data[serviceName] && soaServiceDivExists(serviceName) ) {
+                $('#' + id).remove();
+            }
+        }
+
+        for (i in data) {
+            serviceName = data[i];
+            if ( !soaServiceDivExists(serviceName) ) {
+                soaServicesBuildContainer(serviceName);
+            }
             soaUpdateInstancesForService(serviceName);
         }
+
+        soaServices = data;
     });
 }
 

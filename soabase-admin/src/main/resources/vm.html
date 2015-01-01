@@ -108,9 +108,11 @@
 <div class="soa-template" id="vm-metric-template">
     <div class="col-md-4">
         <div class="panel panel-default">
-            <div class="panel-heading"><h3 class="panel-title" id="vm-metric-name-$ID$"></h3></div>
-            <div class="panel-body">
-                <div id="vm-metric-$ID$"></div>
+            <div class="panel-heading"><span id="vm-metric-collapse-button-$ID$" class="vm-toggle glyphicon glyphicon-collapse-down"></span> <span id="vm-metric-name-$ID$" class="panel-title h3"></span></div>
+            <div class="collapse in" id="vm-metric-collapse-$ID$">
+                <div class="panel-body">
+                    <div id="vm-metric-$ID$"></div>
+                </div>
             </div>
         </div>
     </div>

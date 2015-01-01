@@ -131,6 +131,13 @@ function vmUpdateInterval() {
     vmResetTimeout();
 }
 
+function vmGetCollapseFunction(metric) {
+    return function(){
+        $('#vm-metric-collapse-button-' + metric.id).toggleClass('glyphicon-collapse-down glyphicon-expand');
+        $('#vm-metric-collapse-' + metric.id).collapse('toggle');
+    };
+}
+
 function vmBuildMetrics() {
     var currentRow = null;
     var metricCountInRow = VM_METRICS_PER_ROW;
@@ -191,6 +198,8 @@ function vmBuildMetrics() {
                 height: 200
             }
         });
+
+        $('#vm-metric-collapse-button-' + metric.id).click(vmGetCollapseFunction(metric));
     }
 }
 

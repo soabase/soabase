@@ -171,8 +171,10 @@ public class AdminConsoleAppBuilder<T extends Configuration>
         tabs.add(StandardComponents.newServicesTab());
         tabs.add(StandardComponents.newAttributesTab());
         metrics.add(StandardComponents.newHeapMetric());
+        metrics.add(StandardComponents.newThreadsMetric());
+        metrics.add(StandardComponents.newRequestsMetric());
         metrics.add(StandardComponents.newGcMetric());
         metrics.add(StandardComponents.newGcTimesMetric());
-        metrics.add(StandardComponents.newThreadsMetric());
+        metrics.add(StandardComponents.newRequestStatusMetric());
     }
 }

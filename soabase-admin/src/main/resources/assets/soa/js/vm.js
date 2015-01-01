@@ -13,26 +13,18 @@ var vmInterval = null;
 var VM_MAX_METRIC_POINTS = 50;
 var VM_METRICS_PER_ROW = 3;
 
-function vmUpdate1Metric(metric, gauges) {
+function vmUpdate1Metric(metric, data) {
     var c3Data = [];
+    var i;
 
-    for ( var gaugeName in gauges ) {
-        var prefixMatch = gaugeName.match(metric.prefix);
-        var suffixMatch = gaugeName.match(metric.suffix);
-        if ( prefixMatch && suffixMatch ) {
-            prefixMatch = prefixMatch.toString();
-            suffixMatch = suffixMatch.toString();
-            var name = gaugeName.substring(prefixMatch.length, gaugeName.length - suffixMatch.length);
-            if ( !name || (name.length == 0) ) {
-                name = prefixMatch;
-            }
-            var thisValue = gauges[gaugeName].value;
-
-            var i;
-            var tab = metric.data[name];
+    for ( i in metric.metrics ) {
+        var spec = metric.metrics[i];
+        var thisValue = eval('data.' + spec.path);
+        if ( thisValue != undefined ) {
+            var tab = metric.data[spec.label];
             if ( !tab ) {
                 tab = [];
-                metric.data[name] = tab;
+                metric.data[spec.label] = tab;
                 for ( i = 0; i < VM_MAX_METRIC_POINTS; ++i ) {
                     tab.push(thisValue);
                 }
@@ -42,25 +34,25 @@ function vmUpdate1Metric(metric, gauges) {
                 tab.shift();
             }
 
-            var thisC3Data = [name];
+            var thisC3Data = [spec.label];
             for ( i = 0; i < tab.length; ++i ) {
                 switch ( metric.type ) {
-                    case 'DELTA': {
-                        if ( i > 0 ) {
-                            thisC3Data.push(tab[i] - tab[i - 1]);
-                        }
-                        break;
+                case 'DELTA': {
+                    if ( i > 0 ) {
+                        thisC3Data.push(tab[i] - tab[i - 1]);
                     }
+                    break;
+                }
 
-                    case 'PERCENT': {
-                        thisC3Data.push(Math.round(100 * tab[i]));
-                        break;
-                    }
+                case 'PERCENT': {
+                    thisC3Data.push(Math.round(100 * tab[i]));
+                    break;
+                }
 
-                    default: {
-                        thisC3Data.push(tab[i]);
-                        break;
-                    }
+                default: {
+                    thisC3Data.push(tab[i]);
+                    break;
+                }
                 }
             }
             c3Data.push(thisC3Data);
@@ -72,9 +64,9 @@ function vmUpdate1Metric(metric, gauges) {
     });
 }
 
-function vmUpdateMetrics(gauges) {
+function vmUpdateMetrics(data) {
     for ( var i in vmMetrics ) {
-        vmUpdate1Metric(vmMetrics[i], gauges);
+        vmUpdate1Metric(vmMetrics[i], data);
     }
 }
 
@@ -98,7 +90,7 @@ function vmUpdate() {
         $('#vm-progress-red').width(redPercent + '%');
         $('#vm-progress-memory').text(memUsedPercent + '%' + ' - ' + memUsed.toLocaleString() + ' of ' + memMax.toLocaleString());
 
-        vmUpdateMetrics(data.gauges);
+        vmUpdateMetrics(data);
     });
 }
 

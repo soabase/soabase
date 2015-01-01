@@ -15,26 +15,72 @@
  */
 package io.soabase.admin.components;
 
+import com.google.common.collect.Lists;
+import java.util.List;
+
 public class StandardComponents
 {
     public static MetricComponent newGcMetric()
     {
-        return new MetricComponent("soa-gc", MetricType.DELTA, "GC", "/jvm\\.gc\\./", "/\\.count/", "# of GCs");
+        // TODO - get all collectors
+        List<Metric> metrics = Lists.newArrayList
+        (
+            new Metric("MarkSweep", "gauges['jvm.gc.PS-MarkSweep.count'].value"),
+            new Metric("Scavenge", "gauges['jvm.gc.PS-Scavenge.count'].value")
+        );
+        return new MetricComponent("soa-gc", MetricType.DELTA, "GC", "# of GCs", metrics);
     }
 
     public static MetricComponent newHeapMetric()
     {
-        return new MetricComponent("soa-heap", MetricType.PERCENT, "Heap", "/jvm\\.memory\\.heap\\.usage/", "/\\.*/", "% Used");
+        List<Metric> metrics = Lists.newArrayList
+            (
+                new Metric("Heap", "gauges['jvm.memory.heap.usage'].value")
+            );
+        return new MetricComponent("soa-heap", MetricType.PERCENT, "Heap", "% Used", metrics);
     }
 
     public static MetricComponent newGcTimesMetric()
     {
-        return new MetricComponent("soa-gc-times", MetricType.DELTA, "GC Times", "/jvm\\.gc\\./", "/\\.time/", "Time");
+        // TODO - get all collectors
+        List<Metric> metrics = Lists.newArrayList
+        (
+            new Metric("MarkSweep", "gauges['jvm.gc.PS-MarkSweep.time'].value"),
+            new Metric("Scavenge", "gauges['jvm.gc.PS-Scavenge.time'].value")
+        );
+        return new MetricComponent("soa-gc-times", MetricType.DELTA, "GC Times", "Time", metrics);
     }
 
     public static MetricComponent newThreadsMetric()
     {
-        return new MetricComponent("soa-threads", MetricType.STANDARD, "Threads", "/(jvm\\.threads\\.count)|(jvm\\.threads\\.blocked\\.count)/", "/(jvm\\.threads\\.count)|(jvm\\.threads\\.blocked\\.count)/", "Count");
+        List<Metric> metrics = Lists.newArrayList
+        (
+            new Metric("Threads", "gauges['jvm.threads.count'].value"),
+            new Metric("Blocked", "gauges['jvm.threads.blocked.count'].value")
+        );
+        return new MetricComponent("soa-threads", MetricType.STANDARD, "Threads", "Count", metrics);
+    }
+
+    public static MetricComponent newRequestsMetric()
+    {
+        List<Metric> metrics = Lists.newArrayList
+        (
+            new Metric("Active Requests", "counters['io.dropwizard.jetty.MutableServletContextHandler.active-requests'].count")
+        );
+        return new MetricComponent("soa-requests", MetricType.STANDARD, "Active Requests", "Count", metrics);
+    }
+
+    public static MetricComponent newRequestStatusMetric()
+    {
+        List<Metric> metrics = Lists.newArrayList
+        (
+            new Metric("100s", "meters['io.dropwizard.jetty.MutableServletContextHandler.1xx-responses'].count"),
+            new Metric("200s", "meters['io.dropwizard.jetty.MutableServletContextHandler.2xx-responses'].count"),
+            new Metric("300s", "meters['io.dropwizard.jetty.MutableServletContextHandler.3xx-responses'].count"),
+            new Metric("400s", "meters['io.dropwizard.jetty.MutableServletContextHandler.4xx-responses'].count"),
+            new Metric("500s", "meters['io.dropwizard.jetty.MutableServletContextHandler.5xx-responses'].count")
+        );
+        return new MetricComponent("soa-request-status", MetricType.DELTA, "Statuses", "Count", metrics);
     }
 
     public static TabComponent newServicesTab()

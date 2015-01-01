@@ -15,6 +15,7 @@
  */
 package io.soabase.admin.details;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -49,6 +50,7 @@ public class IndexServlet extends HttpServlet
     private final AtomicReference<Map<String, Entry>> files = new AtomicReference<Map<String, Entry>>(Maps.<String, Entry>newHashMap());
     private final AtomicLong lastModified = new AtomicLong(0);
     private final AtomicInteger builtFromVersion = new AtomicInteger(-1);
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public static class Mapping
     {
@@ -200,16 +202,8 @@ public class IndexServlet extends HttpServlet
 
         for ( MetricComponent metric : componentManager.getMetrics() )
         {
-            metricsBuilder
-                .append("vmMetrics.push(vmNewMetric(")
-                .append("'").append(metric.getId()).append("', ")
-                .append("'").append(metric.getName()).append("', ")
-                .append("'").append(metric.getType()).append("', ")
-                .append("'").append(metric.getLabel()).append("', ")
-                .append(metric.getPrefix()).append(", ")
-                .append(metric.getSuffix())
-                .append("));\n")
-                ;
+            String obj = mapper.writeValueAsString(metric);
+            metricsBuilder.append("vmMetrics.push(").append(obj).append(");\n");
         }
 
         String tabs = tabsBuilder.toString();

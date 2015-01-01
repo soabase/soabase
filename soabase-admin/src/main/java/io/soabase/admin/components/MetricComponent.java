@@ -15,23 +15,24 @@
  */
 package io.soabase.admin.components;
 
+import com.google.common.collect.ImmutableList;
+import java.util.List;
+
 public class MetricComponent implements ComponentId
 {
     private final String id;
     private final MetricType type;
     private final String name;
-    private final String prefix;
-    private final String suffix;
     private final String label;
+    private final List<Metric> metrics;
 
-    public MetricComponent(String id, MetricType type, String name, String prefix, String suffix, String label)
+    public MetricComponent(String id, MetricType type, String name, String label, List<Metric> metrics)
     {
         this.id = id;
         this.type = type;
         this.name = name;
-        this.prefix = prefix;
-        this.suffix = suffix;
         this.label = label;
+        this.metrics = ImmutableList.copyOf(metrics);
     }
 
     @Override
@@ -45,16 +46,6 @@ public class MetricComponent implements ComponentId
         return name;
     }
 
-    public String getPrefix()
-    {
-        return prefix;
-    }
-
-    public String getSuffix()
-    {
-        return suffix;
-    }
-
     public String getLabel()
     {
         return label;
@@ -63,5 +54,10 @@ public class MetricComponent implements ComponentId
     public MetricType getType()
     {
         return type;
+    }
+
+    public List<Metric> getMetrics()
+    {
+        return metrics;
     }
 }

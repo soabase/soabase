@@ -92,16 +92,7 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="panel panel-default">
-                <div class="panel-heading"><h3 class="panel-title">GC</h3></div>
-                <div class="panel-body">
-                    <div id="vm-gc-chart"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="vm-metrics-rows"></div>
 </div>
 
 <footer class="soa-footer">
@@ -111,9 +102,9 @@
 </footer>
 
 <div class="soa-template" id="vm-metric-template">
-    <div class="col-md-8">
+    <div class="col-md-4">
         <div class="panel panel-default">
-            <div class="panel-heading"><h3 class="panel-title">GC</h3></div>
+            <div class="panel-heading"><h3 class="panel-title" id="vm-metric-name-$ID$"></h3></div>
             <div class="panel-body">
                 <div id="vm-metric-$ID$"></div>
             </div>
@@ -123,8 +114,9 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-<script src="/assets/soa/js/d3.min.js"></script>
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="/assets/soa/js/c3.min.js"></script>
+<script src="/assets/soa/js/soa-templates.js"></script>
 <script src="/assets/soa/js/vm.js"></script>
 
 </body>

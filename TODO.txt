@@ -40,3 +40,4 @@
 * Rename SoaDynamicAttributes to DynamicAttributes
 * Get rid of Soa prefix on classes?
 * Support user identity on attributes for auditing
+* Allow data point qty to be user changeable on VM page

@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import io.dropwizard.Bundle;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
-import io.soabase.admin.components.DefaultComponents;
+import io.soabase.admin.components.StandardComponents;
 import io.soabase.admin.components.MetricComponent;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.details.BundleSpec;
@@ -168,8 +168,11 @@ public class AdminConsoleAppBuilder<T extends Configuration>
 
     private AdminConsoleAppBuilder()
     {
-        tabs.add(DefaultComponents.newServicesTab());
-        tabs.add(DefaultComponents.newAttributesTab());
-        metrics.add(DefaultComponents.newGcMetric());
+        tabs.add(StandardComponents.newServicesTab());
+        tabs.add(StandardComponents.newAttributesTab());
+        metrics.add(StandardComponents.newHeapMetric());
+        metrics.add(StandardComponents.newGcMetric());
+        metrics.add(StandardComponents.newGcTimesMetric());
+        metrics.add(StandardComponents.newThreadsMetric());
     }
 }

@@ -9,49 +9,73 @@ var vmHost = null;
 var vmPort = null;
 var vmRate = 1000;
 var vmInterval = null;
-var vmGcChart = null;
-var vmGcData = {};
 
-var VM_MAX_GC_POINTS = 50;
+var VM_MAX_METRIC_POINTS = 50;
+var VM_METRICS_PER_ROW = 3;
 
-function vmIsGc(s) {
-    return s.search("jvm\.gc\..*\.count") >= 0;
-}
+function vmUpdate1Metric(metric, gauges) {
+    var c3Data = [];
 
-function vmUpdateGcChart(gauges) {
-    var localC3Data = [];
+    for ( var gaugeName in gauges ) {
+        var prefixMatch = gaugeName.match(metric.prefix);
+        var suffixMatch = gaugeName.match(metric.suffix);
+        if ( prefixMatch && suffixMatch ) {
+            prefixMatch = prefixMatch.toString();
+            suffixMatch = suffixMatch.toString();
+            var name = gaugeName.substring(prefixMatch.length, gaugeName.length - suffixMatch.length);
+            if ( !name || (name.length == 0) ) {
+                name = prefixMatch;
+            }
+            var thisValue = gauges[gaugeName].value;
 
-    for ( var i in gauges ) {
-        if ( vmIsGc(i) ) {
-            var name = i.substring('jvm.gc.'.length);
-            name = name.substring(0, name.length - '.count'.length);
-            var thisValue = gauges[i].value;
-
-            var tab = vmGcData[name];
+            var i;
+            var tab = metric.data[name];
             if ( !tab ) {
                 tab = [];
-                for ( var j = 0; j < VM_MAX_GC_POINTS; ++j ) {
+                metric.data[name] = tab;
+                for ( i = 0; i < VM_MAX_METRIC_POINTS; ++i ) {
                     tab.push(thisValue);
                 }
-                vmGcData[name] = tab;
             }
-
             tab.push(thisValue);
-            if ( tab.length > VM_MAX_GC_POINTS ) {
+            if ( tab.length > VM_MAX_METRIC_POINTS ) {
                 tab.shift();
             }
 
-            var c3Data = [name];
-            for ( var k = 1; k < tab.length; ++k ) {
-                c3Data.push(tab[k] - tab[k - 1]);
+            var thisC3Data = [name];
+            for ( i = 0; i < tab.length; ++i ) {
+                switch ( metric.type ) {
+                    case 'DELTA': {
+                        if ( i > 0 ) {
+                            thisC3Data.push(tab[i] - tab[i - 1]);
+                        }
+                        break;
+                    }
+
+                    case 'PERCENT': {
+                        thisC3Data.push(Math.round(100 * tab[i]));
+                        break;
+                    }
+
+                    default: {
+                        thisC3Data.push(tab[i]);
+                        break;
+                    }
+                }
             }
-            localC3Data.push(c3Data);
+            c3Data.push(thisC3Data);
         }
     }
 
-    vmGcChart.load({
-        columns: localC3Data
+    metric.chart.load({
+        columns: c3Data
     });
+}
+
+function vmUpdateMetrics(gauges) {
+    for ( var i in vmMetrics ) {
+        vmUpdate1Metric(vmMetrics[i], gauges);
+    }
 }
 
 function vmUpdate() {
@@ -74,7 +98,7 @@ function vmUpdate() {
         $('#vm-progress-red').width(redPercent + '%');
         $('#vm-progress-memory').text(memUsedPercent + '%' + ' - ' + memUsed.toLocaleString() + ' of ' + memMax.toLocaleString());
 
-        vmUpdateGcChart(data.gauges);
+        vmUpdateMetrics(data.gauges);
     });
 }
 
@@ -96,8 +120,72 @@ function vmUpdateInterval() {
     }
 }
 
+function vmBuildMetrics() {
+    var currentRow = null;
+    var metricCountInRow = VM_METRICS_PER_ROW;
+    for ( var i in vmMetrics ) {
+        var metric = vmMetrics[i];
+        var template = soaGetTemplate('vm-metric-template', {
+            '$ID$': metric.id
+        });
+
+        if ( metricCountInRow >= VM_METRICS_PER_ROW ) {
+            metricCountInRow = 0;
+            currentRow = document.createElement('div');
+            $(currentRow).addClass('row');
+            $(currentRow).appendTo('#vm-metrics-rows');
+        }
+
+        ++metricCountInRow;
+        var oldHtml = $(currentRow).html();
+        $(currentRow).html(oldHtml + '\n' + template);
+        $(currentRow).appendTo('#vm-metrics-rows');
+        $('#vm-metric-name-' + metric.id).text(metric.name);
+
+        metric.data = [];
+    }
+
+    for ( i in vmMetrics ) {
+        metric = vmMetrics[i];
+        var axisYSpec = {};
+        axisYSpec.show = true;
+        axisYSpec.label = {
+            text: metric.label,
+            position: 'outer-middle'
+        };
+        if ( metric.type === 'PERCENT' ) {
+            axisYSpec.min = 0;
+            axisYSpec.max = 100;
+            axisYSpec.padding = {
+                top: 0,
+                bottom: 0
+            };
+        }
+
+        metric.chart = c3.generate({
+            bindto: '#vm-metric-' + metric.id,
+            data: {
+                columns: []
+            },
+            axis: {
+                y: axisYSpec,
+                x: {
+                    show: false
+                }
+            },
+            transition: {
+                duration: 250
+            },
+            size: {
+                height: 200
+            }
+        });
+    }
+}
+
 function vmInit() {
     $('#vm-host').text(vmHost + ':' + vmPort);
+    vmBuildMetrics();
     vmUpdate();
     vmUpdateInterval();
 
@@ -112,28 +200,7 @@ function vmInit() {
 $(function () {
     vmHost = getParameterByName('host');
     vmPort = getParameterByName('port');
-
-    vmGcChart = c3.generate({
-        bindto: '#vm-gc-chart',
-        data: {
-            columns: []
-        },
-        axis: {
-            y: {
-                show: true,
-                label: {
-                    text: '# of GCs',
-                    position: 'outer-middle'
-                }
-            },
-            x: {
-                show: false
-            }
-        },
-        transition: {
-            duration: 250
-        }
-    });
+    soaAutoLoadTemplates();
 
     if ( vmHost && vmPort ) {
         vmInit();

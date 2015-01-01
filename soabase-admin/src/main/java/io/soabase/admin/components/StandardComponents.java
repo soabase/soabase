@@ -15,11 +15,26 @@
  */
 package io.soabase.admin.components;
 
-public class DefaultComponents
+public class StandardComponents
 {
     public static MetricComponent newGcMetric()
     {
         return new MetricComponent("soa-gc", MetricType.DELTA, "GC", "/jvm\\.gc\\./", "/\\.count/", "# of GCs");
+    }
+
+    public static MetricComponent newHeapMetric()
+    {
+        return new MetricComponent("soa-heap", MetricType.PERCENT, "Heap", "/jvm\\.memory\\.heap\\.usage/", "/\\.*/", "% Used");
+    }
+
+    public static MetricComponent newGcTimesMetric()
+    {
+        return new MetricComponent("soa-gc-times", MetricType.DELTA, "GC Times", "/jvm\\.gc\\./", "/\\.time/", "Time");
+    }
+
+    public static MetricComponent newThreadsMetric()
+    {
+        return new MetricComponent("soa-threads", MetricType.STANDARD, "Threads", "/(jvm\\.threads\\.count)|(jvm\\.threads\\.blocked\\.count)/", "/(jvm\\.threads\\.count)|(jvm\\.threads\\.blocked\\.count)/", "Count");
     }
 
     public static TabComponent newServicesTab()
@@ -48,7 +63,7 @@ public class DefaultComponents
             .build();
     }
 
-    private DefaultComponents()
+    private StandardComponents()
     {
     }
 }

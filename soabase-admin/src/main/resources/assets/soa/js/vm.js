@@ -33,6 +33,7 @@ function vmUpdate1Metric(metric, data) {
                 for ( i = 0; i < vmMaxMetricPoints; ++i ) {
                     tab.push(thisValue);
                 }
+                metric.data[spec.label] = tab;
             }
 
             tab.push(thisValue);

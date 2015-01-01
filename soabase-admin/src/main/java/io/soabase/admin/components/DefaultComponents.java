@@ -15,8 +15,13 @@
  */
 package io.soabase.admin.components;
 
-public class DefaultTabs
+public class DefaultComponents
 {
+    public static MetricComponent newGcMetric()
+    {
+        return new MetricComponent("soa-gc", MetricType.DELTA, "GC", "/jvm\\.gc\\./", "/\\.count/", "# of GCs");
+    }
+
     public static TabComponent newServicesTab()
     {
         return TabComponentBuilder.builder()
@@ -43,7 +48,7 @@ public class DefaultTabs
             .build();
     }
 
-    private DefaultTabs()
+    private DefaultComponents()
     {
     }
 }

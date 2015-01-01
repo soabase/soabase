@@ -15,17 +15,16 @@
  */
 package io.soabase.admin.components;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ComponentManager
 {
-    private final List<TabComponent> tabs = Lists.newCopyOnWriteArrayList();
+    private final ComponentContainer<TabComponent> tabs = new ComponentContainer<>();
+    private final ComponentContainer<MetricComponent> metrics = new ComponentContainer<>();
     private final String appName;
     private final String companyName;
     private final String footerMessage;
+    private final AtomicInteger version = new AtomicInteger(0);
 
     public ComponentManager(String appName, String companyName, String footerMessage)
     {
@@ -34,15 +33,19 @@ public class ComponentManager
         this.footerMessage = footerMessage;
     }
 
-    public void addTab(final TabComponent tab)
+    public int getVersion()
     {
-        Preconditions.checkArgument(!tabs.contains(tab), "There is already a tab with the id: " + tab.getId());
-        tabs.add(tab);
+        return version.get();
     }
 
-    public List<TabComponent> getTabs()
+    public ComponentContainer<MetricComponent> getMetrics()
     {
-        return ImmutableList.copyOf(tabs);
+        return metrics;
+    }
+
+    public ComponentContainer<TabComponent> getTabs()
+    {
+        return tabs;
     }
 
     public String getAppName()
@@ -58,21 +61,5 @@ public class ComponentManager
     public String getFooterMessage()
     {
         return footerMessage;
-    }
-
-    public void removeAll()
-    {
-        tabs.clear();
-    }
-
-    public TabComponent getTab(String id)
-    {
-        int index = tabs.indexOf(new TabComponent(id));
-        return (index >= 0) ? tabs.get(index) : null;
-    }
-
-    public boolean remove(String id)
-    {
-        return tabs.remove(new TabComponent(id));
     }
 }

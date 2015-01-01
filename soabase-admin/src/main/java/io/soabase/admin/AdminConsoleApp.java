@@ -91,7 +91,7 @@ public class AdminConsoleApp<T extends Configuration> extends Application<T>
         addBundles(bootstrap, BundleSpec.Phase.PRE_SOA);
         bootstrap.addBundle(bundle);
         bootstrap.addBundle(new SoaBundle<>());
-        bootstrap.addBundle(new ComponentBundle(builder.getAppName(), builder.getCompanyName(), builder.getFooterMessage(), builder.getTabs()));
+        bootstrap.addBundle(new ComponentBundle(builder.getAppName(), builder.getCompanyName(), builder.getFooterMessage(), builder.getTabs(), builder.getMetrics()));
         bootstrap.addBundle(new AssetsBundle("/assets/soa"));
         addBundles(bootstrap, BundleSpec.Phase.POST_SOA);
     }

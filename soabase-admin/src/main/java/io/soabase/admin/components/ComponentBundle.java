@@ -16,6 +16,7 @@
 package io.soabase.admin.components;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import io.dropwizard.Bundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -31,13 +32,15 @@ public class ComponentBundle implements Bundle
     private final String appName;
     private final String companyName;
     private final String footerMessage;
+    private final List<MetricComponent> metrics;
     private final List<TabComponent> tabs;
 
-    public ComponentBundle(String appName, String companyName, String footerMessage, List<TabComponent> tabs)
+    public ComponentBundle(String appName, String companyName, String footerMessage, List<TabComponent> tabs, List<MetricComponent> metrics)
     {
         this.appName = appName;
         this.companyName = companyName;
         this.footerMessage = footerMessage;
+        this.metrics = metrics;
         this.tabs = ImmutableList.copyOf(tabs);
     }
 
@@ -58,14 +61,16 @@ public class ComponentBundle implements Bundle
         SoaBundle.getFeatures(environment).putNamed(componentManager, ComponentManager.class, SoaFeatures.DEFAULT_NAME);
         SoaBundle.getFeatures(environment).putNamed(preferences, Preferences.class, SoaFeatures.DEFAULT_NAME);
 
-        for ( TabComponent component : tabs )
-        {
-            componentManager.addTab(component);
-        }
+        componentManager.getTabs().addAll(tabs);
+        componentManager.getMetrics().addAll(metrics);
 
-        IndexServlet servlet = new IndexServlet(componentManager);
-        environment.servlets().addServlet("index", servlet).addMapping("");
-        environment.servlets().addServlet("forced", servlet).addMapping("/force");
+        List<IndexServlet.Mapping> mappings = Lists.newArrayList
+        (
+            new IndexServlet.Mapping("", "index.html"),
+            new IndexServlet.Mapping("/vm", "vm.html")
+        );
+        IndexServlet servlet = new IndexServlet(componentManager, mappings);
+        servlet.setServlets(environment.servlets());
 
         environment.jersey().register(binder);
     }

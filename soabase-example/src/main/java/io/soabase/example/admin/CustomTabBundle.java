@@ -38,7 +38,7 @@ public class CustomTabBundle implements ConfiguredBundle<ExampleAdminConfigurati
             .addingJavascriptUriPath("/admin/custom/assets/js/custom.js")
             .addingCssUriPath("/admin/custom/assets/css/custom.css")
             .build();
-        componentManager.addTab(component);
+        componentManager.getTabs().add(component);
     }
 
     @Override

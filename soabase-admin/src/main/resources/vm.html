@@ -1,0 +1,131 @@
+<!--
+
+    Copyright 2014 Jordan Zimmerman
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!doctype html>
+<html lang="en">
+<head>
+    <title>$SOA_NAME$ - VM Details</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/assets/soa/css/soa.css">
+    <link rel="stylesheet" href="/assets/soa/css/vm.css">
+    <link rel="stylesheet" href="/assets/soa/css/c3.min.css">
+
+    <script type="text/javascript">
+        var vmMetrics = [];
+
+        function vmNewMetric(id, name, type, label, prefix, suffix) {
+            return {
+                'id': id,
+                'name': name,
+                'type': type,
+                'prefix': prefix,
+                'suffix': suffix,
+                'label': label
+            };
+        }
+
+        $SOA_METRICS$
+    </script>
+</head>
+
+<body>
+
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">$SOA_NAME$ - VM Details - <span id="vm-host"></span></a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="pull-right">
+        <label class="control-label">Polling Rate: </label>
+        <div id="vm-poll-buttons" class="btn-group" role="group">
+            <button value="0" type="button" class="btn btn-default">Off</button>
+            <button value="500" type="button" class="btn btn-default">.5s</button>
+            <button value="1000" type="button" class="btn btn-default">1s</button>
+            <button value="5000" type="button" class="btn btn-default">5s</button>
+            <button value="10000" type="button" class="btn btn-default">10s</button>
+            <button value="30000" type="button" class="btn btn-default">30s</button>
+            <button value="60000" type="button" class="btn btn-default">1m</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title">Memory Snapshot</h3></div>
+                <div class="panel-body">
+                    <div>Memory: <span id="vm-progress-memory"></span></div>
+                    <div class="progress">
+                        <div id="vm-progress-green" class="progress-bar progress-bar-striped active progress-bar-success">
+                            <span class="sr-only"></span>
+                        </div>
+                        <div id="vm-progress-yellow" class="progress-bar progress-bar-striped active progress-bar-warning">
+                            <span class="sr-only"></span>
+                        </div>
+                        <div id="vm-progress-red" class="progress-bar progress-bar-striped active progress-bar-danger">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title">GC</h3></div>
+                <div class="panel-body">
+                    <div id="vm-gc-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="soa-footer">
+    <div class="container">
+        <p class="text-muted">&copy; 2014-$SOA_COPYRIGHT$ - All rights reserved $SOA_FOOTER_MESSAGE$</p>
+    </div>
+</footer>
+
+<div class="soa-template" id="vm-metric-template">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title">GC</h3></div>
+            <div class="panel-body">
+                <div id="vm-metric-$ID$"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script src="/assets/soa/js/d3.min.js"></script>
+<script src="/assets/soa/js/c3.min.js"></script>
+<script src="/assets/soa/js/vm.js"></script>
+
+</body>
+</html>

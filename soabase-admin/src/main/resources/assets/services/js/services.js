@@ -96,7 +96,7 @@ function soaHandleLogButton(serviceName, localInstance) {
 }
 
 function soaHandleTraceButton(localInstance) {
-    var url = 'http://' + localInstance.host + ':' + localInstance.adminPort + '/api/soa/logging/stack';
+    var url = 'http://' + localInstance.host + ':' + localInstance.adminPort + '/threads';
     window.open(url, '_blank');
 }
 

@@ -41,7 +41,6 @@ public class ExampleAdminConsoleMain
             .withAppName("Example")
             .withCompanyName("My Company")
             .withConfigurationClass(ExampleAdminConfiguration.class)
-            .addingStandardTabs()
             .addingTabComponent(component)
             .addingPreSoaBundle(new CuratorBundle<ExampleAdminConfiguration>())
             .addingPreSoaBundle(new SqlBundle<ExampleAdminConfiguration>())

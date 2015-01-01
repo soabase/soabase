@@ -20,7 +20,8 @@ import com.google.common.collect.Lists;
 import io.dropwizard.Bundle;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
-import io.soabase.admin.components.DefaultTabs;
+import io.soabase.admin.components.DefaultComponents;
+import io.soabase.admin.components.MetricComponent;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.details.BundleSpec;
 import java.util.List;
@@ -34,6 +35,7 @@ public class AdminConsoleAppBuilder<T extends Configuration>
     private Class<? extends Configuration> configurationClass = Configuration.class;
     private final List<TabComponent> tabs = Lists.newArrayList();
     private final List<BundleSpec<T>> bundles = Lists.newArrayList();
+    private final List<MetricComponent> metrics = Lists.newArrayList();
 
     public static <T extends Configuration> AdminConsoleAppBuilder<T> builder()
     {
@@ -82,9 +84,11 @@ public class AdminConsoleAppBuilder<T extends Configuration>
         return this;
     }
 
-    public AdminConsoleAppBuilder<T> addingStandardTabs()
+    public AdminConsoleAppBuilder<T> addingMetricComponent(MetricComponent metricComponent)
     {
-        return addingTabComponent(DefaultTabs.newServicesTab()).addingTabComponent(DefaultTabs.newAttributesTab());
+        metricComponent = Preconditions.checkNotNull(metricComponent, "metricsComponent cannot be null");
+        metrics.add(metricComponent);
+        return this;
     }
 
     public AdminConsoleAppBuilder<T> addingPreSoaBundle(Bundle bundle)
@@ -112,6 +116,13 @@ public class AdminConsoleAppBuilder<T extends Configuration>
     {
         bundle = Preconditions.checkNotNull(bundle, "bundle cannot be null");
         bundles.add(new BundleSpec<>(bundle, BundleSpec.Phase.POST_SOA));
+        return this;
+    }
+
+    public AdminConsoleAppBuilder<T> clearingComponents()
+    {
+        tabs.clear();
+        metrics.clear();
         return this;
     }
 
@@ -150,7 +161,15 @@ public class AdminConsoleAppBuilder<T extends Configuration>
         return configurationClass;
     }
 
+    List<MetricComponent> getMetrics()
+    {
+        return metrics;
+    }
+
     private AdminConsoleAppBuilder()
     {
+        tabs.add(DefaultComponents.newServicesTab());
+        tabs.add(DefaultComponents.newAttributesTab());
+        metrics.add(DefaultComponents.newGcMetric());
     }
 }

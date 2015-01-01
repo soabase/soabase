@@ -19,7 +19,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 
-public class TabComponent
+public class TabComponent implements ComponentId
 {
     private final String id;
     private final String name;
@@ -51,6 +51,7 @@ public class TabComponent
         this.assetsPaths = ImmutableList.copyOf(assetsPaths);
     }
 
+    @Override
     public String getId()
     {
         return id;
@@ -81,7 +82,6 @@ public class TabComponent
         return assetsPaths;
     }
 
-    // IMPORTANT: must only equal id
     @Override
     public boolean equals(Object o)
     {
@@ -94,10 +94,30 @@ public class TabComponent
             return false;
         }
 
-        TabComponent that = (TabComponent)o;
+        TabComponent component = (TabComponent)o;
 
+        if ( !assetsPaths.equals(component.assetsPaths) )
+        {
+            return false;
+        }
+        if ( !contentResourcePath.equals(component.contentResourcePath) )
+        {
+            return false;
+        }
+        if ( !cssUriPaths.equals(component.cssUriPaths) )
+        {
+            return false;
+        }
+        if ( !id.equals(component.id) )
+        {
+            return false;
+        }
+        if ( !javascriptUriPaths.equals(component.javascriptUriPaths) )
+        {
+            return false;
+        }
         //noinspection RedundantIfStatement
-        if ( !id.equals(that.id) )
+        if ( !name.equals(component.name) )
         {
             return false;
         }
@@ -105,11 +125,16 @@ public class TabComponent
         return true;
     }
 
-    // IMPORTANT: must only equal id
     @Override
     public int hashCode()
     {
-        return id.hashCode();
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + contentResourcePath.hashCode();
+        result = 31 * result + javascriptUriPaths.hashCode();
+        result = 31 * result + cssUriPaths.hashCode();
+        result = 31 * result + assetsPaths.hashCode();
+        return result;
     }
 
     @Override

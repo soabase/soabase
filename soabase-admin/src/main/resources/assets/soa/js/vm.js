@@ -13,7 +13,6 @@ var vmHost = null;
 var vmPort = null;
 var vmAdminPort = null;
 var vmRate = 1000;
-var vmInterval = null;
 
 function vmUpdate1Metric(metric, data) {
     var c3Data = [];
@@ -99,6 +98,25 @@ function vmUpdate() {
 
         vmUpdateMetrics(data);
     });
+    vmResetTimeout();
+}
+
+function vmUpdateMaxMetricPoints() {
+    $('#vm-window-size-buttons :button').each(function () {
+        if ( parseInt(this.value) === vmMaxMetricPoints ) {
+            $(this).addClass('active');
+        }
+        else {
+            $(this).removeClass('active');
+        }
+    });
+    vmResetTimeout();
+}
+
+function vmResetTimeout() {
+    if ( vmRate ) {
+        setTimeout(vmUpdate, vmRate);
+    }
 }
 
 function vmUpdateInterval() {
@@ -110,13 +128,7 @@ function vmUpdateInterval() {
             $(this).removeClass('active');
         }
     });
-    if ( vmInterval ) {
-        clearInterval(vmInterval);
-        vmInterval = null;
-    }
-    if ( vmRate ) {
-        vmInterval = setInterval(vmUpdate, vmRate);
-    }
+    vmResetTimeout();
 }
 
 function vmBuildMetrics() {
@@ -192,6 +204,12 @@ function vmInit() {
         $(this).click(function () {
             vmRate = parseInt(this.value);
             vmUpdateInterval();
+        });
+    });
+    $('#vm-window-size-buttons :button').each(function () {
+        $(this).click(function () {
+            vmMaxMetricPoints = parseInt(this.value);
+            vmUpdateMaxMetricPoints();
         });
     });
 }

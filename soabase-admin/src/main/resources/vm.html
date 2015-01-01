@@ -36,7 +36,7 @@
 
 <body>
 
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <a class="navbar-brand" href="#">$SOA_NAME$ - VM Details - <span id="vm-host"></span></a>
@@ -44,17 +44,34 @@
     </div>
 </nav>
 
-<div class="container">
+<div class="container soa-top-margin">
     <div class="pull-right">
-        <label class="control-label">Polling Rate: </label>
-        <div id="vm-poll-buttons" class="btn-group" role="group">
-            <button value="0" type="button" class="btn btn-default">Off</button>
-            <button value="500" type="button" class="btn btn-default">.5s</button>
-            <button value="1000" type="button" class="btn btn-default">1s</button>
-            <button value="5000" type="button" class="btn btn-default">5s</button>
-            <button value="10000" type="button" class="btn btn-default">10s</button>
-            <button value="30000" type="button" class="btn btn-default">30s</button>
-            <button value="60000" type="button" class="btn btn-default">1m</button>
+        <div class="pull-right">
+            <label class="control-label">Polling Rate: </label>
+            <div id="vm-poll-buttons" class="btn-group" role="group">
+                <button value="0" type="button" class="btn btn-default">Off</button>
+                <button value="500" type="button" class="btn btn-default">.5s</button>
+                <button value="1000" type="button" class="btn btn-default">1s</button>
+                <button value="5000" type="button" class="btn btn-default">5s</button>
+                <button value="10000" type="button" class="btn btn-default">10s</button>
+                <button value="30000" type="button" class="btn btn-default">30s</button>
+                <button value="60000" type="button" class="btn btn-default">1m</button>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <p></p>
+        </div>
+
+        <div class="pull-right">
+            <label class="control-label">Window Size: </label>
+            <div id="vm-window-size-buttons" class="btn-group" role="group">
+                <button value="10" type="button" class="btn btn-default">10</button>
+                <button value="50" type="button" class="btn btn-default">50</button>
+                <button value="100" type="button" class="btn btn-default">100</button>
+                <button value="500" type="button" class="btn btn-default">500</button>
+                <button value="1000" type="button" class="btn btn-default">1000</button>
+            </div>
         </div>
     </div>
 

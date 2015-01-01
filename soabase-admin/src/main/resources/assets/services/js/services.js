@@ -100,6 +100,11 @@ function soaHandleTraceButton(localInstance) {
     window.open(url, '_blank');
 }
 
+function soaHandleDetailsButton(localInstance) {
+    var url = '/vm?host=' + localInstance.host + '&port=' + localInstance.port + '&adminPort=' + localInstance.adminPort;
+    window.open(url, '_blank');
+}
+
 function soaServicesBuildContainer(serviceName) {
     var id = SOA_SERVICE_ID_PREFIX + serviceName;
 
@@ -171,6 +176,9 @@ function soaUpdateInstancesForService(serviceName) {
                 });
                 $('#soa-trace-button-' + instance.id).click(function(){
                     soaHandleTraceButton(instance);
+                });
+                $('#soa-details-button-' + instance.id).click(function(){
+                    soaHandleDetailsButton(instance);
                 });
             }
             for ( var j in data ) {

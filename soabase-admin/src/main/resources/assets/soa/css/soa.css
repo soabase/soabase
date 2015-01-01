@@ -7,6 +7,10 @@ body {
     margin-bottom: 37px;
 }
 
+.soa-top-margin {
+    margin-top: 70px;
+}
+
 .soa-hidden, .soa-template {
     display: none;
 }

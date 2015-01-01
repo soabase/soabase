@@ -5,13 +5,15 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+var VM_DEFAULT_MAX_METRIC_POINTS = 50;
+var VM_METRICS_PER_ROW = 3;
+
+var vmMaxMetricPoints = VM_DEFAULT_MAX_METRIC_POINTS;
 var vmHost = null;
 var vmPort = null;
+var vmAdminPort = null;
 var vmRate = 1000;
 var vmInterval = null;
-
-var VM_MAX_METRIC_POINTS = 50;
-var VM_METRICS_PER_ROW = 3;
 
 function vmUpdate1Metric(metric, data) {
     var c3Data = [];
@@ -25,12 +27,17 @@ function vmUpdate1Metric(metric, data) {
             if ( !tab ) {
                 tab = [];
                 metric.data[spec.label] = tab;
-                for ( i = 0; i < VM_MAX_METRIC_POINTS; ++i ) {
+            }
+
+            if ( tab.length != vmMaxMetricPoints ) {
+                tab = [];
+                for ( i = 0; i < vmMaxMetricPoints; ++i ) {
                     tab.push(thisValue);
                 }
             }
+
             tab.push(thisValue);
-            if ( tab.length > VM_MAX_METRIC_POINTS ) {
+            if ( tab.length > vmMaxMetricPoints ) {
                 tab.shift();
             }
 
@@ -71,7 +78,7 @@ function vmUpdateMetrics(data) {
 }
 
 function vmUpdate() {
-    $.getJSON('http://' + vmHost + ':' + vmPort + '/metrics', function (data) {
+    $.getJSON('http://' + vmHost + ':' + vmAdminPort + '/metrics', function (data) {
         var memMax = data.gauges['jvm.memory.heap.max'].value;
         var memUsed = data.gauges['jvm.memory.heap.used'].value;
         var memUsedPercent = Math.max(Math.round(data.gauges['jvm.memory.heap.usage'].value * 100), 1);
@@ -192,9 +199,10 @@ function vmInit() {
 $(function () {
     vmHost = getParameterByName('host');
     vmPort = getParameterByName('port');
+    vmAdminPort = getParameterByName('adminPort');
     soaAutoLoadTemplates();
 
-    if ( vmHost && vmPort ) {
+    if ( vmHost && vmAdminPort ) {
         vmInit();
     }
 });

@@ -16,12 +16,12 @@
 
 - Admin console
     * Show "no services" message
+    * Get more accurate CPU/disk load
 * Hystrix?
 * Archaius?
 * Eureka?
 - Example App
     * Have MockDatabase support adding new values somehow
-    * Do custom metric
 * Tests
 * javadoc/doc
 * TO-DOs

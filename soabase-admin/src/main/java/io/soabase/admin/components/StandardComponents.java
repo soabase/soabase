@@ -61,6 +61,15 @@ public class StandardComponents
         return new MetricComponent("soa-threads", MetricType.STANDARD, "Threads", "Count", metrics);
     }
 
+    public static MetricComponent newCpuMetric()
+    {
+        List<Metric> metrics = Lists.newArrayList
+        (
+            new Metric("CPU", "gauges['system.cpu.load'].value")
+        );
+        return new MetricComponent("soa-cpu", MetricType.PERCENT, "System CPU", "% Load", metrics);
+    }
+
     public static MetricComponent newRequestsMetric()
     {
         List<Metric> metrics = Lists.newArrayList

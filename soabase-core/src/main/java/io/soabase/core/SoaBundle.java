@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.soabase.core;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Metric;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.sun.management.UnixOperatingSystemMXBean;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.jersey.DropwizardResourceConfig;
@@ -52,10 +56,15 @@ import io.soabase.core.rest.SoaApis;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.servlet.ServletContainer;
+import javax.management.AttributeList;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.EnumSet;
@@ -67,6 +76,7 @@ import java.util.concurrent.TimeUnit;
 public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     private static final boolean hasAdminKey;
+
     static
     {
         boolean localHasAdminKey = false;
@@ -152,6 +162,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         startDiscoveryHealth(discovery, soaConfiguration, environment);
 
         environment.jersey().register(binder);
+
+        addMetrics(environment);
     }
 
     private void setFeaturesInContext(Environment environment, SoaFeaturesImpl features)
@@ -350,5 +362,39 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         // TODO log if no main files or archives
 
         return new LoggingReader(mainFiles, archiveDirectories);
+    }
+
+    private void addMetrics(Environment environment)
+    {
+        Metric metric = new Gauge<Double>()
+        {
+            private double lastValue = 0.0;
+
+            @Override
+            public Double getValue()
+            {
+                try
+                {
+                    MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+                    ObjectName name = ObjectName.getInstance("java.lang:type=OperatingSystem");
+                    AttributeList list = mbs.getAttributes(name, new String[]{"SystemCpuLoad"});
+                    if ( (list != null) && (list.size() > 0) )
+                    {
+                        // unfortunately, this bean reports bad values occasionally. Filter them out.
+                        Object value = list.asList().get(0).getValue();
+                        double d = (value instanceof Number) ? ((Number)value).doubleValue() : 0.0;
+                        d = ((d > 0.0) && (d < 1.0)) ? d : lastValue;
+                        lastValue = d;
+                        return d;
+                    }
+                }
+                catch ( Exception ignore )
+                {
+                    // ignore
+                }
+                return lastValue;
+            }
+        };
+        environment.metrics().register("system.cpu.load", metric);
     }
 }

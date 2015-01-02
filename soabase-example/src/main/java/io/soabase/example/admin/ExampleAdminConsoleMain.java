@@ -26,6 +26,10 @@ import io.soabase.admin.components.TabComponentBuilder;
 import io.soabase.example.ExampleAppBase;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
+import javax.management.AttributeList;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
 import java.util.List;
 
 public class ExampleAdminConsoleMain

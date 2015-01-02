@@ -1,0 +1,7 @@
+.list-group-item {
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    text-decoration: underline !important;
+}

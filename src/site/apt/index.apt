@@ -32,6 +32,14 @@ Soabase
 
         * Built in resources for SOA features
 
+    * {{{./console.html}Administration Console}}
+
+        * Customizable/extensible
+
+        * Monitor all instances in the cluster
+
+        * Watch any Dropwizard metric
+
     * {{{./config.html}Configuration Utilities}}
 
         * A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an external file or a resource in the classpath. Special tokens are used to determine how to treat the argument.

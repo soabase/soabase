@@ -15,13 +15,18 @@
  */
 package io.soabase.example.admin;
 
+import com.google.common.collect.Lists;
 import io.soabase.admin.AdminConsoleApp;
 import io.soabase.admin.AdminConsoleAppBuilder;
+import io.soabase.admin.components.Metric;
+import io.soabase.admin.components.MetricComponent;
+import io.soabase.admin.components.MetricType;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.components.TabComponentBuilder;
 import io.soabase.example.ExampleAppBase;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
+import java.util.List;
 
 public class ExampleAdminConsoleMain
 {
@@ -37,11 +42,14 @@ public class ExampleAdminConsoleMain
             .addingCssUriPath("/admin/custom/assets/css/custom.css")
             .build();
 
+        List<Metric> metrics = Lists.newArrayList(new Metric("random", "gauges['goodbye-random'].value"));
+        MetricComponent customMetric = new MetricComponent("custom-metric", MetricType.STANDARD, "Custom", "Value", metrics);
         AdminConsoleApp<ExampleAdminConfiguration> app = AdminConsoleAppBuilder.<ExampleAdminConfiguration>builder()
             .withAppName("Example")
             .withCompanyName("My Company")
             .withConfigurationClass(ExampleAdminConfiguration.class)
             .addingTabComponent(component)
+            .addingMetricComponent(customMetric)
             .addingPreSoaBundle(new CuratorBundle<ExampleAdminConfiguration>())
             .addingPreSoaBundle(new SqlBundle<ExampleAdminConfiguration>())
             .build()

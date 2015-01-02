@@ -13,8 +13,14 @@ function vmUpdate1Metric(metric, data) {
 
     for ( i in metric.metrics ) {
         var spec = metric.metrics[i];
-        var thisValue = eval('data.' + spec.path);
-        if ( thisValue != undefined ) {
+        var thisValue = null;
+        try {
+            thisValue = eval('data.' + spec.path);
+        }
+        catch ( e ) {
+            thisValue = null;
+        }
+        if ( (thisValue != undefined) && (thisValue != null) ) {
             var tab = metric.data[spec.label];
             if ( !tab ) {
                 tab = [];

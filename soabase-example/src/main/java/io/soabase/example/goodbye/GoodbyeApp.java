@@ -15,12 +15,15 @@
  */
 package io.soabase.example.goodbye;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Metric;
 import io.dropwizard.Configuration;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.example.ExampleAppBase;
+import java.util.Random;
 
 public class GoodbyeApp extends ExampleAppBase
 {
@@ -37,6 +40,18 @@ public class GoodbyeApp extends ExampleAppBase
     @Override
     protected void internalRun(Configuration configuration, Environment environment)
     {
+        Metric metric = new Gauge<Integer>()
+        {
+            final Random random = new Random();
+
+            @Override
+            public Integer getValue()
+            {
+                return random.nextInt(100);
+            }
+        };
+        environment.metrics().register("goodbye-random", metric);
+
         environment.jersey().register(GoodbyeResource.class);
         JerseyEnvironment adminJerseyEnvironment = SoaBundle.getFeatures(environment).getNamedRequired(JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
         adminJerseyEnvironment.register(GoodbyeAdminResource.class);

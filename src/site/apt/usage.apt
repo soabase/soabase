@@ -1,3 +1,105 @@
-Soabase Usage
+Getting Started with Soabase
 
-    TBD
+    Soabase consists of extensions to {{{http://dropwizard.io/index.html}Dropwizard}}. You should be familiar
+    with writing Dropwizard applications before using Soabase.
+
+* Artifacts
+
+    Soabase's artifacts are available from Maven Central. Use any dependency tool (e.g. Maven or Gradle) to add the
+    Soabase artifacts to your application's project:
+
+*------------------------------------*--------------------------------------------------------------------------------*
+| <<<io.soabase:soabase-core>>>      | <<required>> - The main Soabase component.                                     |
+*------------------------------------*--------------------------------------------------------------------------------*
+| <<<io.soabase:soabase-client>>>    | The Jersey and Apache REST client additions to support Service Discovery.      |
+*------------------------------------*--------------------------------------------------------------------------------*
+| <<<io.soabase:soabase-sql>>>       | The JDBC integration with Soabase Dynamic Attributes.                          |
+*------------------------------------*--------------------------------------------------------------------------------*
+| <<<io.soabase:soabase-zookeeper>>> | The Apache ZooKeeper and Apache Curator integration for Service Discovery.     |
+*------------------------------------*--------------------------------------------------------------------------------*
+
+    NOTE: Soabase has a few other special purpose artifacts. These are described elsewhere.
+
+* Features
+
+    Soabase consists of several components. There are default implementations for each of the components but
+    you can provide your own implementations for any of them.
+
+*---------------------------------------------*--------------------------------------------------------------------------------------------------*
+| {{{./discovery.html}Service Discovery}}     | Allows instances to register themselves and, in turn,                                            |
+|                                             | allows querying for instances. The default implementation is provided by                         |
+|                                             | {{{http://curator.apache.org/curator-x-discovery/index.html}Apache Curator}}.                    |
+*---------------------------------------------*--------------------------------------------------------------------------------------------------*
+| {{{./client.html}REST Client}}              | Soabase augments the Dropwizard-provided Jersey and Apache REST clients to integrate with        |
+|                                             | Service Discovery. You can also integrate a different REST client.                               |
+*---------------------------------------------*--------------------------------------------------------------------------------------------------*
+| {{{./admin.html}Jersey Admin APIs}}         | The Dropwizard admin servlet is agumented to support Jersey Resources.                           |
+*---------------------------------------------*--------------------------------------------------------------------------------------------------*
+| {{{./attributes.html}Dynamic Attributes}}   | Allows global, scopes attributes. The default implementation uses JDBC. You will need to have a  |
+|                                             | JDBC compatible datasource. You can also provide your own implementation that uses a different   |
+|                                             | storage mechanism.                                                                               |
+*---------------------------------------------*--------------------------------------------------------------------------------------------------*
+| {{{./console.html}Admin Console}}           | A toolkit to build an administration console to monitor your entire cluster. It comes with many  |
+|                                             | builtin features and you can add your own.                                                       |
+*---------------------------------------------*--------------------------------------------------------------------------------------------------*
+
+    Soabase's various features are controlled in the standard Dropwizard way: via configuration. Your application's configuration object must
+    have Soabase {{{./soaconfig.html}configuration}} fields. Soabase uses its {{{./config.html}Configuration Utility}} to find the configuration
+    objects. The only required {{{./soaconfig.html}configuration}} is <<<SoaConfiguration>>>.
+
+* Adding Soabase to your application
+
+    In the <<<initialize()>>> method of your application, add the Soabase bundles that you want to use. Soabase bundles need to be
+    added in a specific order. If you'll be using the default implementations for attributes and discovery, do this:
+
++-------------------------------+
+bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider()); // not required, but useful
+bootstrap.addBundle(new CuratorBundle<>()); // adds Curator Service Discovery
+bootstrap.addBundle(new SqlBundle<>()); // adds JDBC attributes
+bootstrap.addBundle(new SoaBundle<>()); // required for all Soabase applications
+bootstrap.addBundle(new SoaClientBundle<>()); // adds the Jersey and Apache REST client integrations
++-------------------------------+
+
+    That's all the code that's needed. The other features of Soabase are controlled by {{{./soaconfig.html}configuration}}.
+
+* SoaFeatures
+
+    Soabase defines a container object that is used to access various features: <<<SoaFeatures>>>. It is bound using Jersey's
+    dependency injection framework so that you can inject it into your Jersey Resources. It can also be accessed from a
+    Dropwizard environment object by calling: <<<SoaBundle.getFeatures()>>>.
+
+    SoaFeatures also has a facility to store and retrieve named objects. Soabase uses this facility to store various
+    instances. E.g. the Soabase client bundle stores the REST clients this way. See the doc for each of Soabase's
+    features for details. You can also use this to store objects of your own.
+
+    SoaFeatures provides these methods:
+
+*--------------------*---------------------------------------------------------*
+| getDiscovery()     | Returns the Service Discovery implementation instance.  |
+*--------------------*---------------------------------------------------------*
+| getAttributes()    | Returns the Dynamic Attributes implementation instance. |
+*--------------------*---------------------------------------------------------*
+| getSoaInfo()       | Returns various details about the running instance.     |
+*--------------------*---------------------------------------------------------*
+| putNamed()         | Stores an object with a name                            |
+*--------------------*---------------------------------------------------------*
+| getNamed()         | Returns the object stored by name                       |
+*--------------------*---------------------------------------------------------*
+
+* Injections
+
+    A few useful objects are bound using Jersey's dependency injection framework so that you can inject them into
+    your Jersey Resources:
+
+    * <<<SoaFeatures>>> - see above
+
+    * <<<HttpClient>>>/<<<Client>>> - if you use the SoaClientBundle
+
+    * <<<HealthCheckRegistry>>> - from environment.healthChecks()
+
+    * <<<ObjectMapper>>> - from environment.getObjectMapper()
+
+    * <<<MetricRegistry>>> - from environment.metrics()
+
+    * <<<ExecutorBuilder>>> - provides access to Dropwizard's ExecutorServiceBuilder and ScheduledExecutorServiceBuilder
+

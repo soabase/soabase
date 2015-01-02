@@ -14,6 +14,12 @@
     limitations under the License.
 ====
 
+* Docs need a glossary of some kind
+    * Instance
+    * Service
+    * Discovery
+    * Attribute, Attribute scope
+    * Named features (SoaFeatures)
 - Admin console
     * Show "no services" message
     * Get more accurate CPU/disk load

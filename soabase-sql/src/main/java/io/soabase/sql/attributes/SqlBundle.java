@@ -46,7 +46,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
                 mybatisConfiguration.addMapper(AttributeEntityMapper.class);
                 final SqlSession session = sqlSessionFactory.openSession(true);
 
-                SoaBundle.getFeatures(environment).putNamed(session, SqlSession.class, sqlConfiguration.getSessionName());
+                SoaBundle.getFeatures(environment).putNamed(session, SqlSession.class, sqlConfiguration.getName());
                 Managed managed = new Managed()
                 {
                     @Override

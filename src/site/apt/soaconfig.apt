@@ -1,0 +1,116 @@
+Soabase Configuration
+
+    Soabase's various features are controlled in the standard Dropwizard way: via configuration. Your application's configuration object
+    must have Soabase configuration fields. Soabase uses its {{{./config.html}Configuration Utility}} to find the configuration objects.
+    The only required configuration is SoaConfiguration.
+
+* Main Configuration
+
+    <<<SoaConfiguration>>> is the main configuration object.
+
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| <<Field>>           | <<Description>>                                                                                                           | <<Default>>                              |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| discovery           | Defines the Service Discovery implementation to use. The default is a NOP instance. To use the provided Curator           | NOP                                      |
+|                     | implementation, set the type to "zookeeper". See {{{./discovery.html}Service Discovery}} for details.                     |                                          |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| attributes          | Defines the Dynamic Attributes implementation to use. The default is a simple in-memory implementation. To use the        | in-memory only                           |
+|                     | provided JDBC implementation, set the type to "sql". See {{{./attributes.html}Dynamic Attributes}} for details.           |                                          |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| checkPeriodMs       | How often to poll Dropwizard's health checks and update the instance state in Service Discovery.                          | 10 seconds                               |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| shutdownWaitMaxMs   | How long to wait when shutting down the application                                                                       | 1 minute                                 |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| serviceName         | The service that this instance is part of. A dynamic attribute scope will be defined with this name.                      | none - must be provided                  |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| instanceName        | The name for this instance. A dynamic attribute scope will be defined with this name.                                     | InetAddress.getLocalHost().getHostName() |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| additionalScopes    | Any additional scopes you want to define.                                                                                 | n/a                                      |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| addCorsFilter       | If true, add the Dropwizard CORS filter.                                                                                  | true                                     |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| discoveryHealth     | The Discovery Health integration to use. The default marks the instances as healthy in Service Discovery only when        | DefaultDiscoveryHealth                   |
+|                     | <all> Dropwizard health checks return healthy.                                                                            |                                          |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| adminJerseyPath     | Enables Jersey Resources for the Dropwizard Admin servlet. This is the URL path to use. If null, Jersey Resources are     | /api                                     |
+|                     | not enabled for the Admin servlet.                                                                                        |                                          |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+| registerInDiscovery | If true, registers the instance in Service Discovery. If false, does not.                                                 | true                                     |
+*---------------------*---------------------------------------------------------------------------------------------------------------------------*------------------------------------------*
+
+* Service Discovery
+
+    The Service Discovery implementation is specified by the "discovery" field. To use the default Curator implementation
+    specify the config as "zookeeper". E.g. assuming your SoaConfiguration field is named "soa":
+
++-------------------------------+
+{
+    ...
+    "soa": {
+        "discovery": {
+            "type": "zookeeper"
+            ....
+        }
+    }
+}
++-------------------------------+
+
+    Your configuration class must have a field of type <<<CuratorConfiguration>>>. It defines these configuration values:
+
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| <<Field>>           | <<Description>>                                                                  | <<Default>>                              |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| name                | Allows for multiple Curator connections (TODO - define this)                     | "Default"                                |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| connectionString    | The ZooKeeper connection string                                                  | none - required                          |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+
+* Dynamic Attributes
+
+    The Dynamic Attributes implementation is specified by the "attributes" field. To use the default JDBC implementation
+    specify the config as "sql". E.g. assuming your SoaConfiguration field is named "soa":
+
++-------------------------------+
+{
+    ...
+    "soa": {
+        "attributes": {
+            "type": "sql"
+            ....
+        }
+    }
+}
++-------------------------------+
+
+    Your configuration class must have a field of type <<<SqlConfiguration>>>. It defines these configuration values:
+
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| <<Field>>           | <<Description>>                                                                  | <<Default>>                              |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| name                | Allows for multiple SQL connections (TODO - define this)                         | "Default"                                |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| mybatisConfigUrl    | The Soabase JDBC implementation uses                                             | none - required                          |
+|                     | {{{http://mybatis.github.io/mybatis-3/}Mybatis}}. This is the URL for the        |                                          |
+|                     | Mybatis configuration file. (TODO - minimal Mybatis doc)                         |                                          |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+
+* REST Client
+
+    If you will be using the standard Jersey and/or HTTP client implementations your configuration class must have a field
+    of type <<<SoaClientConfiguration>>>:
+
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| <<Field>>           | <<Description>>                                                                  | <<Default>>                              |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| apache              | A HttpClientConfiguration object. See the                                        | null                                     |
+|                     | {{{https://dropwizard.github.io/dropwizard/manual/configuration.html}Dropwizard  |                                          |
+|                     | docs}} for details.                                                              |                                          |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| jersey              | A JerseyClientConfiguration object. See the                                      | null                                     |
+|                     | {{{https://dropwizard.github.io/dropwizard/manual/configuration.html}Dropwizard  |                                          |
+|                     | docs}} for details.                                                              |                                          |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| maxRetries          | The maximum number of retries.                                                   | 3                                        |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| retry500s           | If true, retry HTTP 500 responses.                                               | true                                     |
+*---------------------*----------------------------------------------------------------------------------*------------------------------------------*

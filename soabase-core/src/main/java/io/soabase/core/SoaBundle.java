@@ -18,9 +18,11 @@ package io.soabase.core;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.sun.management.UnixOperatingSystemMXBean;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.jersey.DropwizardResourceConfig;
@@ -39,6 +41,7 @@ import io.dropwizard.server.SimpleServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.config.ComposedConfigurationAccessor;
+import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.SafeDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
@@ -64,7 +67,6 @@ import javax.servlet.FilterRegistration;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.EnumSet;
@@ -126,7 +128,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     }
 
     @Override
-    public void run(final T configuration, Environment environment) throws Exception
+    public void run(final T configuration, final Environment environment) throws Exception
     {
         final SoaConfiguration soaConfiguration = SoaBundle.access(configuration, environment, SoaConfiguration.class);
 
@@ -152,6 +154,10 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             protected void configure()
             {
                 bind(features).to(SoaFeatures.class);
+                bind(environment.healthChecks()).to(HealthCheckRegistry.class);
+                bind(environment.getObjectMapper()).to(ObjectMapper.class);
+                bind(environment.metrics()).to(MetricRegistry.class);
+                bind(new ExecutorBuilder(environment.lifecycle())).to(ExecutorBuilder.class);
             }
         };
         setFeaturesInContext(environment, features);

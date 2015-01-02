@@ -28,7 +28,7 @@ public class SqlConfiguration
 
     @Valid
     @NotNull
-    private String sessionName = SoaFeatures.DEFAULT_NAME;
+    private String name = SoaFeatures.DEFAULT_NAME;
 
     @JsonProperty("mybatisConfigUrl")
     public String getMybatisConfigUrl()
@@ -43,14 +43,14 @@ public class SqlConfiguration
     }
 
     @JsonProperty("name")
-    public String getSessionName()
+    public String getName()
     {
-        return sessionName;
+        return name;
     }
 
     @JsonProperty("name")
-    public void setSessionName(String sessionName)
+    public void setName(String name)
     {
-        this.sessionName = sessionName;
+        this.name = name;
     }
 }

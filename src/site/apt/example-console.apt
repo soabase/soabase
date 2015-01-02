@@ -135,7 +135,7 @@ curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
 
 ** Logs Screen
 
-    Clicking the "Logs" button for an instance shows the list of all log files for an instance. Clicking
+    Clicking the "Logs" button for an instance shows the list of all log files for the instance. Clicking
     any of the log file names will display the contents of the file.
 
 [images/admin-logs.png]

@@ -54,7 +54,7 @@ public class SoaConfiguration
     private String serviceName;
 
     @Valid
-    private int shutdownWaitMaxMs = (int)TimeUnit.SECONDS.toMillis(5);
+    private int shutdownWaitMaxMs = (int)TimeUnit.MINUTES.toMillis(1);
 
     @Valid
     private String instanceName;

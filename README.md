@@ -5,6 +5,16 @@ A suite of [Dropwizard](http://dropwizard.io/) bundles and utilities that aid in
 Service Oriented Applications. soabase is implementation neutral, however, default production-level implementations
 are available.
 
+Why Soabase?
+--------
+
+Dropwizard was created to create a turn key solution for Java server applications. It standardizes the things that
+every Java server app needs and relieves the tedium of re-inventing the wheel every time you write a new Java server app.
+
+Soabase extends this to Service Oriented Architecture applications. Writing clustered Java server applications
+requires writing the same things over and over. Every app needs a discovery service integrated with the REST client.
+They also need global configuration/attributes and global administration.
+
 Features
 --------
 

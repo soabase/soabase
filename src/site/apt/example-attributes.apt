@@ -1,0 +1,96 @@
+{{{./example.html}Examples}} - Dynamic Attributes
+
+* Running the example
+
+    The example consists of 4 separate applications:
+
+    * mock-database
+
+    * mock-zookeeper
+
+    * goodbye
+
+    * hello
+
+    You will run 1 instance of mock-database and mock-zookeeper. You can run multiple versions of goodbye. For example purposes, run
+    at least 2. Lastly, run one instance of hello.
+
+    From the soabase directory (assuming a *nix system):
+
++--------------------------------------------------------------------------+
+# Run the mock database in the background
+java -jar ./target/mock-database.jar &
+
+# Run the mock zookeeper in the background
+java -jar ./target/mock-zookeeper.jar &
+
+# Run 2 instances of the goodbye app in the background
+java -jar ./target/goodbye.jar &
+java -jar ./target/goodbye.jar &
+
+# Run the hello app in the background
+java -jar ./target/hello.jar &
+# You will see output that shows the ports for the hello app - save these
++--------------------------------------------------------------------------+
+
+* Performing the example tasks
+
+    The MockDatabase app sets a few dynamic attributes that you can query for.
+
++------------------------------------------+
+curl http://localhost:HelloAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+    This will return "global".
+
++------------------------------------------+
+curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+    This will also return "global".
+
++------------------------------------------+
+curl http://localhost:HelloAdminPort/api/soa/attributes/test2
++------------------------------------------+
+
+    This will return "one".
+
++------------------------------------------+
+curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
++------------------------------------------+
+
+    This will return "two".
+
++------------------------------------------+
+curl -X PUT -d '"new"' -H "Content-Type: application/json" http://localhost:HelloAdminPort/api/soa/attributes/test
+curl http://localhost:HelloAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+    This will return "new".
+
++------------------------------------------+
+curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+    This will still return "global".
+
++------------------------------------------+
+curl -X DELETE http://localhost:HelloAdminPort/api/soa/attributes/test
+curl http://localhost:HelloAdminPort/api/soa/attributes/test
++------------------------------------------+
+
+    This will return "global" again.
+
+    This example shows the following features:
+
+*-----------------------*--------------------------------------------------------------------------------------------------*
+| Scoped Attributes     | Soabase dynamic attributes can be scoped. There are three default scopes: Global, service and    |
+|                       | instance. You can also define your own scopes. In the example, the attribute "test" is set at    |
+|                       | the global scope so it is the same for both Goodbye and Hello apps. The attribute "test2" is set |
+|                       | differently for the service scope and so Goodbye and Hello return different values.              |
+*-----------------------*--------------------------------------------------------------------------------------------------*
+| Jersey for Admin      | Soabase adds Jersey support to Dropwizard's admin port. Soabase defines a few APIs and you can   |
+|                       | add your own.                                                                                    |
+*-----------------------*--------------------------------------------------------------------------------------------------*
+| Local Overrides       | Through the admin API you can set instance specific overrides for dynamic attributes.            |
+*-----------------------*--------------------------------------------------------------------------------------------------*

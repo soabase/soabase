@@ -44,7 +44,7 @@
         <menu name="Soabase">
             <item name="About" href="index.html"/>
             <item name="Usage" href="usage.html"/>
-            <item name="Example" href="example.html"/>
+            <item name="Examples" href="example.html"/>
         </menu>
 
         <menu name="Features">

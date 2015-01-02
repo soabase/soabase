@@ -1,0 +1,38 @@
+{{{./example.html}Examples}} - Administration Console
+
+* Running the example
+
+    The example consists of 4 separate applications:
+
+    * mock-database
+
+    * mock-zookeeper
+
+    * goodbye
+
+    * hello
+
+    You will run 1 instance of mock-database and mock-zookeeper. You can run multiple versions of goodbye. For example purposes, run
+    at least 2. Lastly, run one instance of hello.
+
+    From the soabase directory (assuming a *nix system):
+
++--------------------------------------------------------------------------+
+# Run the mock database in the background
+java -jar ./target/mock-database.jar &
+
+# Run the mock zookeeper in the background
+java -jar ./target/mock-zookeeper.jar &
+
+# Run 2 instances of the goodbye app in the background
+java -jar ./target/goodbye.jar &
+java -jar ./target/goodbye.jar &
+
+# Run the hello app in the background
+java -jar ./target/hello.jar &
+# You will see output that shows the ports for the hello app - save these
++--------------------------------------------------------------------------+
+
+* Performing the example tasks
+
+    TBD

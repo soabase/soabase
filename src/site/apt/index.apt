@@ -50,6 +50,6 @@ Soabase
 
     It is assumed that you are familiar with Dropwizard, bundles, etc. See the {{{./usage.html}Usage}} page for details.
 
-* Example
+* Examples
 
     See the {{{./example.html}Examples}} page for a detailed example of Soabase

@@ -1,10 +1,10 @@
-Example
+Examples
 
-    The Soabase example shows some of the features of the various bundles and utilities.
+    The Soabase examples show some of the features of the various bundles and utilities.
 
-* Building the example
+* Building the examples
 
-    The Soabase example is built using Apache Maven. Download the example POM into a new directory and then build
+    The Soabase examples are built using Apache Maven. Download the example POM into a new directory and then build
     it.
 
 +-------------------------------+
@@ -14,128 +14,10 @@ wget https://raw.githubusercontent.com/Randgalt/soabase/master/soabase-example/s
 mvn clean package
 +-------------------------------+
 
-* Running the example
+* The Examples
 
-    The example consists of 4 separate applications:
+    * {{{./example-rest.html}REST client/server and Discovery}}
 
-    * mock-database
+    * {{{./example-attributes.html}Dynamic Attributes}}
 
-    * mock-zookeeper
-
-    * goodbye
-
-    * hello
-
-    You will run 1 instance of mock-database and mock-zookeeper. You can run multiple versions of goodbye. For example purposes, run
-    at least 2. Lastly, run one instance of hello.
-
-    From the soabase directory (assuming a *nix system):
-
-+--------------------------------------------------------------------------+
-# Run the mock database in the background
-java -jar ./target/mock-database.jar &
-
-# Run the mock zookeeper in the background
-java -jar ./target/mock-zookeeper.jar &
-
-# Run 2 instances of the goodbye app in the background
-java -jar ./target/goodbye.jar &
-java -jar ./target/goodbye.jar &
-
-# Run the hello app in the background
-java -jar ./target/hello.jar &
-# You will see output that shows the ports for the hello app - save these
-+--------------------------------------------------------------------------+
-
-* Performing the example tasks
-
-    * REST client/server and Discovery
-
-+------------------------------------------+
-curl http://localhost:HelloMainPort/hello
-+------------------------------------------+
-
-        This will make an HTTP/REST call to the Hello app. The Hello app will then use Discovery to
-        query a Goodbye app instance. The Hello app will then return the Goodbye app's result plus its own.
-        You will see the Hello app's instance name and service name. You will also see one of the Goodbye app's
-        instance names. If you execute the REST call again you should see a different Goodbye app instance. The default
-        load balancer is round robin so each REST call should cycle through all the Goodbye apps.
-
-        This example shows the following features:
-
-*---------------------------*---------------------------------------------------------------------------------------------*
-| Discovery Integration     | Soabase automatically registers services with the Sobase Discovery system.                  |
-*---------------------------*---------------------------------------------------------------------------------------------*
-| Integrated REST Client    | Soabase wraps both the Apache HTTP Client and the Jersey Client so that they are integrated |
-|                           | with Soabase's Discovery system. The URL used is <<<http://00000.goodbye/goodbye>>>.        |
-|                           | Soabase will see the "00000.name" pattern and replace this by looking up the service        |
-|                           | in the Discovery system. If the call fails, it will get retried via a new lookup from       |
-|                           | the Discovery system.                                                                       |
-*---------------------------*---------------------------------------------------------------------------------------------*
-| Request Id                | In an SOA system, a single external user request will result in many internal service       |
-|                           | calls. A method for tying all of them together back to the original request is vital.       |
-|                           | Sobase adds a Request Id header which the wrapped REST Clients are aware of. In the example |
-|                           | you see that the Hello app's REST call to the Goodbye app maintained the same Request Id.   |
-*---------------------------*---------------------------------------------------------------------------------------------*
-
-    * Dynamic Attributes
-
-        The MockDatabase app sets a few dynamic attributes that you can query for.
-
-+------------------------------------------+
-curl http://localhost:HelloAdminPort/api/soa/attributes/test
-+------------------------------------------+
-
-        This will return "global".
-
-+------------------------------------------+
-curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
-+------------------------------------------+
-
-        This will also return "global".
-
-+------------------------------------------+
-curl http://localhost:HelloAdminPort/api/soa/attributes/test2
-+------------------------------------------+
-
-        This will return "one".
-
-+------------------------------------------+
-curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
-+------------------------------------------+
-
-        This will return "two".
-
-+------------------------------------------+
-curl -X PUT -d '"new"' -H "Content-Type: application/json" http://localhost:HelloAdminPort/api/soa/attributes/test
-curl http://localhost:HelloAdminPort/api/soa/attributes/test
-+------------------------------------------+
-
-        This will return "new".
-
-+------------------------------------------+
-curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
-+------------------------------------------+
-
-        This will still return "global".
-
-+------------------------------------------+
-curl -X DELETE http://localhost:HelloAdminPort/api/soa/attributes/test
-curl http://localhost:HelloAdminPort/api/soa/attributes/test
-+------------------------------------------+
-
-        This will return "global" again.
-
-        This example shows the following features:
-
-*-----------------------*--------------------------------------------------------------------------------------------------*
-| Scoped Attributes     | Soabase dynamic attributes can be scoped. There are three default scopes: Global, service and    |
-|                       | instance. You can also define your own scopes. In the example, the attribute "test" is set at    |
-|                       | the global scope so it is the same for both Goodbye and Hello apps. The attribute "test2" is set |
-|                       | differently for the service scope and so Goodbye and Hello return different values.              |
-*-----------------------*--------------------------------------------------------------------------------------------------*
-| Jersey for Admin      | Soabase adds Jersey support to Dropwizard's admin port. Soabase defines a few APIs and you can   |
-|                       | add your own.                                                                                    |
-*-----------------------*--------------------------------------------------------------------------------------------------*
-| Local Overrides       | Through the admin API you can set instance specific overrides for dynamic attributes.            |
-*-----------------------*--------------------------------------------------------------------------------------------------*
+    * {{{./example-console.html}Administration Console}}

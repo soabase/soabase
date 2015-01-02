@@ -2,7 +2,7 @@
 
 * Running the example
 
-    The example consists of 4 separate applications:
+    The example consists of 5 separate applications:
 
     * mock-database
 
@@ -12,8 +12,10 @@
 
     * hello
 
-    You will run 1 instance of mock-database and mock-zookeeper. You can run multiple versions of goodbye. For example purposes, run
-    at least 2. Lastly, run one instance of hello.
+    * admin
+
+    You will run 1 instance of mock-database and mock-zookeeper. Run one or more versions of goodbye and hello.
+    Lastly, run one instance of admin.
 
     From the soabase directory (assuming a *nix system):
 
@@ -24,15 +26,76 @@ java -jar ./target/mock-database.jar &
 # Run the mock zookeeper in the background
 java -jar ./target/mock-zookeeper.jar &
 
-# Run 2 instances of the goodbye app in the background
+# Run any number instances of the goodbye app in the background
 java -jar ./target/goodbye.jar &
 java -jar ./target/goodbye.jar &
 
-# Run the hello app in the background
+# Run any number instances hello app in the background
 java -jar ./target/hello.jar &
-# You will see output that shows the ports for the hello app - save these
+java -jar ./target/hello.jar &
+
+# Run the admin app in the background
+java -jar ./target/admin.jar &
 +--------------------------------------------------------------------------+
 
 * Performing the example tasks
 
-    TBD
+    Open the main page in a browser: {{{http://localhost:8080}http://localhost:8080}}. You will see the main admin console page:
+
+[images/admin-services.png]
+
+    << >>
+
+    From this screen you will see all registered instances. For each instance:
+
+    * There is a green or red light. Green means the instance will be returned as available in Discovery.
+    Red means it will not be returned.
+
+    * Healthy/unhealthy and forced state. Shows whether the instance is healthy, unhealthy or forced.
+
+    * Action buttons:
+
+        * Logs - displays the log files for the instance
+
+        * Stack Trace - displays a full stack trace for the instance
+
+        * Force - allows forcing the registration state of the instance in Discovery
+
+        * Details - displays the real time system monitoring screen
+
+        []
+
+    []
+
+===========
+
+[images/admin-attributes.png]
+
+    << >>
+
+    Something else now
+
+===========
+
+[images/admin-custom.png]
+
+    << >>
+
+    Something else now
+
+===========
+
+[images/admin-details.png]
+
+    << >>
+
+    Something else now
+
+===========
+
+[images/admin-logs.png]
+
+    << >>
+
+    Something else now
+

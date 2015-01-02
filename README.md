@@ -21,6 +21,10 @@ Features
 * Jersey-based Admin APIs
  * Add Jersey resources to the Admin port
  * Built in resources for SOA features
+* Administration Console
+ * Customizable/extensible
+ * Monitor all instances in the cluster
+ * Watch any Dropwizard metric
 * Configuration Utilities
  * A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an external file or a resource in the classpath. Special tokens are used to determine how to treat the argument.
  * A simple way of allowing shared bundles, etc. to access their custom configuration objects

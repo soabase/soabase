@@ -46,53 +46,9 @@ function soaForceDialogSubmit(serviceName, instanceId, forceValue) {
         }
     });
 }
-
-function soaShowLogWindow(localInstance, filesData) {
-    if ( filesData.length == 0 ) {
-        bootbox.alert('No log files found.');
-        return;
-    }
-
-    var logFiles = "";
-    for ( var i in filesData ) {
-        logFiles = logFiles + '<option>' + filesData[i].name + '</option>';
-    }
-
-    var localTemplate = soaGetTemplate('soa-service-logs', {
-        '$FILES$': logFiles
-    });
-    bootbox.dialog({
-        'message': localTemplate,
-        'title': 'Logs for ' + soaToName(localInstance),
-        'onEscape': function () {
-            bootbox.hideAll();
-        },
-        'buttons': {
-            'cancel': {
-                label: "Cancel",
-                className: "btn-default"
-            },
-            'ok': {
-                label: "Open",
-                className: "btn-primary",
-                callback: function () {
-                    var index = $('#soa-service-logs-file')[0].selectedIndex;
-                    var url = 'http://' + localInstance.host + ':' + localInstance.adminPort + '/api/soa/logging/file/raw/' + filesData[index].key;
-                    url = url + "?host=" + localInstance.host + "&name=" + encodeURIComponent(filesData[index].name);
-                    window.open(url, '_blank');
-                }
-            }
-        }
-    });
-}
-
-function soaHandleLogButton(serviceName, localInstance) {
-    soaShowInfiniteProgressBar();
-    var url = 'http://' + localInstance.host + ':' + localInstance.adminPort + '/api/soa/logging/files';
-    $.getJSON(url, function(data){
-        soaHideInfiniteProgressBar();
-        soaShowLogWindow(localInstance, data);
-    });
+function soaHandleLogButton(localInstance) {
+    var url = '/logs?host=' + localInstance.host + '&port=' + localInstance.port + '&adminPort=' + localInstance.adminPort;
+    window.open(url, '_blank');
 }
 
 function soaHandleTraceButton(localInstance) {
@@ -172,7 +128,7 @@ function soaUpdateInstancesForService(serviceName) {
                     soaHandleForceButton(serviceName, instance);
                 });
                 $('#soa-logs-button-' + instance.id).click(function(){
-                    soaHandleLogButton(serviceName, instance);
+                    soaHandleLogButton(instance);
                 });
                 $('#soa-trace-button-' + instance.id).click(function(){
                     soaHandleTraceButton(instance);

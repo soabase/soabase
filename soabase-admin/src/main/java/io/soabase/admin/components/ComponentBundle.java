@@ -67,7 +67,8 @@ public class ComponentBundle implements Bundle
         List<IndexServlet.Mapping> mappings = Lists.newArrayList
         (
             new IndexServlet.Mapping("", "index.html"),
-            new IndexServlet.Mapping("/vm", "vm.html")
+            new IndexServlet.Mapping("/vm", "vm.html"),
+            new IndexServlet.Mapping("/logs", "logs.html")
         );
         IndexServlet servlet = new IndexServlet(componentManager, mappings);
         servlet.setServlets(environment.servlets());

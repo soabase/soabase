@@ -1,10 +1,3 @@
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
 var VM_DEFAULT_MAX_METRIC_POINTS = 50;
 var VM_METRICS_PER_ROW = 3;
 
@@ -98,6 +91,7 @@ function vmUpdate() {
         $('#vm-progress-memory').text(memUsedPercent + '%' + ' - ' + memUsed.toLocaleString() + ' of ' + memMax.toLocaleString());
 
         vmUpdateMetrics(data);
+        $('#vm-last-updated').text('Last updated ' + (new Date()).toLocaleString());
     });
     vmResetTimeout();
 }

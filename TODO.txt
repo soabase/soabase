@@ -15,14 +15,13 @@
 ====
 
 - Admin console
-    - Instances (discovery) tab
-    - Attributes tab
     * Show "no services" message
 * Hystrix?
 * Archaius?
 * Eureka?
 - Example App
     * Have MockDatabase support adding new values somehow
+    * Do custom metric
 * Tests
 * javadoc/doc
 * TO-DOs
@@ -36,8 +35,6 @@
 * Maybe it's better for all the configs to just have public fields?
 * Discovery registration should be in background
 * Get rid of soa-hidden
-* Write out GCs? Threads?
 * Rename SoaDynamicAttributes to DynamicAttributes
 * Get rid of Soa prefix on classes?
 * Support user identity on attributes for auditing
-* Allow data point qty to be user changeable on VM page

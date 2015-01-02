@@ -14,6 +14,8 @@
 
     * admin
 
+    []
+
     You will run 1 instance of mock-database and mock-zookeeper. Run one or more versions of goodbye and hello.
     Lastly, run one instance of admin.
 
@@ -38,7 +40,12 @@ java -jar ./target/hello.jar &
 java -jar ./target/admin.jar &
 +--------------------------------------------------------------------------+
 
+    When the goodbye and hello apps start, they will write their ports to the console.
+    Write down the admin ports as they are needed in the examples below.
+
 * Performing the example tasks
+
+** Services Screen
 
     Open the main page in a browser: {{{http://localhost:8080}http://localhost:8080}}. You will see the main admin console page:
 
@@ -67,35 +74,70 @@ java -jar ./target/admin.jar &
 
     []
 
-===========
+    << >>
+
+=======
+
+** Attributes Screen
+
+    Click on "Attributes" to see the attributes screen. This screen shows the Soabase
+    global dynamic attributes. In this example, the attributes are stored in an in-memory
+    database. In a production environment, you'd store them in a Mysql database, AWS storage,
+    etc.
 
 [images/admin-attributes.png]
 
     << >>
 
-    Something else now
+    You should see three attributes. The example hard codes these values when the
+    mock-database starts. Notice that the attribute "test" has no scope. This means that
+    all instances will see the same value. Notice that the attribute "test2" is different
+    for scopes "goodbye" and "hello". This means that the hello and goodbye apps will see
+    different values. You can see this by using curl:
 
-===========
++------------------------------------------+
+curl http://localhost:HelloAdminPort/api/soa/attributes/test
+curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
+curl http://localhost:HelloAdminPort/api/soa/attributes/test2
+curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
++------------------------------------------+
+
+    You'll see that the result for "test" is the same for hello and goodbye, but "test2" is different.
+
+    From the attributes screen, you can add, update and delete attributes and scopes. Try
+    various changes and curl to see the affect on the example applications.
+
+    << >>
+
+=======
+
+** Custom Screen
+
+    The administration console supports custom tabs with any content you like. Click on "Custom Tab"
+    to see an example.
 
 [images/admin-custom.png]
 
     << >>
 
-    Something else now
+=======
 
-===========
+** Details Screen
+
+    Clicking the "Details" button for an instance shows real time monitoring of various metrics for
+    the instance. You can also define your own metrics. Note the "Custom" metric displayed on this screen.
 
 [images/admin-details.png]
 
     << >>
 
-    Something else now
+=======
 
-===========
+** Logs Screen
+
+    Clicking the "Logs" button for an instance shows the list of all log files for an instance. Clicking
+    any of the log file names will display the contents of the file.
 
 [images/admin-logs.png]
 
     << >>
-
-    Something else now
-

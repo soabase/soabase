@@ -12,6 +12,8 @@
 
     * hello
 
+    []
+
     You will run 1 instance of mock-database and mock-zookeeper. You can run multiple versions of goodbye. For example purposes, run
     at least 2. Lastly, run one instance of hello.
 

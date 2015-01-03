@@ -20,14 +20,20 @@ Service Discovery
 * Usage
 
     Service Discovery is enabled via configuration. See the {{{./soaconfig.html#Service_Discovery}Service Discovery Configuration}}
-    section for details. To use the default Apache Curator/ZooKeeper implementation, add Curator configuration to
+    section for details. To use the default Apache Curator/ZooKeeper implementation, add <<<CuratorConfiguration>>> configuration to
     your application's Configuration object. If needed, you can access the <<<SoaDiscovery>>> instance from <<<SoaFeatures>>>.
+
+* Curator
+
+    A nice side-effect of using the standard Apache Curator integration is that you can directly access the CuratorFramework
+    instance for any other ZooKeeper usage you might have. You can even create multiple CuratorFramework instances for different
+    ZooKeeper clusters. Each Curator instance defined in your Configuration is set in SoaFeatures with the configured name.
 
 * Adding a Custom Implementation
 
     To use something other than the Curator Service Discovery implementation, follow these steps:
 
-    * Create implementations for <<<SoaDiscoveryFactory>>> and <<<SoaDiscovery>>>
+    * Create implementations for <<<SoaDiscoveryFactory>>> and <<<SoaExtendedDiscovery>>>
 
     * Add a directory named <<<META-INF/services>>> that contains two files: <<<io.dropwizard.jackson.Discoverable>>>
       and <<<io.soabase.core.features.discovery.SoaDiscoveryFactory>>>.
@@ -38,7 +44,7 @@ Service Discovery
 
     Your SoaDiscoveryFactory implementation is like other Dropwizard factories. It should be both configuration and a factory.
     Use <<<ZooKeeperDiscoveryFactory.java>>> as an example. This class must be annotated with <<<JsonTypeName>>> and given a unique
-    name. You then use this name as the value for the discovery type in your configuration file. E.g.
+    name. You then use this name as the value for the attributes type in your configuration file. E.g.
 
 +----------------------------------------+
 package com.me.my;
@@ -60,9 +66,11 @@ public class MyDiscoveryFactory implements SoaDiscoveryFactory {
 }
 +----------------------------------------+
 
-    <SoaDiscovery>
+    <SoaExtendedDiscovery>
 
     Your SoaDiscovery implementation does the actual work of Service Discovery. The details will depend on your implementation's needs.
+    Note: your custom class should implement <<<SoaExtendedDiscovery>>> not <<<SoaDiscovery>>>. This allows
+    your implementation to interact with the {{{./console.html}Administration Console}}.
 
     <ServiceLoader files>
 

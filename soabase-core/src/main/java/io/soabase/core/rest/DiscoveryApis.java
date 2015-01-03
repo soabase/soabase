@@ -44,7 +44,7 @@ public class DiscoveryApis
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{name}")
+    @Path("single/{name}")
     public Response getInstance(@PathParam("name") String serviceName)
     {
         // TODO logging

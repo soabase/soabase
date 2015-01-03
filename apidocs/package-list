@@ -5,13 +5,13 @@ io.soabase.admin.rest
 io.soabase.client
 io.soabase.client.apache
 io.soabase.client.jersey
-io.soabase.client.retry
 io.soabase.core
 io.soabase.core.config
+io.soabase.core.features
 io.soabase.core.features.attributes
+io.soabase.core.features.client
 io.soabase.core.features.discovery
 io.soabase.core.features.logging
-io.soabase.core.features.request
 io.soabase.core.listening
 io.soabase.core.rest
 io.soabase.core.rest.entities

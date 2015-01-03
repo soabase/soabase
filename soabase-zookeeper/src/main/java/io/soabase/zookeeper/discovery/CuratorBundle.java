@@ -21,7 +21,7 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
-import io.soabase.core.config.ComposedConfigurationAccessor;
+import io.soabase.core.features.config.ComposedConfigurationAccessor;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;

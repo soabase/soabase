@@ -22,6 +22,7 @@ import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
 import io.dropwizard.jackson.Jackson;
 import io.soabase.core.config.mocks.MyConfiguration;
+import io.soabase.core.features.config.FlexibleConfigurationSourceProvider;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import javax.validation.Validation;

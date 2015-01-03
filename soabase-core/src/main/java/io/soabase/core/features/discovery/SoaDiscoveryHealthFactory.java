@@ -17,7 +17,7 @@ package io.soabase.core.features.discovery;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.config.SoaConfiguration;
+import io.soabase.core.features.config.SoaConfiguration;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = DefaultDiscoveryHealth.class)
 public interface SoaDiscoveryHealthFactory

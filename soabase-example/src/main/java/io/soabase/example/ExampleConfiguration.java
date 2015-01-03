@@ -17,7 +17,7 @@ package io.soabase.example;
 
 import io.dropwizard.Configuration;
 import io.soabase.client.SoaClientConfiguration;
-import io.soabase.core.config.SoaConfiguration;
+import io.soabase.core.features.config.SoaConfiguration;
 import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
 

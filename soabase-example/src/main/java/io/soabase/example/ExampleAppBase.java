@@ -24,7 +24,7 @@ import io.dropwizard.setup.Environment;
 import io.soabase.client.SoaClientBundle;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaInfo;
-import io.soabase.core.config.FlexibleConfigurationSourceProvider;
+import io.soabase.core.features.config.FlexibleConfigurationSourceProvider;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 import org.apache.curator.test.InstanceSpec;

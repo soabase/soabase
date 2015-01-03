@@ -21,7 +21,7 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
-import io.soabase.core.config.ComposedConfigurationAccessor;
+import io.soabase.core.features.config.ComposedConfigurationAccessor;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;

@@ -19,6 +19,9 @@ import io.dropwizard.lifecycle.setup.ExecutorServiceBuilder;
 import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
 import io.dropwizard.lifecycle.setup.ScheduledExecutorServiceBuilder;
 
+/**
+ * Gives access to the executor builders from Dropwizard's environment
+ */
 public class ExecutorBuilder
 {
     private final LifecycleEnvironment environment;
@@ -28,14 +31,33 @@ public class ExecutorBuilder
         this.environment = environment;
     }
 
+    /**
+     * Same as {@link LifecycleEnvironment#executorService(String)}
+     *
+     * @param nameFormat name format
+     * @return builder
+     */
     public ExecutorServiceBuilder executorService(String nameFormat) {
         return environment.executorService(nameFormat);
     }
 
+    /**
+     * Same as {@link LifecycleEnvironment#scheduledExecutorService(String)}
+     *
+     * @param nameFormat name format
+     * @return builder
+     */
     public ScheduledExecutorServiceBuilder scheduledExecutorService(String nameFormat) {
         return environment.scheduledExecutorService(nameFormat);
     }
 
+    /**
+     * Same as {@link LifecycleEnvironment#scheduledExecutorService(String, boolean)}
+     *
+     * @param nameFormat name format
+     * @param useDaemonThreads true/false
+     * @return builder
+     */
     public ScheduledExecutorServiceBuilder scheduledExecutorService(String nameFormat, boolean useDaemonThreads) {
         return environment.scheduledExecutorService(nameFormat, useDaemonThreads);
     }

@@ -28,7 +28,7 @@ import io.soabase.client.apache.WrappedHttpClient;
 import io.soabase.client.jersey.JerseyRetryConnectorProvider;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
-import io.soabase.core.config.ComposedConfigurationAccessor;
+import io.soabase.core.features.config.ComposedConfigurationAccessor;
 import io.soabase.core.features.client.DefaultRetryHandler;
 import io.soabase.core.features.client.RetryComponents;
 import io.soabase.core.features.client.RetryHandler;

@@ -41,6 +41,7 @@ import io.dropwizard.server.SimpleServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.config.ComposedConfigurationAccessor;
+import io.soabase.core.config.SoaConfiguration;
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.SafeDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
@@ -143,9 +144,9 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 
         SoaDiscovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(environment, soaInfo)));
         SoaDynamicAttributes attributes = wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)));
-        LoggingReader loggingReader = initLogging(configuration);
 
-        final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, new ExecutorBuilder(environment.lifecycle()), loggingReader);
+        final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, new ExecutorBuilder(environment.lifecycle()));
+        final LoggingReader loggingReader = initLogging(configuration);
         AbstractBinder binder = new AbstractBinder()
         {
             @Override
@@ -155,6 +156,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
                 bind(environment.healthChecks()).to(HealthCheckRegistry.class);
                 bind(environment.getObjectMapper()).to(ObjectMapper.class);
                 bind(environment.metrics()).to(MetricRegistry.class);
+                bind(loggingReader).to(LoggingReader.class);
             }
         };
         setFeaturesInContext(environment, features);
@@ -209,18 +211,20 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         }
     }
 
-    private Ports getPorts(Configuration configuration)
+    private Ports getPorts(T configuration)
     {
         if ( SoaMainPortAccessor.class.isAssignableFrom(configuration.getClass()) )
         {
-            SoaMainPortAccessor accessor = (SoaMainPortAccessor)configuration;
+            @SuppressWarnings("unchecked")
+            SoaMainPortAccessor<T> accessor = (SoaMainPortAccessor<T>)configuration;
             return new Ports(accessor.getMainPort(configuration), accessor.getAdminPort(configuration));
         }
 
         ServerFactory serverFactory = configuration.getServerFactory();
         if ( SoaMainPortAccessor.class.isAssignableFrom(serverFactory.getClass()) )
         {
-            SoaMainPortAccessor accessor = (SoaMainPortAccessor)serverFactory;
+            @SuppressWarnings("unchecked")
+            SoaMainPortAccessor<T> accessor = (SoaMainPortAccessor<T>)serverFactory;
             return new Ports(accessor.getMainPort(configuration), accessor.getAdminPort(configuration));
         }
 

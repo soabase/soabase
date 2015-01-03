@@ -20,7 +20,6 @@ import com.google.common.collect.Maps;
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
-import io.soabase.core.features.logging.LoggingReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
@@ -31,20 +30,18 @@ class SoaFeaturesImpl implements SoaFeatures
     private final SoaDynamicAttributes dynamicAttributes;
     private final SoaInfo info;
     private final ExecutorBuilder executorBuilder;
-    private final LoggingReader loggingReader;
 
     public SoaFeaturesImpl()
     {
-        this(null, null, null, null, null);
+        this(null, null, null, null);
     }
 
-    SoaFeaturesImpl(SoaDiscovery discovery, SoaDynamicAttributes dynamicAttributes, SoaInfo info, ExecutorBuilder executorBuilder, LoggingReader loggingReader)
+    SoaFeaturesImpl(SoaDiscovery discovery, SoaDynamicAttributes dynamicAttributes, SoaInfo info, ExecutorBuilder executorBuilder)
     {
         this.discovery = discovery;
         this.dynamicAttributes = dynamicAttributes;
         this.info = info;
         this.executorBuilder = executorBuilder;
-        this.loggingReader = loggingReader;
     }
 
     void setNamed(SoaFeaturesImpl from)
@@ -75,12 +72,6 @@ class SoaFeaturesImpl implements SoaFeatures
     public SoaInfo getSoaInfo()
     {
         return info;
-    }
-
-    @Override
-    public LoggingReader getLoggingReader()
-    {
-        return loggingReader;
     }
 
     @Override

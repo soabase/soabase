@@ -17,9 +17,27 @@ package io.soabase.core;
 
 import io.dropwizard.Configuration;
 
-public interface SoaMainPortAccessor
+/**
+ * By default, Soabase determines the main port and the admin port
+ * from Dropwizard's DefaultServerFactory or SimpleServerFactory. If you
+ * use a different factory or want to override this behavior, have your application's
+ * Configuration class implement this interface.
+ */
+public interface SoaMainPortAccessor<T extends Configuration>
 {
-    public <T extends Configuration> int getMainPort(T configuration);
+    /**
+     * Return the main port to use for the application
+     *
+     * @param configuration config
+     * @return main port
+     */
+    public int getMainPort(T configuration);
 
-    public <T extends Configuration> int getAdminPort(T configuration);
+    /**
+     * Return the admin port to use for the application
+     *
+     * @param configuration config
+     * @return admin port
+     */
+    public int getAdminPort(T configuration);
 }

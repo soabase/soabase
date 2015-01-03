@@ -15,7 +15,6 @@
  */
 package io.soabase.core.rest;
 
-import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.logging.LoggingFile;
 import io.soabase.core.features.logging.LoggingReader;
 import javax.inject.Inject;
@@ -32,12 +31,10 @@ public class LoggingApis
 {
     private final LoggingReader loggingReader;
 
-    private static final int MAX_DEPTH = 50;
-
     @Inject
-    public LoggingApis(SoaFeatures features)
+    public LoggingApis(LoggingReader loggingReader)
     {
-        loggingReader = features.getLoggingReader();
+        this.loggingReader = loggingReader;
     }
 
     @GET

@@ -18,7 +18,6 @@ package io.soabase.core.features.discovery;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.dropwizard.jackson.Discoverable;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.SoaConfiguration;
 import io.soabase.core.SoaInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = NullDiscoveryFactory.class)

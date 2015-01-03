@@ -18,26 +18,76 @@ package io.soabase.core;
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
-import io.soabase.core.features.logging.LoggingReader;
 
+/**
+ * Container for various Soabase singletons
+ */
 public interface SoaFeatures
 {
+    /**
+     * Default name to use for {@link #getNamed(Class, String)}
+     */
     public static final String DEFAULT_NAME = "default";
+
+    /**
+     * Name for the admin JerseyEnvironment
+     */
     public static final String ADMIN_NAME = "soa-admin";
 
+    /**
+     * Return the stored named object
+     *
+     * @param clazz object's class
+     * @param name name of the object
+     * @return the object or null
+     */
     public <T> T getNamed(Class<T> clazz, String name);
 
+    /**
+     * Return the stored named object or throws {@link NullPointerException}
+     *
+     * @param clazz object's class
+     * @param name name of the object
+     * @return the object (never null)
+     * @throws NullPointerException if an object of the given class with the given name isn't registered
+     */
     public <T> T getNamedRequired(Class<T> clazz, String name);
 
+    /**
+     * Registers an object with a name. The name must be unique for the given class. i.e. there can
+     * only be 1 object with a given name and class
+     *
+     * @param o the object
+     * @param clazz the object's class
+     * @param name name to store
+     */
     public <T> void putNamed(T o, Class<T> clazz, String name);
 
+    /**
+     * Return the service discovery instance
+     *
+     * @return service discovery instance
+     */
     public SoaDiscovery getDiscovery();
 
+    /**
+     * Return the dynamic attributes instance
+     *
+     * @return dynamic attributes instance
+     */
     public SoaDynamicAttributes getAttributes();
 
+    /**
+     * Returns information about this instance
+     *
+     * @return info
+     */
     public SoaInfo getSoaInfo();
 
+    /**
+     * Access to the Dropwizard executor builders from the Dropwizard environment
+     *
+     * @return Dropwizard executor builders
+     */
     public ExecutorBuilder getExecutorBuilder();
-
-    public LoggingReader getLoggingReader();
 }

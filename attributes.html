@@ -220,7 +220,82 @@
                                   
             <div class="section">
 <h2><a name="Dynamic_Attributes"></a>Dynamic Attributes</h2>
-<p>TBD</p></div>
+<p>Distributed, scoped dynamic attributes provide a mechanism to configure/alter your cluster at runtime. Attributes can be changed for all instances of all services in the cluster, only for a particular service, only for a particular instance, etc.</p>
+<div class="section">
+<h3><a name="Usage"></a>Usage</h3>
+<p>Dynamic Attribute support is enabled via configuration. See the <a href="./soaconfig.html#Dynamic_Attributes">Dynamic Attributes Configuration</a> section for details. To use the default JDBC, add <tt>SqlConfiguration</tt> configuration to your application's Configuration object. If needed, you can access the Mybatis <tt>SqlSession</tt> instance from <tt>SoaFeatures</tt>.</p></div>
+<div class="section">
+<h3><a name="Mybatis"></a>Mybatis</h3>
+<p>A nice side-effect of using the standard JDBC integration is that you can directly access the Mybatis SqlSession instance for any other database usage you might have. You can even create multiple SqlSession instances for different databases. Each Sql instance defined in your Configuration is set in SoaFeatures with the configured name.</p>
+<p>Even if you don't directly need to access the Mybatis session, you'll need to create a minimal Mybatis configuration file. For most uses, this file will suffice:</p>
+<div class="source">
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;!DOCTYPE configuration PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot; &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;
+&lt;configuration&gt;
+    &lt;environments default=&quot;development&quot;&gt;
+        &lt;environment id=&quot;development&quot;&gt;
+            &lt;transactionManager type=&quot;JDBC&quot;/&gt;
+            &lt;dataSource type=&quot;POOLED&quot;&gt;
+                &lt;property name=&quot;driver&quot; value=&quot;Class Name of your JDBC Driver&quot;/&gt;
+                &lt;property name=&quot;url&quot; value=&quot;Connection URL for the Driver&quot;/&gt;
+                &lt;property name=&quot;username&quot; value=&quot;XXXX&quot;/&gt;
+                &lt;property name=&quot;password&quot; value=&quot;XXXX&quot;/&gt;
+            &lt;/dataSource&gt;
+        &lt;/environment&gt;
+    &lt;/environments&gt;
+&lt;/configuration&gt;</pre></div>
+<p>Whatever database you use, you need to set up the schema for Dynamic Attributes. You can do this manually or via a Soabase utility. The SQL to create the table is:</p>
+<div class="source">
+<pre>CREATE TABLE SoaAttributes
+(
+    fKEY VARCHAR(255) NOT NULL,
+    fSCOPE VARCHAR(255) NOT NULL,
+    fVALUE VARCHAR(65535),
+    fTIMESTAMP VARCHAR(255) NOT NULL,
+    PRIMARY KEY (fKEY, fSCOPE))
+)</pre></div>
+<p>To do it programmatically, use the Mybatis session:</p>
+<div class="source">
+<pre>SoaFeatures features = SoaBundle.getFeatures(environment);
+SqlSession session = features.getNamedRequired(SqlSession.class, name);
+AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
+mapper.createTable();</pre></div>
+<p>Once the database is set up, you can add attributes manually or via the <a href="./console.html">Administration Console</a>. To add manually, use this SQL (fTIMESTAMP is a GUID):</p>
+<div class="source">
+<pre>INSERT INTO SoaAttributes (fKEY, fSCOPE, fVALUE, fTIMESTAMP) VALUES (?, ?, ?, ?)</pre></div></div>
+<div class="section">
+<h3><a name="API"></a>API</h3>
+<p>Dynamic Attributes are accessed via the <tt>SoaDynamicAttributes</tt> instance from <tt>SoaFeatures</tt>. It has methods to get attributes coerced to various types, override attributes and listen for changes.</p></div>
+<div class="section">
+<h3><a name="Adding_a_Custom_Implementation"></a>Adding a Custom Implementation</h3>
+<p>To use something other than the JDOBC implementation, follow these steps:</p>
+<ul>
+<li>Create implementations for <tt>SoaDynamicAttributesFactory</tt> and <tt>SoaWritableDynamicAttributes</tt></li>
+<li>Add a directory named <tt>META-INF/services</tt> that contains two files: <tt>io.dropwizard.jackson.Discoverable</tt> and <tt>io.soabase.core.features.attributes.SoaDynamicAttributesFactory</tt>.</li></ul>
+<p><i>SoaDynamicAttributesFactory</i></p>
+<p>Your SoaDynamicAttributesFactory implementation is like other Dropwizard factories. It should be both configuration and a factory. Use <tt>SqlDynamicAttributesFactory.java</tt> as an example. This class must be annotated with <tt>JsonTypeName</tt> and given a unique name. You then use this name as the value for the discovery type in your configuration file. E.g.</p>
+<div class="source">
+<pre>package com.me.my;
+
+@JsonTypeName(&quot;my-discovery&quot;)
+public class MyAttributesFactory implements SqlDynamicAttributesFactory {
+    public String aConfigValue;
+
+    public int anotherConfigValue;
+
+        ...
+
+    @Override
+    public SoaDynamicAttributes build(Environment environment, List&lt;String&gt; scopes)
+    {
+            ...
+        return new MyAttributes(...);
+    }
+}</pre></div>
+<p><i>SoaWritableDynamicAttributes</i></p>
+<p>Your SoaDynamicAttributes implementation does the actual work. The details will depend on your implementation's needs. Note: your custom class should implement <tt>SoaWritableDynamicAttributes</tt> not <tt>SoaDynamicAttributes</tt>. This allows your implementation to interact with the <a href="./console.html">Administration Console</a>.</p>
+<p><i>ServiceLoader files</i></p>
+<p>Like other Dropwizard plugins, your Dynamic Attributes implementation needs Service Loader files. In the <tt>io.dropwizard.jackson.Discoverable</tt> file add a line containing: <tt>io.soabase.core.features.attributes.SoaDynamicAttributesFactory</tt>. In the <tt>io.soabase.core.features.attributes.SoaDynamicAttributesFactory</tt> file add a line the with fully-qualified path name of your class. E.g. <tt>com.me.my.MyAttributesFactory</tt></p></div></div>
                   </div>
             </div>
           </div>

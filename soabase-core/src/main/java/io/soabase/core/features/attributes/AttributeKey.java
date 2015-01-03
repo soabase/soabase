@@ -17,6 +17,9 @@ package io.soabase.core.features.attributes;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * Encapsulates a key and a scope
+ */
 public class AttributeKey
 {
     private final String key;

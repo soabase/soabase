@@ -51,7 +51,7 @@ import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryHealth;
 import io.soabase.core.features.discovery.SoaExtendedDiscovery;
 import io.soabase.core.features.logging.LoggingReader;
-import io.soabase.core.features.request.SoaClientFilter;
+import io.soabase.core.features.client.SoaClientFilter;
 import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.core.rest.DynamicAttributeApis;
 import io.soabase.core.rest.LoggingApis;
@@ -147,7 +147,9 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         SoaDynamicAttributes attributes = wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)));
         LoggingReader loggingReader = initLogging(configuration);
 
-        final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, loggingReader);
+        final ExecutorBuilder executorBuilder = new ExecutorBuilder(environment.lifecycle());
+
+        final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, executorBuilder, loggingReader);
         AbstractBinder binder = new AbstractBinder()
         {
             @Override
@@ -157,7 +159,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
                 bind(environment.healthChecks()).to(HealthCheckRegistry.class);
                 bind(environment.getObjectMapper()).to(ObjectMapper.class);
                 bind(environment.metrics()).to(MetricRegistry.class);
-                bind(new ExecutorBuilder(environment.lifecycle())).to(ExecutorBuilder.class);
+                bind(executorBuilder).to(ExecutorBuilder.class);
             }
         };
         setFeaturesInContext(environment, features);

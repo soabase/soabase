@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.client.retry;
+package io.soabase.core.features.client;
 
 public interface RetryHandler
 {

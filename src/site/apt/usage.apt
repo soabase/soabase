@@ -31,7 +31,7 @@ Getting Started with Soabase
 |                                             | {{{http://curator.apache.org/curator-x-discovery/index.html}Apache Curator}}.                    |
 *---------------------------------------------*--------------------------------------------------------------------------------------------------*
 | {{{./client.html}REST Client}}              | Soabase augments the Dropwizard-provided Jersey and Apache REST clients to integrate with        |
-|                                             | Service Discovery. You can also integrate a different REST client.                               |
+|                                             | Service Discovery.                                                                               |
 *---------------------------------------------*--------------------------------------------------------------------------------------------------*
 | {{{./admin.html}Jersey Admin APIs}}         | The Dropwizard admin servlet is agumented to support Jersey Resources.                           |
 *---------------------------------------------*--------------------------------------------------------------------------------------------------*
@@ -74,17 +74,19 @@ bootstrap.addBundle(new SoaClientBundle<>()); // adds the Jersey and Apache REST
 
     SoaFeatures provides these methods:
 
-*--------------------*---------------------------------------------------------*
-| getDiscovery()     | Returns the Service Discovery implementation instance.  |
-*--------------------*---------------------------------------------------------*
-| getAttributes()    | Returns the Dynamic Attributes implementation instance. |
-*--------------------*---------------------------------------------------------*
-| getSoaInfo()       | Returns various details about the running instance.     |
-*--------------------*---------------------------------------------------------*
-| putNamed()         | Stores an object with a name                            |
-*--------------------*---------------------------------------------------------*
-| getNamed()         | Returns the object stored by name                       |
-*--------------------*---------------------------------------------------------*
+*----------------------*-------------------------------------------------------------------------------------------------*
+| getDiscovery()       | Returns the Service Discovery implementation instance.                                          |
+*----------------------*-------------------------------------------------------------------------------------------------*
+| getAttributes()      | Returns the Dynamic Attributes implementation instance.                                         |
+*----------------------*-------------------------------------------------------------------------------------------------*
+| getSoaInfo()         | Returns various details about the running instance.                                             |
+*----------------------*-------------------------------------------------------------------------------------------------*
+| getExecutorBuilder() | Provides access to Dropwizard's ExecutorServiceBuilder and ScheduledExecutorServiceBuilder.     |
+*----------------------*-------------------------------------------------------------------------------------------------*
+| putNamed()           | Stores an object with a name                                                                    |
+*----------------------*-------------------------------------------------------------------------------------------------*
+| getNamed()           | Returns the object stored by name                                                               |
+*----------------------*-------------------------------------------------------------------------------------------------*
 
 * Injections
 

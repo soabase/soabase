@@ -53,8 +53,8 @@ curl http://localhost:HelloMainPort/hello
 | Discovery Integration     | Soabase automatically registers services with the Sobase Discovery system.                  |
 *---------------------------*---------------------------------------------------------------------------------------------*
 | Integrated REST Client    | Soabase wraps both the Apache HTTP Client and the Jersey Client so that they are integrated |
-|                           | with Soabase's Discovery system. The URL used is <<<http://00000.goodbye/goodbye>>>.        |
-|                           | Soabase will see the "00000.name" pattern and replace this by looking up the service        |
+|                           | with Soabase's Discovery system. The URL used is <<<http://0.goodbye/goodbye>>>.            |
+|                           | Soabase will see the "0.name" pattern and replace this by looking up the service            |
 |                           | in the Discovery system. If the call fails, it will get retried via a new lookup from       |
 |                           | the Discovery system.                                                                       |
 *---------------------------*---------------------------------------------------------------------------------------------*

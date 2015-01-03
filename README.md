@@ -24,7 +24,6 @@ Features
 * Load Balancing REST Client
  * Default implementations for both Jersey and Apache clients
  * Integrates with Service Discovery for retries, etc.
- * Supports plugging in any desired implementation
 * Distribued, scoped attributes
  * Built in support for JDBC datasources via [Mybatis](http://mybatis.github.io/mybatis-3/)
  * Supports plugging in any desired implementation

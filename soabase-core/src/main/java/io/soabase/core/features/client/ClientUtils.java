@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.client;
+package io.soabase.core.features.client;
 
 import com.google.common.base.Preconditions;
 import io.soabase.core.features.discovery.SoaDiscovery;
@@ -21,16 +21,23 @@ import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class Common
+public class ClientUtils
 {
+    public static final String HOST_SUBSTITUTION_TOKEN = "0.";
+
     public static String hostToServiceName(String host)
     {
         host = Preconditions.checkNotNull(host, "Request URI's host cannot be null");
-        if ( host.startsWith(SoaClientBundle.HOST_SUBSTITUTION_TOKEN) && (host.length() > SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length()) )
+        if ( host.startsWith(HOST_SUBSTITUTION_TOKEN) && (host.length() > HOST_SUBSTITUTION_TOKEN.length()) )
         {
-            return host.substring(SoaClientBundle.HOST_SUBSTITUTION_TOKEN.length());
+            return host.substring(HOST_SUBSTITUTION_TOKEN.length());
         }
         return null;
+    }
+
+    public static String serviceNameToHost(String serviceName)
+    {
+        return HOST_SUBSTITUTION_TOKEN + serviceName;
     }
 
     public static SoaDiscoveryInstance hostToInstance(SoaDiscovery discovery, String host)
@@ -61,7 +68,7 @@ public class Common
         return null;
     }
 
-    private Common()
+    private ClientUtils()
     {
     }
 }

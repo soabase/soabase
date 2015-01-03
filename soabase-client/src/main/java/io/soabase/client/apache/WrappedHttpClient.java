@@ -15,12 +15,12 @@
  */
 package io.soabase.client.apache;
 
-import io.soabase.client.Common;
-import io.soabase.client.retry.RetryComponents;
-import io.soabase.client.retry.RetryContext;
+import io.soabase.core.features.client.ClientUtils;
+import io.soabase.core.features.client.RetryComponents;
+import io.soabase.core.features.client.RetryContext;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
-import io.soabase.core.features.request.SoaRequestId;
+import io.soabase.core.features.client.SoaRequestId;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -78,10 +78,10 @@ public class WrappedHttpClient implements HttpClient
         RetryContext retryContext = new RetryContext(retryComponents, request.getURI(), request.getMethod());
         for ( int retryCount = 0; /* no check */; ++retryCount )
         {
-            SoaDiscoveryInstance instance = Common.hostToInstance(discovery, retryContext.getOriginalHost());
+            SoaDiscoveryInstance instance = ClientUtils.hostToInstance(discovery, retryContext.getOriginalHost());
             retryContext.setInstance(instance);
 
-            URI filteredUri = Common.filterUri(request.getURI(), instance);
+            URI filteredUri = ClientUtils.filterUri(request.getURI(), instance);
             if ( filteredUri != null )
             {
                 request = new WrappedHttpUriRequest(request, filteredUri);
@@ -131,10 +131,10 @@ public class WrappedHttpClient implements HttpClient
         {
             try
             {
-                SoaDiscoveryInstance instance = Common.hostToInstance(discovery, retryContext.getOriginalHost());
+                SoaDiscoveryInstance instance = ClientUtils.hostToInstance(discovery, retryContext.getOriginalHost());
                 retryContext.setInstance(instance);
 
-                URI filteredUri = Common.filterUri(uri, instance);
+                URI filteredUri = ClientUtils.filterUri(uri, instance);
                 if ( filteredUri != null )
                 {
                     target = toHost(filteredUri);

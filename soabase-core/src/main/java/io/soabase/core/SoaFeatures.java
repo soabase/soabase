@@ -15,6 +15,7 @@
  */
 package io.soabase.core;
 
+import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.logging.LoggingReader;
@@ -35,6 +36,8 @@ public interface SoaFeatures
     public SoaDynamicAttributes getAttributes();
 
     public SoaInfo getSoaInfo();
+
+    public ExecutorBuilder getExecutorBuilder();
 
     public LoggingReader getLoggingReader();
 }

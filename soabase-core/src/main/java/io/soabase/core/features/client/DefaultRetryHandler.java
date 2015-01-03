@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.client.retry;
+package io.soabase.core.features.client;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.soabase.client.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.ConnectException;
 
-@JsonTypeName("default")
 public class DefaultRetryHandler implements RetryHandler
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -46,7 +43,7 @@ public class DefaultRetryHandler implements RetryHandler
         boolean shouldBeRetried = shouldBeRetried(retryContext, exception);
         if ( shouldBeRetried )
         {
-            String serviceName = Common.hostToServiceName(retryContext.getOriginalHost());
+            String serviceName = ClientUtils.hostToServiceName(retryContext.getOriginalHost());
             if ( (serviceName != null) && (retryContext.getInstance() != null) )
             {
                 retryContext.getComponents().getDiscovery().noteError(serviceName, retryContext.getInstance());

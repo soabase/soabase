@@ -16,7 +16,7 @@
 package io.soabase.example.goodbye;
 
 import io.soabase.core.SoaInfo;
-import io.soabase.core.features.request.SoaRequestId;
+import io.soabase.core.features.client.SoaRequestId;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

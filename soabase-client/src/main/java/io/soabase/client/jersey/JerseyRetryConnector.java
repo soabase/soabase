@@ -18,10 +18,10 @@ package io.soabase.client.jersey;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
-import io.soabase.client.Common;
-import io.soabase.core.features.request.SoaRequestId;
-import io.soabase.client.retry.RetryComponents;
-import io.soabase.client.retry.RetryContext;
+import io.soabase.core.features.client.ClientUtils;
+import io.soabase.core.features.client.SoaRequestId;
+import io.soabase.core.features.client.RetryComponents;
+import io.soabase.core.features.client.RetryContext;
 import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientRequest;
@@ -84,9 +84,9 @@ public class JerseyRetryConnector implements Connector
         };
         SoaRequestId.checkSetHeaders(request, setter);
 
-        SoaDiscoveryInstance instance = Common.hostToInstance(retryContext.getComponents().getDiscovery(), retryContext.getOriginalHost());
+        SoaDiscoveryInstance instance = ClientUtils.hostToInstance(retryContext.getComponents().getDiscovery(), retryContext.getOriginalHost());
         retryContext.setInstance(instance);
-        URI filteredUri = Common.filterUri(request.getUri(), instance);
+        URI filteredUri = ClientUtils.filterUri(request.getUri(), instance);
         if ( filteredUri != null )
         {
             request.setUri(filteredUri);

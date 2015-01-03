@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.core.features.request;
+package io.soabase.core.features.client;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
 import java.util.UUID;
 
 public class SoaRequestId

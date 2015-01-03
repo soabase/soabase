@@ -16,8 +16,8 @@
 package io.soabase.example.hello;
 
 import com.google.common.io.CharStreams;
-import io.soabase.client.SoaClientBundle;
-import io.soabase.core.features.request.SoaRequestId;
+import io.soabase.core.features.client.ClientUtils;
+import io.soabase.core.features.client.SoaRequestId;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
 import org.apache.http.HttpHost;
@@ -58,7 +58,7 @@ public class HelloResourceApache
             + "\n"
             ;
 
-        URI uri = new URIBuilder().setHost(SoaClientBundle.hostForService("goodbye")).setPath("/goodbye").build();
+        URI uri = new URIBuilder().setHost(ClientUtils.serviceNameToHost("goodbye")).setPath("/goodbye").build();
         HttpGet get = new HttpGet(uri);
         ResponseHandler<String> responseHandler = new ResponseHandler<String>()
         {

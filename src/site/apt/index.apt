@@ -28,8 +28,6 @@ Soabase
 
         * Integrates with Service Discovery for retries, etc.
 
-        * Supports plugging in any desired implementation
-
     * {{{./attributes.html}Distributed, Scoped Dynamic Attributes}}
 
         * Built in support for JDBC datasources via {{{http://mybatis.github.io/mybatis-3/}Mybatis}}
@@ -52,7 +50,8 @@ Soabase
 
     * {{{./config.html}Configuration Utilities}}
 
-        * A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an external file or a resource in the classpath. Special tokens are used to determine how to treat the argument.
+        * A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an external file or a resource in the classpath.
+        Special tokens are used to determine how to treat the argument.
 
         * A simple way of allowing shared bundles, etc. to access their custom configuration objects
 

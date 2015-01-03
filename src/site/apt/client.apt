@@ -1,3 +1,64 @@
-Soabase Client
+REST Client Enhancements
+
+    Soabase augments the standard Dropwizard HttpClient and Jersey Client with a number of features
+    useful in an SOA environment.
+
+* Service Discovery integration with retries
+
+    With the REST Client Enhancements, you can call APIs for services and have the Service Discovery
+    choose which service instance to use. Simply use the Soabase hostname format for the url passed
+    to the REST client:
+
+    <<<http://0.service-name/path/to/api>>>
+
+    You can also use the utility <<<ClientUtils.serviceNameToHost()>>>. When the enhanced REST clients
+    see this hostname format, they call <<<getInstance()>>> on the SoaDiscovery instance using the service
+    name and substituting the returned instance's host and port. If the request needs to be retried
+    (due to errors, etc.) a new instance is retrieved and substituted.
+
+* Request ID
+
+    In an SOA, multiple services are usually involved in handling an end-user request. For tracking and
+    auditing, it's useful to have a way to correlate all them to the initiating end-user request. Soabase
+    enables this via the Request ID. Via the <<<SoaClientFilter>>> every incoming request is assigned
+    a unique request ID. Further, the REST client enhancements set a header on outgoing requests with
+    this request ID. The <<<SoaClientFilter>>> looks for this header and uses the request ID from it when
+    found.
+
+[images/request-id.png]
+
+* Usage
+
+    To use the enhanced REST clients add the configuration and add the bundle:
+
+    * Configuration
+
+    Your application's Configuration object must have a <<<SoaClientConfiguration>>> field.
+    See the {{{./config.html}Configuration page}} for details.
+
+    * Bundle
+
+    Add the <<<SoaClientBundle>>> (after adding the SoaBundle).
+
+    The SoaClientBundle registers the clients in Jersey's dependency injection system. E.g.
+
++-----------------------------+
+@Path(...)
+public class MyResource {
+    @Inject
+    public MyResource(Client jerseyClient) {
+        ...
+    }
+}
++-----------------------------+
+
+    The client can also be accessed from via SoaFeatures. E.g.
+
++-----------------------------+
+SoaFeatures features = SoaBundle.getFeatures(environment);
+Client jerseyClient = features.getNamedRequired(Client.class, clientName);
++-----------------------------+
+
+* Using a Different REST Client
 
     TBD

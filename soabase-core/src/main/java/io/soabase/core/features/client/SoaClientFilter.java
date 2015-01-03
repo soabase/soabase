@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.core.features.request;
+package io.soabase.core.features.client;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

@@ -15,8 +15,8 @@
  */
 package io.soabase.example.hello;
 
-import io.soabase.client.SoaClientBundle;
-import io.soabase.core.features.request.SoaRequestId;
+import io.soabase.core.features.client.ClientUtils;
+import io.soabase.core.features.client.SoaRequestId;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
 import io.soabase.example.goodbye.GoodbyeResource;
@@ -52,7 +52,7 @@ public class HelloResourceJersey
             + "\n"
             ;
 
-        URI uri = UriBuilder.fromResource(GoodbyeResource.class).host(SoaClientBundle.hostForService("goodbye")).build();
+        URI uri = UriBuilder.fromResource(GoodbyeResource.class).host(ClientUtils.serviceNameToHost("goodbye")).build();
         String value = client.target(uri).request().get(String.class);
         return result + "\nGoodbye app says: \n\t" + value;
     }

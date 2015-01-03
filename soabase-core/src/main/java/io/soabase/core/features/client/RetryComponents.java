@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.client.retry;
+package io.soabase.core.features.client;
 
 import com.google.common.base.Preconditions;
+import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import java.util.concurrent.ExecutorService;
 
@@ -25,20 +26,21 @@ public class RetryComponents
     private final SoaDiscovery discovery;
     private final int retries;
     private final boolean retry500s;
-    private final RetryExecutor retryExecutor;
+    private final ExecutorService executorService;
 
-    public RetryComponents(RetryHandler retryHandler, SoaDiscovery discovery, int retries, boolean retry500s, RetryExecutor retryExecutor)
+    public RetryComponents(RetryHandler retryHandler, SoaDiscovery discovery, int retries, boolean retry500s, ExecutorBuilder executorBuilder)
     {
         this.retryHandler = Preconditions.checkNotNull(retryHandler, "retryHandler cannot be null");
         this.discovery = Preconditions.checkNotNull(discovery, "discovery cannot be null");
         this.retries = retries;
         this.retry500s = retry500s;
-        this.retryExecutor = Preconditions.checkNotNull(retryExecutor, "retryExecutor cannot be null");
+        executorBuilder = Preconditions.checkNotNull(executorBuilder, "executorBuilder cannot be null");
+        executorService = executorBuilder.executorService("RetryHandler-%d").build();
     }
 
     public ExecutorService getExecutorService()
     {
-        return retryExecutor.getExecutorService();
+        return executorService;
     }
 
     public RetryHandler getRetryHandler()

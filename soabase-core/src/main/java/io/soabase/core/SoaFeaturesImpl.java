@@ -17,6 +17,7 @@ package io.soabase.core;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.logging.LoggingReader;
@@ -29,18 +30,20 @@ class SoaFeaturesImpl implements SoaFeatures
     private final SoaDiscovery discovery;
     private final SoaDynamicAttributes dynamicAttributes;
     private final SoaInfo info;
+    private final ExecutorBuilder executorBuilder;
     private final LoggingReader loggingReader;
 
     public SoaFeaturesImpl()
     {
-        this(null, null, null, null);
+        this(null, null, null, null, null);
     }
 
-    SoaFeaturesImpl(SoaDiscovery discovery, SoaDynamicAttributes dynamicAttributes, SoaInfo info, LoggingReader loggingReader)
+    SoaFeaturesImpl(SoaDiscovery discovery, SoaDynamicAttributes dynamicAttributes, SoaInfo info, ExecutorBuilder executorBuilder, LoggingReader loggingReader)
     {
         this.discovery = discovery;
         this.dynamicAttributes = dynamicAttributes;
         this.info = info;
+        this.executorBuilder = executorBuilder;
         this.loggingReader = loggingReader;
     }
 
@@ -48,6 +51,12 @@ class SoaFeaturesImpl implements SoaFeatures
     {
         this.named.clear();
         this.named.putAll(from.named);
+    }
+
+    @Override
+    public ExecutorBuilder getExecutorBuilder()
+    {
+        return executorBuilder;
     }
 
     @Override

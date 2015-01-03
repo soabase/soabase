@@ -23,9 +23,6 @@
 - Admin console
     * Show "no services" message
     * Get more accurate CPU/disk load
-* Hystrix?
-* Archaius?
-* Eureka?
 * Tests
 * javadoc/doc
 * TO-DOs

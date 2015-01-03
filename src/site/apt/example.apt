@@ -21,3 +21,35 @@ mvn clean package
     * {{{./example-attributes.html}Dynamic Attributes}}
 
     * {{{./example-console.html}Administration Console}}
+
+* The Code
+
+    The code for the examples is in the <<<soabase-example>>> module:
+
+    * <ExampleAppBase.java>
+
+    Used by both the Hello and Goodbye apps to initialize Soabase.
+
+    * <ExampleConfiguration.java>
+
+    Contains the Soabase configuration fields.
+
+    * <io.soabase.example.hello>
+
+    The code for the Hello app.
+
+    * <io.soabase.example.goodbye>
+
+    The code for the Goodbye app.
+
+    * <io.soabase.example.admin>
+
+    Example Administration Console customizations.
+
+    * <MockDatabase.java>
+
+    Implements a simple in-memory database. Used to store dynamic attributes for the examples.
+
+    * <MockZooKeeper.java>
+
+    A temporary ZooKeeper server. Used for Service Discovery for the examples.

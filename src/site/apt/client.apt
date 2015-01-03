@@ -5,21 +5,21 @@ REST Client Enhancements
 
 * Service Discovery integration with retries
 
-    With the REST Client Enhancements, you can call APIs for services and have the Service Discovery
+    With the REST Client Enhancements, you can call APIs for services and have Service Discovery
     choose which service instance to use. Simply use the Soabase hostname format for the url passed
     to the REST client:
 
     <<<http://0.service-name/path/to/api>>>
 
     You can also use the utility <<<ClientUtils.serviceNameToHost()>>>. When the enhanced REST clients
-    see this hostname format, they call <<<getInstance()>>> on the SoaDiscovery instance using the service
+    see this hostname format, they call <<<SoaDiscovery.getInstance()>>> using the service
     name and substituting the returned instance's host and port. If the request needs to be retried
     (due to errors, etc.) a new instance is retrieved and substituted.
 
 * Request ID
 
     In an SOA, multiple services are usually involved in handling an end-user request. For tracking and
-    auditing, it's useful to have a way to correlate all them to the initiating end-user request. Soabase
+    auditing, it's useful to have a way to correlate all of them to the initiating end-user request. Soabase
     enables this via the Request ID. Via the <<<SoaClientFilter>>> every incoming request is assigned
     a unique request ID. Further, the REST client enhancements set a header on outgoing requests with
     this request ID. The <<<SoaClientFilter>>> looks for this header and uses the request ID from it when
@@ -34,7 +34,7 @@ REST Client Enhancements
     * Configuration
 
     Your application's Configuration object must have a <<<SoaClientConfiguration>>> field.
-    See the {{{./config.html}Configuration page}} for details.
+    See the {{{./soaconfig.html}Configuration page}} for details.
 
     * Bundle
 
@@ -52,7 +52,7 @@ public class MyResource {
 }
 +-----------------------------+
 
-    The client can also be accessed from via SoaFeatures. E.g.
+    The client can also be accessed from SoaFeatures. E.g.
 
 +-----------------------------+
 SoaFeatures features = SoaBundle.getFeatures(environment);

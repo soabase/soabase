@@ -95,13 +95,11 @@ bootstrap.addBundle(new SoaClientBundle<>()); // adds the Jersey and Apache REST
 
     * <<<SoaFeatures>>> - see above
 
-    * <<<HttpClient>>>/<<<Client>>> - if you use the SoaClientBundle
+    * <<<HttpClient>>> and/or <<<Client>>> - if you use the SoaClientBundle
 
     * <<<HealthCheckRegistry>>> - from environment.healthChecks()
 
     * <<<ObjectMapper>>> - from environment.getObjectMapper()
 
     * <<<MetricRegistry>>> - from environment.metrics()
-
-    * <<<ExecutorBuilder>>> - provides access to Dropwizard's ExecutorServiceBuilder and ScheduledExecutorServiceBuilder
 

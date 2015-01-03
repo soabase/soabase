@@ -2,11 +2,11 @@ soabase
 =======
 
 A suite of [Dropwizard](http://dropwizard.io/) bundles and utilities that aid in building 
-Service Oriented Applications. soabase is implementation neutral, however, default production-level implementations
-are available.
+Service Oriented Applications. Soabase is implementation neutral. However, default production-level implementations
+are provided.
 
 Why Soabase?
---------
+------------
 
 Dropwizard was created to create a turn key solution for Java server applications. It standardizes the things that
 every Java server app needs and relieves the tedium of re-inventing the wheel every time you write a new Java server app.
@@ -24,6 +24,7 @@ Features
 * Load Balancing REST Client
  * Default implementations for both Jersey and Apache clients
  * Integrates with Service Discovery for retries, etc.
+ * Supports plugging in any desired implementation
 * Distribued, scoped attributes
  * Built in support for JDBC datasources via [Mybatis](http://mybatis.github.io/mybatis-3/)
  * Supports plugging in any desired implementation

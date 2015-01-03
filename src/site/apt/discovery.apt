@@ -1,3 +1,72 @@
 Service Discovery
 
-    TBD
+    In SOA/distributed systems, services need to find each other. i.e. a web service might need to find a caching service, etc.
+    DNS can be used for this but it is nowhere near flexible enough for services that are constantly changing. A Service Discovery
+    system provides a mechanism for:
+
+    * Services to register their availability
+
+    * Locating a single instance of a particular service
+
+    * Notifying when the instances of a service change
+
+    []
+
+    In Soabase, Service Discovery is transparent for the most part. Soabase applications automatically register themselves
+    and the {{{./client.html}REST Client Enhancements}}} use it to locate service instances. The default implementation
+    uses {{{http://curator.apache.org/curator-x-discovery/index.html}Apache Curator}}. You only need to add configuration
+    and the bundle.
+
+* Usage
+
+    Service Discovery is enabled via configuration. See the {{{./soaconfig.html#Service_Discovery}Service Discovery Configuration}}
+    section for details. To use the default Apache Curator/ZooKeeper implementation, add Curator configuration to
+    your application's Configuration object. If needed, you can access the <<<SoaDiscovery>>> instance from <<<SoaFeatures>>>.
+
+* Adding a Custom Implementation
+
+    To use something other than the Curator Service Discovery implementation, follow these steps:
+
+    * Create implementations for <<<SoaDiscoveryFactory>>> and <<<SoaDiscovery>>>
+
+    * Add a directory named <<<META-INF/services>>> that contains two files: <<<io.dropwizard.jackson.Discoverable>>>
+      and <<<io.soabase.core.features.discovery.SoaDiscoveryFactory>>>.
+
+    []
+
+    <SoaDiscoveryFactory>
+
+    Your SoaDiscoveryFactory implementation is like other Dropwizard factories. It should be both configuration and a factory.
+    Use <<<ZooKeeperDiscoveryFactory.java>>> as an example. This class must be annotated with <<<JsonTypeName>>> and given a unique
+    name. You then use this name as the value for the discovery type in your configuration file. E.g.
+
++----------------------------------------+
+package com.me.my;
+
+@JsonTypeName("my-discovery")
+public class MyDiscoveryFactory implements SoaDiscoveryFactory {
+    public String aConfigValue;
+
+    public int anotherConfigValue;
+
+        ...
+
+    @Override
+    public SoaDiscovery build(Environment environment, SoaInfo soaInfo)
+    {
+            ...
+        return new MyDiscovery(...);
+    }
+}
++----------------------------------------+
+
+    <SoaDiscovery>
+
+    Your SoaDiscovery implementation does the actual work of Service Discovery. The details will depend on your implementation's needs.
+
+    <ServiceLoader files>
+
+    Like other Dropwizard plugins, your Service Discovery implementation needs Service Loader files. In the <<<io.dropwizard.jackson.Discoverable>>>
+    file add a line containing: <<<io.soabase.core.features.discovery.SoaDiscoveryFactory>>>. In the <<<io.soabase.core.features.discovery.SoaDiscoveryFactory>>>
+    file add a line the with fully-qualified path name of your class. E.g. <<<com.me.my.MyDiscoveryFactory>>>
+

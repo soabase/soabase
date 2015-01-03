@@ -44,8 +44,8 @@
         <menu name="Soabase">
             <item name="About" href="index.html"/>
             <item name="Getting Started" href="usage.html"/>
-            <item name="Examples" href="example.html"/>
             <item name="Configuration" href="soaconfig.html"/>
+            <item name="Examples" href="example.html"/>
         </menu>
 
         <menu name="Features">

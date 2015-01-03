@@ -28,6 +28,7 @@ import io.soabase.client.apache.WrappedHttpClient;
 import io.soabase.client.jersey.JerseyRetryConnectorProvider;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
+import io.soabase.core.config.ComposedConfigurationAccessor;
 import io.soabase.core.features.client.DefaultRetryHandler;
 import io.soabase.core.features.client.RetryComponents;
 import io.soabase.core.features.client.RetryHandler;
@@ -74,7 +75,7 @@ public class SoaClientBundle<T extends Configuration> implements ConfiguredBundl
     public void run(T configuration, Environment environment) throws Exception
     {
         SoaFeatures features = SoaBundle.getFeatures(environment);
-        SoaClientConfiguration clientConfiguration = SoaBundle.access(configuration, environment, SoaClientConfiguration.class);
+        SoaClientConfiguration clientConfiguration = ComposedConfigurationAccessor.access(configuration, environment, SoaClientConfiguration.class);
 
         RetryComponents retryComponents = new RetryComponents(retryHandler, features.getDiscovery(), clientConfiguration.getMaxRetries(), clientConfiguration.isRetry500s(), features.getExecutorBuilder());
 

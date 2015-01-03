@@ -21,6 +21,7 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
+import io.soabase.core.config.ComposedConfigurationAccessor;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -36,7 +37,7 @@ public class SqlBundle<T extends io.dropwizard.Configuration> implements Configu
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        SqlConfiguration sqlConfiguration = SoaBundle.access(configuration, environment, SqlConfiguration.class);
+        SqlConfiguration sqlConfiguration = ComposedConfigurationAccessor.access(configuration, environment, SqlConfiguration.class);
         try
         {
             try ( InputStream stream = Resources.getResource(sqlConfiguration.getMybatisConfigUrl()).openStream() )

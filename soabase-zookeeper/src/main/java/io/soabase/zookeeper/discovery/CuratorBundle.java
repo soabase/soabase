@@ -21,6 +21,7 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
+import io.soabase.core.config.ComposedConfigurationAccessor;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
@@ -31,7 +32,7 @@ public class CuratorBundle<T extends Configuration> implements ConfiguredBundle<
     @Override
     public void run(T configuration, Environment environment) throws Exception
     {
-        CuratorConfiguration curatorConfiguration = SoaBundle.access(configuration, environment, CuratorConfiguration.class);
+        CuratorConfiguration curatorConfiguration = ComposedConfigurationAccessor.access(configuration, environment, CuratorConfiguration.class);
         // TODO more config
         final CuratorFramework curator = CuratorFrameworkFactory.newClient(curatorConfiguration.getConnectionString(), new RetryOneTime(1));
 

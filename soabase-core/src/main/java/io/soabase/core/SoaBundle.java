@@ -75,6 +75,13 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This is the main integration point for Soabase. This is a required bundle. In
+ * general, you should add this bundle before any other Soabase bundle. However, the
+ * Service Discovery and Dynamic Attributes bundles must be added before this one.
+ *
+ * @param <T> your application's configuration type
+ */
 public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     private static final boolean hasAdminKey;
@@ -100,6 +107,13 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     {
     }
 
+    /**
+     * Return the SoaFeatures instance. Note: the instance is also
+     * registered in Jersey's dependency injection framework.
+     *
+     * @param environment Dropwizard environment
+     * @return SoaFeatures instance
+     */
     public static SoaFeatures getFeatures(Environment environment)
     {
         SoaFeatures features = (SoaFeatures)environment.getApplicationContext().getAttribute(SoaFeatures.class.getName());
@@ -111,26 +125,10 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return features;
     }
 
-    public static <T> T access(Configuration configuration, Environment environment, Class<T> clazz)
-    {
-        return getAccessor(configuration, environment).access(clazz);
-    }
-
-    public static ComposedConfigurationAccessor getAccessor(Configuration configuration, Environment environment)
-    {
-        ComposedConfigurationAccessor accessor = (ComposedConfigurationAccessor)environment.getApplicationContext().getAttribute(ComposedConfigurationAccessor.class.getName());
-        if ( accessor == null )
-        {
-            accessor = new ComposedConfigurationAccessor(configuration);
-            environment.getApplicationContext().setAttribute(ComposedConfigurationAccessor.class.getName(), accessor);
-        }
-        return accessor;
-    }
-
     @Override
     public void run(final T configuration, final Environment environment) throws Exception
     {
-        final SoaConfiguration soaConfiguration = SoaBundle.access(configuration, environment, SoaConfiguration.class);
+        final SoaConfiguration soaConfiguration = ComposedConfigurationAccessor.access(configuration, environment, SoaConfiguration.class);
 
         environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 

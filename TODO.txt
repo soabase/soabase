@@ -26,8 +26,6 @@
 * Hystrix?
 * Archaius?
 * Eureka?
-- Example App
-    * Have MockDatabase support adding new values somehow
 * Tests
 * javadoc/doc
 * TO-DOs

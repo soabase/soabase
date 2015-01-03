@@ -18,6 +18,8 @@ package io.soabase.core.config;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import io.dropwizard.Configuration;
+import io.dropwizard.setup.Environment;
 import java.lang.reflect.Field;
 
 /**
@@ -58,6 +60,22 @@ public class ComposedConfigurationAccessor
             }
         };
         fieldCache = CacheBuilder.newBuilder().build(loader);
+    }
+
+    public static <T> T access(Configuration configuration, Environment environment, Class<T> clazz)
+    {
+        return getAccessor(configuration, environment).access(clazz);
+    }
+
+    public static ComposedConfigurationAccessor getAccessor(Configuration configuration, Environment environment)
+    {
+        ComposedConfigurationAccessor accessor = (ComposedConfigurationAccessor)environment.getApplicationContext().getAttribute(ComposedConfigurationAccessor.class.getName());
+        if ( accessor == null )
+        {
+            accessor = new ComposedConfigurationAccessor(configuration);
+            environment.getApplicationContext().setAttribute(ComposedConfigurationAccessor.class.getName(), accessor);
+        }
+        return accessor;
     }
 
     /**

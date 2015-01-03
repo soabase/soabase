@@ -12,7 +12,7 @@ ComposedConfigurationAccessor
 
     The application's configuration object should contain the custom configurations needed by Soabase
     or any other extensions. The custom configuration instances are accessed by calling
-    <<<SoaBundle.access()>>>. E.g.
+    <<<ComposedConfigurationAccessor.access()>>>. E.g.
 
 +------------------------------------------+
 public class AppConfig extends Configuration {
@@ -23,6 +23,6 @@ public class AppConfig extends Configuration {
     ...
 
 public void run(AppConfig configuration, Environment environment) throws Exception {
-    MyConfig myConfig = SoaBundle.access(configuration, environment, MyConfig.class);
+    MyConfig myConfig = ComposedConfigurationAccessor.access(configuration, environment, MyConfig.class);
 }
 +------------------------------------------+

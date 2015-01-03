@@ -24,8 +24,8 @@ public class TabComponent implements ComponentId
     private final String id;
     private final String name;
     private final String contentResourcePath;
-    private final List<String> javascriptUriPaths;
-    private final List<String> cssUriPaths;
+    private final List<String> javascriptUris;
+    private final List<String> cssUris;
     private final List<AssetsPath> assetsPaths;
 
     TabComponent(String id)
@@ -33,21 +33,21 @@ public class TabComponent implements ComponentId
         this.id = id;
         name = null;
         contentResourcePath = null;
-        javascriptUriPaths = null;
-        cssUriPaths = null;
+        javascriptUris = null;
+        cssUris = null;
         assetsPaths = null;
     }
 
-    TabComponent(String id, String name, String contentResourcePath, List<String> javascriptUriPaths, List<String> cssUriPaths, List<AssetsPath> assetsPaths)
+    TabComponent(String id, String name, String contentResourcePath, List<String> javascriptUris, List<String> cssUris, List<AssetsPath> assetsPaths)
     {
         this.id = Preconditions.checkNotNull(id, "id cannot be null");
         this.name = Preconditions.checkNotNull(name, "name cannot be null");
         this.contentResourcePath = Preconditions.checkNotNull(contentResourcePath, "contentResourcePath cannot be null");
-        javascriptUriPaths = Preconditions.checkNotNull(javascriptUriPaths, "javascriptUriPaths cannot be null");
-        cssUriPaths = Preconditions.checkNotNull(cssUriPaths, "cssUriPaths cannot be null");
+        javascriptUris = Preconditions.checkNotNull(javascriptUris, "javascriptUris cannot be null");
+        cssUris = Preconditions.checkNotNull(cssUris, "cssUris cannot be null");
         assetsPaths = Preconditions.checkNotNull(assetsPaths, "assetsPaths cannot be null");
-        this.javascriptUriPaths = ImmutableList.copyOf(javascriptUriPaths);
-        this.cssUriPaths = ImmutableList.copyOf(cssUriPaths);
+        this.javascriptUris = ImmutableList.copyOf(javascriptUris);
+        this.cssUris = ImmutableList.copyOf(cssUris);
         this.assetsPaths = ImmutableList.copyOf(assetsPaths);
     }
 
@@ -67,14 +67,14 @@ public class TabComponent implements ComponentId
         return contentResourcePath;
     }
 
-    public List<String> getJavascriptUriPaths()
+    public List<String> getJavascriptUris()
     {
-        return javascriptUriPaths;
+        return javascriptUris;
     }
 
-    public List<String> getCssUriPaths()
+    public List<String> getCssUris()
     {
-        return cssUriPaths;
+        return cssUris;
     }
 
     public List<AssetsPath> getAssetsPaths()
@@ -104,7 +104,7 @@ public class TabComponent implements ComponentId
         {
             return false;
         }
-        if ( !cssUriPaths.equals(component.cssUriPaths) )
+        if ( !cssUris.equals(component.cssUris) )
         {
             return false;
         }
@@ -112,7 +112,7 @@ public class TabComponent implements ComponentId
         {
             return false;
         }
-        if ( !javascriptUriPaths.equals(component.javascriptUriPaths) )
+        if ( !javascriptUris.equals(component.javascriptUris) )
         {
             return false;
         }
@@ -131,8 +131,8 @@ public class TabComponent implements ComponentId
         int result = id.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + contentResourcePath.hashCode();
-        result = 31 * result + javascriptUriPaths.hashCode();
-        result = 31 * result + cssUriPaths.hashCode();
+        result = 31 * result + javascriptUris.hashCode();
+        result = 31 * result + cssUris.hashCode();
         result = 31 * result + assetsPaths.hashCode();
         return result;
     }
@@ -144,8 +144,8 @@ public class TabComponent implements ComponentId
             "id='" + id + '\'' +
             ", name='" + name + '\'' +
             ", contentResourcePath='" + contentResourcePath + '\'' +
-            ", javascriptUriPaths=" + javascriptUriPaths +
-            ", cssUriPaths=" + cssUriPaths +
+            ", javascriptUriPaths=" + javascriptUris +
+            ", cssUriPaths=" + cssUris +
             ", assetsPaths=" + assetsPaths +
             '}';
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-function soaShowInfiniteProgressBar(message) {
+function soaShowInfiniteProgressBar() {
     $('#soa-progress-container').show();
 }
 

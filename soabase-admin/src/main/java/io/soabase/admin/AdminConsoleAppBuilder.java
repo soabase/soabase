@@ -17,11 +17,9 @@ package io.soabase.admin;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import io.dropwizard.Bundle;
 import io.dropwizard.Configuration;
-import io.dropwizard.ConfiguredBundle;
-import io.soabase.admin.components.StandardComponents;
 import io.soabase.admin.components.MetricComponent;
+import io.soabase.admin.components.StandardComponents;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.details.BundleSpec;
 import java.util.List;
@@ -91,31 +89,10 @@ public class AdminConsoleAppBuilder<T extends Configuration>
         return this;
     }
 
-    public AdminConsoleAppBuilder<T> addingPreSoaBundle(Bundle bundle)
+    public AdminConsoleAppBuilder<T> addingBundle(BundleSpec<T> bundleSpec)
     {
-        bundle = Preconditions.checkNotNull(bundle, "bundle cannot be null");
-        bundles.add(new BundleSpec<T>(bundle, BundleSpec.Phase.PRE_SOA));
-        return this;
-    }
-
-    public AdminConsoleAppBuilder<T> addingPreSoaBundle(ConfiguredBundle<T> bundle)
-    {
-        bundle = Preconditions.checkNotNull(bundle, "bundle cannot be null");
-        bundles.add(new BundleSpec<>(bundle, BundleSpec.Phase.PRE_SOA));
-        return this;
-    }
-
-    public AdminConsoleAppBuilder<T> addingPostSoaBundle(Bundle bundle)
-    {
-        bundle = Preconditions.checkNotNull(bundle, "bundle cannot be null");
-        bundles.add(new BundleSpec<T>(bundle, BundleSpec.Phase.POST_SOA));
-        return this;
-    }
-
-    public AdminConsoleAppBuilder<T> addingPostSoaBundle(ConfiguredBundle<T> bundle)
-    {
-        bundle = Preconditions.checkNotNull(bundle, "bundle cannot be null");
-        bundles.add(new BundleSpec<>(bundle, BundleSpec.Phase.POST_SOA));
+        bundleSpec = Preconditions.checkNotNull(bundleSpec, "bundleSpec cannot be null");
+        bundles.add(bundleSpec);
         return this;
     }
 

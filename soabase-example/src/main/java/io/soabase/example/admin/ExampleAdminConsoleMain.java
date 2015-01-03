@@ -23,13 +23,10 @@ import io.soabase.admin.components.MetricComponent;
 import io.soabase.admin.components.MetricType;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.components.TabComponentBuilder;
+import io.soabase.admin.details.BundleSpec;
 import io.soabase.example.ExampleAppBase;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
-import javax.management.AttributeList;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import java.lang.management.ManagementFactory;
 import java.util.List;
 
 public class ExampleAdminConsoleMain
@@ -54,8 +51,8 @@ public class ExampleAdminConsoleMain
             .withConfigurationClass(ExampleAdminConfiguration.class)
             .addingTabComponent(component)
             .addingMetricComponent(customMetric)
-            .addingPreSoaBundle(new CuratorBundle<ExampleAdminConfiguration>())
-            .addingPreSoaBundle(new SqlBundle<ExampleAdminConfiguration>())
+            .addingBundle(new BundleSpec<>(new CuratorBundle<ExampleAdminConfiguration>(), BundleSpec.Phase.PRE_SOA))
+            .addingBundle(new BundleSpec<>(new SqlBundle<ExampleAdminConfiguration>(), BundleSpec.Phase.PRE_SOA))
             .build()
             ;
         app.run(ExampleAppBase.setSystemAndAdjustArgs("admin/config.json"));

@@ -187,11 +187,11 @@ public class IndexServlet extends HttpServlet
             tabsBuilder.append("<li id='").append(id).append("-li").append("'><a href=\"#").append(tab.getId()).append("\">").append(tab.getName()).append("</a></li>\n");
             idsBuilder.append("soaTabIds.push('").append(id).append("');\n");
 
-            for ( String cssFile : tab.getCssUriPaths() )
+            for ( String cssFile : tab.getCssUris() )
             {
                 cssBuilder.append("<link rel=\"stylesheet\" href=\"").append(cssFile).append("\">\n");
             }
-            for ( String jssFile : tab.getJavascriptUriPaths() )
+            for ( String jssFile : tab.getJavascriptUris() )
             {
                 jsBuilder.append("<script src=\"").append(jssFile).append("\"></script>\n");
             }

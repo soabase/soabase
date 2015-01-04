@@ -76,7 +76,7 @@ builder.buildHttpClient(httpClientConfig, clientName);      // for Apache client
     Dropwizard environment object by calling: <<<SoaBundle.getFeatures()>>>.
 
     SoaFeatures also has a facility to store and retrieve named objects. Soabase uses this facility to store various
-    instances. E.g. the Soabase client bundle stores the REST clients this way. See the doc for each of Soabase's
+    instances. E.g. the Soabase client builder stores the REST clients this way. See the doc for each of Soabase's
     features for details. You can also use this to store objects of your own.
 
     SoaFeatures provides these methods:
@@ -90,9 +90,11 @@ builder.buildHttpClient(httpClientConfig, clientName);      // for Apache client
 *----------------------*-------------------------------------------------------------------------------------------------*
 | getExecutorBuilder() | Provides access to Dropwizard's ExecutorServiceBuilder and ScheduledExecutorServiceBuilder.     |
 *----------------------*-------------------------------------------------------------------------------------------------*
-| putNamed()           | Stores an object with a name                                                                    |
+| putNamed()           | Stores an object with a name.                                                                   |
 *----------------------*-------------------------------------------------------------------------------------------------*
-| getNamed()           | Returns the object stored by name                                                               |
+| getNamed()           | Returns the object stored by name.                                                              |
+*----------------------*-------------------------------------------------------------------------------------------------*
+| getNamedRequired()   | Returns the object stored by name throwing NullPointerException if not found.                   |
 *----------------------*-------------------------------------------------------------------------------------------------*
 
 * Injections

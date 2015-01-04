@@ -93,24 +93,3 @@ Soabase Configuration
 |                     | {{{http://mybatis.github.io/mybatis-3/}Mybatis}}. This is the URL for the        |                                          |
 |                     | Mybatis configuration file. (TODO - minimal Mybatis doc)                         |                                          |
 *---------------------*----------------------------------------------------------------------------------*------------------------------------------*
-
-* REST Client
-
-    If you will be using the standard Jersey and/or HTTP client implementations your configuration class must have a field
-    of type <<<SoaClientConfiguration>>>:
-
-*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
-| <<Field>>           | <<Description>>                                                                  | <<Default>>                              |
-*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
-| apache              | A HttpClientConfiguration object. See the                                        | null                                     |
-|                     | {{{https://dropwizard.github.io/dropwizard/manual/configuration.html}Dropwizard  |                                          |
-|                     | docs}} for details.                                                              |                                          |
-*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
-| jersey              | A JerseyClientConfiguration object. See the                                      | null                                     |
-|                     | {{{https://dropwizard.github.io/dropwizard/manual/configuration.html}Dropwizard  |                                          |
-|                     | docs}} for details.                                                              |                                          |
-*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
-| maxRetries          | The maximum number of retries.                                                   | 3                                        |
-*---------------------*----------------------------------------------------------------------------------*------------------------------------------*
-| retry500s           | If true, retry HTTP 500 responses.                                               | true                                     |
-*---------------------*----------------------------------------------------------------------------------*------------------------------------------*

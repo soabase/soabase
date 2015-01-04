@@ -67,6 +67,17 @@ mapper.createTable();
 INSERT INTO SoaAttributes (fKEY, fSCOPE, fVALUE, fTIMESTAMP) VALUES (?, ?, ?, ?)
 +-------------------------------+
 
+    You can also create/update/delete attributes using the Mybatis session:
+
++----------------------------+
+SoaFeatures features = SoaBundle.getFeatures(environment);
+SqlSession session = features.getNamedRequired(SqlSession.class, name);
+AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
+mapper.insert(...);
+mapper.update(...);
+mapper.delete(...);
++----------------------------+
+
 * API
 
     Dynamic Attributes are accessed via the <<<SoaDynamicAttributes>>> instance from <<<SoaFeatures>>>. It has methods

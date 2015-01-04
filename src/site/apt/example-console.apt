@@ -104,7 +104,7 @@ curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
 
     You'll see that the result for "test" is the same for hello and goodbye, but "test2" is different.
 
-    From the attributes screen, you can add, update and delete attributes and scopes. Try
+    From the attributes screen, you can create, update and delete attributes and scopes. Try
     various changes and curl to see the affect on the example applications.
 
     << >>

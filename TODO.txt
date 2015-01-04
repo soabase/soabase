@@ -41,3 +41,4 @@
 * Support user identity on attributes for auditing
 * Discovery meta data
 * What is Instance name used for? Is it needed?
+* Try to eliminate remaining console output for the examples

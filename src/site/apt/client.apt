@@ -9,7 +9,7 @@ REST Client Enhancements
     choose which service instance to use. Simply use the Soabase hostname format for the url passed
     to the REST client:
 
-    <<<http://0.service-name/path/to/api>>>
+    <<<//0.service-name/path/to/api>>>
 
     You can also use the utility <<<ClientUtils.serviceNameToHost()>>>. When the enhanced REST clients
     see this hostname format, they call <<<SoaDiscovery.getInstance()>>> using the service
@@ -61,4 +61,64 @@ Client jerseyClient = features.getNamedRequired(Client.class, clientName);
 
 * Using a Different REST Client
 
-    TBD
+    To use a REST client other than Jersey or Apache, use the Soabase client APIs and utility classes to
+    enhance your client.
+
+** Service Discovery Integration
+
+    Your REST client must handle the Soabase hostname format for urls. The <<<ClientUtils>>> class
+    has utility methods to aid with this:
+
+*--------------------------*----------------------------*-------------------------------------------------------------------------------------------------------------*
+| ClientUtils              |                            |                                                                                                             |
+*--------------------------*----------------------------*-------------------------------------------------------------------------------------------------------------*
+| hostToServiceName()      | Service name or null       | Parses a hostname and, if it contains host substitution token, returns the service name                     |
+*--------------------------*----------------------------*-------------------------------------------------------------------------------------------------------------*
+| serviceNameToHost()      | Tokenized hostname         | Converts a service name to a Soabase hostname                                                               |
+*--------------------------*----------------------------*-------------------------------------------------------------------------------------------------------------*
+| hostToInstance()         | Discovery instance         | If the hostname contains the host substitution token, queries Service Discovery and returns an instance     |
+*--------------------------*----------------------------*-------------------------------------------------------------------------------------------------------------*
+| filterUri()              | Updated URI                | Given a URI, checks for the host substitution token. If found, queries Service Discovery and replaces       |
+|                          |                            | the token with the instance found.                                                                          |
+*--------------------------*----------------------------*-------------------------------------------------------------------------------------------------------------*
+
+** Retries
+
+    If your REST client supports retries, it can use the Soabase's retry components. The general form for your code is:
+
++--------------------------------------------------+
+RetryContext retryContext = new RetryContext(retryComponents, requestUri, requestMethod);
+for ( int retryCount = 0; /* no check */; ++retryCount )
+{
+    try
+    {
+        SoaDiscoveryInstance instance = ClientUtils.hostToInstance(soaDiscovery, retryContext.getOriginalHost());
+        retryContext.setInstance(instance);
+
+        URI filteredUri = ClientUtils.filterUri(uri, instance);
+        if ( filteredUri != null )
+        {
+            target = toHost(filteredUri);
+            request = new WrappedHttpRequest(request, filteredUri);
+        }
+        HttpResponse response = implementation.execute(target, request, context);
+        if ( !retryContext.shouldBeRetried(retryCount, response.getStatusLine().getStatusCode(), null) )
+        {
+            return response;
+        }
+    }
+    catch ( IOException e )
+    {
+        if ( !retryContext.shouldBeRetried(retryCount, 0, e) )
+        {
+            throw e;
+        }
+    }
+}
++--------------------------------------------------+
+
+
+    <<<DefaultRetryHandler>>>. After each request and before returning
+    the response, call the <<<shouldBeRetried()>>> and retry the request if if returns true. When retrying a request, always
+    reset the request URI using <<<ClientUtils>>>. The arguments to <<<shouldBeRetried()>>> are a <<<RetryContext>>> (see below),
+    a zer

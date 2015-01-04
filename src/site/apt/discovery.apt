@@ -13,7 +13,7 @@ Service Discovery
     []
 
     In Soabase, Service Discovery is transparent for the most part. Soabase applications automatically register themselves
-    and the {{{./client.html}REST Client Enhancements}}} use it to locate service instances. The default implementation
+    and the {{{./client.html}REST Client Enhancements}} use it to locate service instances. The default implementation
     uses {{{http://curator.apache.org/curator-x-discovery/index.html}Apache Curator}}. You only need to add configuration
     and the bundle.
 

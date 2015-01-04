@@ -45,7 +45,12 @@ public class ClientUtils
         String serviceName = hostToServiceName(host);
         if ( serviceName != null )
         {
-            return Preconditions.checkNotNull(discovery.getInstance(serviceName), "No instance found for " + serviceName);
+            SoaDiscoveryInstance instance = discovery.getInstance(serviceName);
+            if ( instance == null )
+            {
+                throw new RuntimeException("Could not find an active instance for service: " + serviceName);
+            }
+            return instance;
         }
         return null;
     }

@@ -27,9 +27,9 @@ public class DefaultRetryHandler implements RetryHandler
     @Override
     public boolean shouldBeRetried(RetryContext retryContext, int retryCount, int statusCode, Throwable exception)
     {
-        if ( retryCount >= retryContext.getComponents().getRetries() )
+        if ( retryCount >= retryContext.getComponents().getMaxRetries() )
         {
-            log.warn(String.format("Retries exceeded. retryCount: %d - maxRetries: %d", retryCount, retryContext.getComponents().getRetries()));
+            log.warn(String.format("Retries exceeded. retryCount: %d - maxRetries: %d", retryCount, retryContext.getComponents().getMaxRetries()));
             return false;
         }
 

@@ -37,7 +37,7 @@ java -jar ./target/hello.jar &
 
 * Performing the example tasks
 
-    The MockDatabase app sets a few dynamic attributes that you can query for. This will return "global".
+    The MockDatabase app sets a few dynamic attributes that you can query for. This will return "global":
 
 +------------------------------------------+
 curl http://localhost:HelloAdminPort/api/soa/attributes/test
@@ -45,7 +45,7 @@ curl http://localhost:HelloAdminPort/api/soa/attributes/test
 
 =========================
 
-    This will also return "global".
+    This will also return "global":
 
 +------------------------------------------+
 curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
@@ -53,7 +53,7 @@ curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
 
 =========================
 
-    This will return "one".
+    This will return "one":
 
 +------------------------------------------+
 curl http://localhost:HelloAdminPort/api/soa/attributes/test2
@@ -61,7 +61,7 @@ curl http://localhost:HelloAdminPort/api/soa/attributes/test2
 
 =========================
 
-    This will return "two".
+    This will return "two":
 
 +------------------------------------------+
 curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
@@ -69,7 +69,7 @@ curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
 
 =========================
 
-    This will return "new".
+    This will return "new":
 
 +------------------------------------------+
 curl -X PUT -d '"new"' -H "Content-Type: application/json" http://localhost:HelloAdminPort/api/soa/attributes/test
@@ -78,7 +78,7 @@ curl http://localhost:HelloAdminPort/api/soa/attributes/test
 
 =========================
 
-    This will still return "global".
+    This will still return "global":
 
 +------------------------------------------+
 curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
@@ -86,7 +86,7 @@ curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test
 
 =========================
 
-    This will return "global" again.
+    This will return "global" again:
 
 +------------------------------------------+
 curl -X DELETE http://localhost:HelloAdminPort/api/soa/attributes/test

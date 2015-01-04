@@ -16,10 +16,13 @@
 package io.soabase.core;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
@@ -42,6 +45,13 @@ class SoaFeaturesImpl implements SoaFeatures
         this.dynamicAttributes = dynamicAttributes;
         this.info = info;
         this.executorBuilder = executorBuilder;
+    }
+
+    @Override
+    public <T> Collection<String> getNames(Class<T> clazz)
+    {
+        ConcurrentMap<String, Object> map = named.get(clazz);
+        return (map != null) ? map.keySet() : ImmutableSet.<String>of();
     }
 
     void setNamed(SoaFeaturesImpl from)

@@ -21,6 +21,11 @@
         "archivedLogFilenamePattern": "./logs/admin-%d.log.gz",
         "archivedFileCount": "5",
         "timeZone": "UTC"
+      },
+
+      {
+        "type": "console",
+        "threshold": "OFF"
       }
     ]
   }

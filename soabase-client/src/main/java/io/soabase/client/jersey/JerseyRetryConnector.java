@@ -15,14 +15,11 @@
  */
 package io.soabase.client.jersey;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
-import io.soabase.core.features.client.ClientUtils;
-import io.soabase.core.features.client.SoaRequestId;
+import io.soabase.core.features.client.RequestRunner;
 import io.soabase.core.features.client.RetryComponents;
-import io.soabase.core.features.client.RetryContext;
-import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import io.soabase.core.features.client.SoaRequestId;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
@@ -38,6 +35,14 @@ public class JerseyRetryConnector implements Connector
 {
     private final Connector connector;
     private final RetryComponents retryComponents;
+    private final SoaRequestId.HeaderSetter<ClientRequest> headerSetter = new SoaRequestId.HeaderSetter<ClientRequest>()
+    {
+        @Override
+        public void setHeader(ClientRequest request, String header, String value)
+        {
+            request.getHeaders().putSingle(header, value);
+        }
+    };
 
     public JerseyRetryConnector(Client client, RetryComponents retryComponents, Configuration runtimeConfig)
     {
@@ -48,16 +53,67 @@ public class JerseyRetryConnector implements Connector
     @Override
     public ClientResponse apply(ClientRequest request)
     {
-        RetryContext retryContext = new RetryContext(retryComponents, request.getUri(), request.getMethod());
-        return internalApply(request, retryContext, 0);
+        RequestRunner<ClientRequest> requestRunner = new RequestRunner<>(retryComponents, headerSetter, request.getUri(), request.getMethod());
+        while ( requestRunner.shouldContinue() )
+        {
+            URI uri = requestRunner.prepareRequest(request);
+            request.setUri(uri);
+            try
+            {
+                ClientResponse response = connector.apply(request);
+                if ( requestRunner.isSuccessResponse(response.getStatus()) )
+                {
+                    return response;
+                }
+            }
+            catch ( Exception e )
+            {
+                if ( !requestRunner.shouldBeRetried(e) )
+                {
+                    throw new ProcessingException(e);
+                }
+            }
+        }
+        throw new ProcessingException("Retries expired: " + requestRunner.getOriginalUri());
     }
 
     @Override
-    public Future<?> apply(ClientRequest request, AsyncConnectorCallback callback)
+    public Future<?> apply(final ClientRequest request, final AsyncConnectorCallback callback)
     {
         Preconditions.checkNotNull(callback, "callback is assumed to be non null");
-        RetryContext retryContext = new RetryContext(retryComponents, request.getUri(), request.getMethod());
-        return internalApply(request, retryContext, callback, 0);
+        final RequestRunner<ClientRequest> requestRunner = new RequestRunner<>(retryComponents, headerSetter, request.getUri(), request.getMethod());
+        AsyncConnectorCallback localCallback = new AsyncConnectorCallback()
+        {
+            @Override
+            public void response(ClientResponse response)
+            {
+                if ( requestRunner.isSuccessResponse(response.getStatus()) )
+                {
+                    callback.response(response);
+                }
+                else
+                {
+                    asyncRetry(request, requestRunner, this);
+                }
+            }
+
+            @Override
+            public void failure(Throwable failure)
+            {
+                if ( requestRunner.shouldBeRetried(failure) )
+                {
+                    asyncRetry(request, requestRunner, this);
+                }
+                else
+                {
+                    callback.failure(failure);
+                }
+            }
+        };
+
+        request.setUri(requestRunner.prepareRequest(request));
+        connector.apply(request, localCallback);
+        return SettableFuture.create(); // just a dummy
     }
 
     @Override
@@ -72,98 +128,17 @@ public class JerseyRetryConnector implements Connector
         connector.close();
     }
 
-    private void filterRequest(ClientRequest request, RetryContext retryContext)
+    private void asyncRetry(final ClientRequest request, final RequestRunner<ClientRequest> requestRunner, final AsyncConnectorCallback callback)
     {
-        SoaRequestId.HeaderSetter<ClientRequest> setter = new SoaRequestId.HeaderSetter<ClientRequest>()
+        Runnable runnable = new Runnable()
         {
             @Override
-            public void setHeader(ClientRequest request, String header, String value)
+            public void run()
             {
-                request.getHeaders().putSingle(header, value);
+                request.setUri(requestRunner.prepareRequest(request));
+                connector.apply(request, callback);
             }
         };
-        SoaRequestId.checkSetHeaders(request, setter);
-
-        SoaDiscoveryInstance instance = ClientUtils.hostToInstance(retryContext.getComponents().getDiscovery(), retryContext.getOriginalHost());
-        retryContext.setInstance(instance);
-        URI filteredUri = ClientUtils.filterUri(request.getUri(), instance);
-        if ( filteredUri != null )
-        {
-            request.setUri(filteredUri);
-        }
-    }
-
-    @VisibleForTesting
-    protected ClientResponse internalApply(ClientRequest request, RetryContext retryContext, int tryCount)
-    {
-        ClientResponse clientResponse;
-        try
-        {
-            filterRequest(request, retryContext);
-            clientResponse = connector.apply(request);
-        }
-        catch ( ProcessingException e )
-        {
-            if ( retryContext.shouldBeRetried(tryCount, 0, e) )
-            {
-                return internalApply(request, retryContext, tryCount + 1);
-            }
-            throw e;
-        }
-
-        if ( retryContext.shouldBeRetried(tryCount, clientResponse.getStatus(), null) )
-        {
-            return internalApply(request, retryContext, tryCount + 1);
-        }
-
-        return clientResponse;
-    }
-
-
-    @VisibleForTesting
-    protected Future<?> internalApply(final ClientRequest request, final RetryContext retryContext, final AsyncConnectorCallback callback, final int tryCount)
-    {
-        AsyncConnectorCallback localCallback = new AsyncConnectorCallback()
-        {
-            @Override
-            public void response(ClientResponse response)
-            {
-                if ( !isRetry(request, response, retryContext, null, callback, tryCount) )
-                {
-                    callback.response(response);
-                }
-            }
-
-            @Override
-            public void failure(Throwable failure)
-            {
-                if ( !isRetry(request, null, retryContext, failure, callback, tryCount) )
-                {
-                    callback.failure(failure);
-                }
-            }
-        };
-        filterRequest(request, retryContext);
-        connector.apply(request, localCallback);
-        return SettableFuture.create(); // just a dummy
-    }
-
-    private boolean isRetry(final ClientRequest request, ClientResponse response, final RetryContext retryContext, Throwable failure, final AsyncConnectorCallback callback, final int tryCount)
-    {
-        int status = (response != null) ? response.getStatus() : 0;
-        if ( retryContext.shouldBeRetried(tryCount, status, failure) )
-        {
-            Runnable runnable = new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    internalApply(request, retryContext, callback, tryCount + 1);
-                }
-            };
-            retryComponents.getExecutorService().submit(runnable);
-            return true;
-        }
-        return false;
+        retryComponents.getExecutorService().submit(runnable);
     }
 }

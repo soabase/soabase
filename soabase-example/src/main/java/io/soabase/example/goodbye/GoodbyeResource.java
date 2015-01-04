@@ -15,6 +15,7 @@
  */
 package io.soabase.example.goodbye;
 
+import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
 import io.soabase.core.features.client.SoaRequestId;
 import javax.inject.Inject;
@@ -29,9 +30,9 @@ public class GoodbyeResource
     private final SoaInfo info;
 
     @Inject
-    public GoodbyeResource(SoaInfo info)
+    public GoodbyeResource(SoaFeatures features)
     {
-        this.info = info;
+        this.info = features.getSoaInfo();
     }
 
     @GET

@@ -24,15 +24,15 @@ public class RetryComponents
 {
     private final RetryHandler retryHandler;
     private final SoaDiscovery discovery;
-    private final int retries;
+    private final int maxRetries;
     private final boolean retry500s;
     private final ExecutorService executorService;
 
-    public RetryComponents(RetryHandler retryHandler, SoaDiscovery discovery, int retries, boolean retry500s, ExecutorBuilder executorBuilder)
+    public RetryComponents(RetryHandler retryHandler, SoaDiscovery discovery, int maxRetries, boolean retry500s, ExecutorBuilder executorBuilder)
     {
         this.retryHandler = Preconditions.checkNotNull(retryHandler, "retryHandler cannot be null");
         this.discovery = Preconditions.checkNotNull(discovery, "discovery cannot be null");
-        this.retries = retries;
+        this.maxRetries = maxRetries;
         this.retry500s = retry500s;
         executorBuilder = Preconditions.checkNotNull(executorBuilder, "executorBuilder cannot be null");
         executorService = executorBuilder.executorService("RetryHandler-%d").build();
@@ -53,9 +53,9 @@ public class RetryComponents
         return discovery;
     }
 
-    public int getRetries()
+    public int getMaxRetries()
     {
-        return retries;
+        return maxRetries;
     }
 
     public boolean isRetry500s()

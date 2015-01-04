@@ -21,7 +21,6 @@ import io.dropwizard.Configuration;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.soabase.client.SoaClientBundle;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaInfo;
 import io.soabase.core.features.config.FlexibleConfigurationSourceProvider;
@@ -48,7 +47,6 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
         bootstrap.addBundle(new CuratorBundle<>());
         bootstrap.addBundle(new SqlBundle<>());
         bootstrap.addBundle(new SoaBundle<>());
-        bootstrap.addBundle(new SoaClientBundle<>());
     }
 
     @Override
@@ -66,6 +64,11 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
 
     public static String[] setSystemAndAdjustArgs(String configFqpn)
     {
+        if ( Boolean.getBoolean("debug") )
+        {
+            System.setProperty("dw.logging.appenders[1].threshold", "DEBUG");
+        }
+
         System.setProperty("dw.curator.connectionString", "localhost:2181");
         System.setProperty("dw.soa.instanceName", "instance-" + new Random().nextInt(10000));
         System.setProperty("dw.soa.discovery.type", "zookeeper");

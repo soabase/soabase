@@ -10,7 +10,7 @@ Administration Console
 
     * View stack traces for any instance
 
-    * Monitor VM details or any Dropwizard metric
+    * Monitor VM details for any Dropwizard metric
 
     * Create, read, update, delete Dynamic Attributes
 
@@ -28,7 +28,7 @@ Administration Console
     Use the <<<AdminConsoleAppBuilder>>> to create the application instance. The main builder methods are:
 
 *----------------------------*------------------------------------------------------------------------------------------------------*
-| withConfigurationClass()   | <<required>> - this is class of your Configuration file. The Soabase admin console                   |
+| withConfigurationClass()   | <<required>> - this is the class of your Configuration file. The Soabase admin console               |
 |                            | needs the same configuration that you use for your Soabase services so that it can access Discovery, |
 |                            | Attribute, etc. config fields.                                                                       |
 *----------------------------*------------------------------------------------------------------------------------------------------*
@@ -182,3 +182,10 @@ var template = soaGetTemplate('unique-template-id', {
 *------------------------------*----------------------------------------------------------*
 | soaHideInfiniteProgressBar() | Hide the "in progress" UI                                |
 *------------------------------*----------------------------------------------------------*
+
+*** Development Mode
+
+    The Administration Console caches the merge HTML file at runtime. This can make developing
+    your custom tab a pain; needing to restart the app after every change. During development,
+    take advantage of "force mode". Instead of the normal URL, use <<<http://localhost:8080/force>>>.
+    This will cause the Administration Console to rebuild the HTML file on every request.

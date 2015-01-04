@@ -15,11 +15,8 @@
  */
 package io.soabase.client.apache;
 
-import io.soabase.core.features.client.ClientUtils;
+import io.soabase.core.features.client.RequestRunner;
 import io.soabase.core.features.client.RetryComponents;
-import io.soabase.core.features.client.RetryContext;
-import io.soabase.core.features.discovery.SoaDiscovery;
-import io.soabase.core.features.discovery.SoaDiscoveryInstance;
 import io.soabase.core.features.client.SoaRequestId;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -42,13 +39,19 @@ import java.net.URISyntaxException;
 public class WrappedHttpClient implements HttpClient
 {
     private final HttpClient implementation;
-    private final SoaDiscovery discovery;
     private final RetryComponents retryComponents;
+    private final SoaRequestId.HeaderSetter<HttpRequest> headerSetter = new SoaRequestId.HeaderSetter<HttpRequest>()
+    {
+        @Override
+        public void setHeader(HttpRequest request, String header, String value)
+        {
+            request.addHeader(header, value);
+        }
+    };
 
-    public WrappedHttpClient(HttpClient implementation, SoaDiscovery discovery, RetryComponents retryComponents)
+    public WrappedHttpClient(HttpClient implementation, RetryComponents retryComponents)
     {
         this.implementation = implementation;
-        this.discovery = discovery;
         this.retryComponents = retryComponents;
     }
 
@@ -73,35 +76,29 @@ public class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpUriRequest request, HttpContext context) throws IOException
     {
-        addRequestId(request);
-
-        RetryContext retryContext = new RetryContext(retryComponents, request.getURI(), request.getMethod());
-        for ( int retryCount = 0; /* no check */; ++retryCount )
+        RequestRunner<HttpUriRequest> requestRunner = new RequestRunner<>(retryComponents, headerSetter, request.getURI(), request.getMethod());
+        while ( requestRunner.shouldContinue() )
         {
-            SoaDiscoveryInstance instance = ClientUtils.hostToInstance(discovery, retryContext.getOriginalHost());
-            retryContext.setInstance(instance);
-
-            URI filteredUri = ClientUtils.filterUri(request.getURI(), instance);
-            if ( filteredUri != null )
-            {
-                request = new WrappedHttpUriRequest(request, filteredUri);
-            }
+            URI uri = requestRunner.prepareRequest(request);
+            request = new WrappedHttpUriRequest(request, uri);
             try
             {
                 HttpResponse response = implementation.execute(request, context);
-                if ( !retryContext.shouldBeRetried(retryCount, response.getStatusLine().getStatusCode(), null) )
+                if ( requestRunner.isSuccessResponse(response.getStatusLine().getStatusCode()) )
                 {
                     return response;
                 }
             }
             catch ( IOException e )
             {
-                if ( !retryContext.shouldBeRetried(retryCount, 0, e) )
+                if ( !requestRunner.shouldBeRetried(e) )
                 {
                     throw e;
                 }
             }
         }
+
+        throw new IOException("Retries expired for " + requestRunner.getOriginalUri());
     }
 
     @Override
@@ -113,8 +110,6 @@ public class WrappedHttpClient implements HttpClient
     @Override
     public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context) throws IOException
     {
-        addRequestId(request);
-
         URI uri;
         try
         {
@@ -126,34 +121,30 @@ public class WrappedHttpClient implements HttpClient
             throw new IOException(e);
         }
 
-        RetryContext retryContext = new RetryContext(retryComponents, uri, request.getRequestLine().getMethod());
-        for ( int retryCount = 0; /* no check */; ++retryCount )
+        RequestRunner<HttpRequest> requestRunner = new RequestRunner<>(retryComponents, headerSetter, uri, request.getRequestLine().getMethod());
+        while ( requestRunner.shouldContinue() )
         {
+            uri = requestRunner.prepareRequest(request);
+            request = new WrappedHttpRequest(request, uri);
+            target = new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
             try
             {
-                SoaDiscoveryInstance instance = ClientUtils.hostToInstance(discovery, retryContext.getOriginalHost());
-                retryContext.setInstance(instance);
-
-                URI filteredUri = ClientUtils.filterUri(uri, instance);
-                if ( filteredUri != null )
-                {
-                    target = toHost(filteredUri);
-                    request = new WrappedHttpRequest(request, filteredUri);
-                }
                 HttpResponse response = implementation.execute(target, request, context);
-                if ( !retryContext.shouldBeRetried(retryCount, response.getStatusLine().getStatusCode(), null) )
+                if ( requestRunner.isSuccessResponse(response.getStatusLine().getStatusCode()) )
                 {
                     return response;
                 }
             }
             catch ( IOException e )
             {
-                if ( !retryContext.shouldBeRetried(retryCount, 0, e) )
+                if ( !requestRunner.shouldBeRetried(e) )
                 {
                     throw e;
                 }
             }
         }
+
+        throw new IOException("Retries expired for " + requestRunner.getOriginalUri());
     }
 
     @Override
@@ -180,24 +171,6 @@ public class WrappedHttpClient implements HttpClient
         return internalExecute(null, target, request, responseHandler, context);
     }
 
-    private void addRequestId(HttpRequest request)
-    {
-        SoaRequestId.HeaderSetter<HttpRequest> setter = new SoaRequestId.HeaderSetter<HttpRequest>()
-        {
-            @Override
-            public void setHeader(HttpRequest request, String header, String value)
-            {
-                request.addHeader(header, value);
-            }
-        };
-        SoaRequestId.checkSetHeaders(request, setter);
-    }
-
-    private HttpHost toHost(URI uri)
-    {
-        return new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
-    }
-
     // mostly copied from CloseableHttpClient.execute()
     private <T> T internalExecute(final HttpUriRequest uriRequest, final HttpHost target, final HttpRequest request,
                          final ResponseHandler<? extends T> responseHandler, final HttpContext context)
@@ -222,6 +195,7 @@ public class WrappedHttpClient implements HttpClient
             if (t instanceof RuntimeException) {
                 throw (RuntimeException) t;
             }
+            //noinspection ConstantConditions
             if (t instanceof IOException) {
                 throw (IOException) t;
             }

@@ -35,7 +35,7 @@ Getting Started with Soabase
 *---------------------------------------------*--------------------------------------------------------------------------------------------------*
 | {{{./admin.html}Jersey Admin APIs}}         | The Dropwizard admin servlet is agumented to support Jersey Resources.                           |
 *---------------------------------------------*--------------------------------------------------------------------------------------------------*
-| {{{./attributes.html}Dynamic Attributes}}   | Allows global, scopes attributes. The default implementation uses JDBC. You will need to have a  |
+| {{{./attributes.html}Dynamic Attributes}}   | Allows global, scoped attributes. The default implementation uses JDBC. You will need to have a  |
 |                                             | JDBC compatible datasource. You can also provide your own implementation that uses a different   |
 |                                             | storage mechanism.                                                                               |
 *---------------------------------------------*--------------------------------------------------------------------------------------------------*

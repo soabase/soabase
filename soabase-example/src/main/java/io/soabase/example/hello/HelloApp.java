@@ -16,7 +16,11 @@
 package io.soabase.example.hello;
 
 import io.dropwizard.Configuration;
+import io.dropwizard.client.HttpClientConfiguration;
+import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.setup.Environment;
+import io.soabase.client.ClientBuilder;
+import io.soabase.core.SoaFeatures;
 import io.soabase.example.ExampleAppBase;
 
 public class HelloApp extends ExampleAppBase
@@ -34,6 +38,10 @@ public class HelloApp extends ExampleAppBase
     @Override
     protected void internalRun(Configuration configuration, Environment environment)
     {
+        ClientBuilder builder = new ClientBuilder(environment);
+        builder.buildJerseyClient(new JerseyClientConfiguration(), SoaFeatures.DEFAULT_NAME);
+        builder.buildHttpClient(new HttpClientConfiguration(), SoaFeatures.DEFAULT_NAME);
+
         environment.jersey().register(HelloResourceJersey.class);
         environment.jersey().register(HelloResourceApache.class);
     }

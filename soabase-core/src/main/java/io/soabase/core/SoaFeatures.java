@@ -18,6 +18,7 @@ package io.soabase.core;
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
+import java.util.Collection;
 
 /**
  * Container for various Soabase singletons
@@ -42,6 +43,13 @@ public interface SoaFeatures
      * @return the object or null
      */
     public <T> T getNamed(Class<T> clazz, String name);
+
+    /**
+     * Return the set of names registered for the given class
+     * @param clazz class to check
+     * @return set of names
+     */
+    public <T> Collection<String> getNames(Class<T> clazz);
 
     /**
      * Return the stored named object or throws {@link NullPointerException}

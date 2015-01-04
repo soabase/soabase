@@ -16,7 +16,6 @@
 package io.soabase.example;
 
 import io.dropwizard.Configuration;
-import io.soabase.client.SoaClientConfiguration;
 import io.soabase.core.features.config.SoaConfiguration;
 import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
@@ -26,5 +25,4 @@ public class ExampleConfiguration extends Configuration
     public SoaConfiguration soa = new SoaConfiguration();
     public SqlConfiguration sql = new SqlConfiguration();
     public CuratorConfiguration curator = new CuratorConfiguration();
-    public SoaClientConfiguration client = new SoaClientConfiguration();
 }

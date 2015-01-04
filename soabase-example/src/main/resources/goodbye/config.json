@@ -25,6 +25,11 @@
         "archivedLogFilenamePattern": "./logs/goodbye-%d.log.gz",
         "archivedFileCount": "5",
         "timeZone": "UTC"
+      },
+
+      {
+        "type": "console",
+        "threshold": "OFF"
       }
     ]
   }

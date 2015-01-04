@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-public class SoaClientFilter implements Filter
+public class ClientFilter implements Filter
 {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException
@@ -43,23 +43,23 @@ public class SoaClientFilter implements Filter
         if ( request instanceof HttpServletRequest )
         {
             final HttpServletRequest httpRequest = (HttpServletRequest)request;
-            String id = httpRequest.getHeader(SoaRequestId.REQUEST_ID_HEADER_NAME);
+            String id = httpRequest.getHeader(RequestId.REQUEST_ID_HEADER_NAME);
             if ( id != null )
             {
-                SoaRequestId.set(id);
+                RequestId.set(id);
             }
             else
             {
-                final String newId = SoaRequestId.create();
+                final String newId = RequestId.create();
                 final List<String> headerNames = Collections.list(httpRequest.getHeaderNames());
-                headerNames.add(SoaRequestId.REQUEST_ID_HEADER_NAME);
+                headerNames.add(RequestId.REQUEST_ID_HEADER_NAME);
 
                 request = new HttpServletRequestWrapper(httpRequest)
                 {
                     @Override
                     public String getHeader(String name)
                     {
-                        if ( name.equals(SoaRequestId.REQUEST_ID_HEADER_NAME) )
+                        if ( name.equals(RequestId.REQUEST_ID_HEADER_NAME) )
                         {
                             return newId;
                         }
@@ -69,7 +69,7 @@ public class SoaClientFilter implements Filter
                     @Override
                     public Enumeration<String> getHeaders(String name)
                     {
-                        if ( name.equals(SoaRequestId.REQUEST_ID_HEADER_NAME) )
+                        if ( name.equals(RequestId.REQUEST_ID_HEADER_NAME) )
                         {
                             return Collections.enumeration(Arrays.asList(newId));
                         }
@@ -89,7 +89,7 @@ public class SoaClientFilter implements Filter
             }
             finally
             {
-                SoaRequestId.clear();
+                RequestId.clear();
             }
         }
         else

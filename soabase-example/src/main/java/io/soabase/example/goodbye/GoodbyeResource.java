@@ -17,7 +17,7 @@ package io.soabase.example.goodbye;
 
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
-import io.soabase.core.features.client.SoaRequestId;
+import io.soabase.core.features.client.RequestId;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -40,7 +40,7 @@ public class GoodbyeResource
     {
         return "Service Name: " + info.getServiceName()
             + "\n\tInstance Name: " + info.getInstanceName()
-            + "\n\tRequest Id: " + SoaRequestId.get(headers)
+            + "\n\tRequest Id: " + RequestId.get(headers)
             + "\n"
             ;
     }

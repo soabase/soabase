@@ -57,7 +57,14 @@ bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider
 bootstrap.addBundle(new CuratorBundle<>()); // adds Curator Service Discovery
 bootstrap.addBundle(new SqlBundle<>()); // adds JDBC attributes
 bootstrap.addBundle(new SoaBundle<>()); // required for all Soabase applications
-bootstrap.addBundle(new SoaClientBundle<>()); // adds the Jersey and Apache REST client integrations
++-------------------------------+
+
+    To use one of the enhanced REST clients:
+
++-------------------------------+
+ClientBuilder builder = new ClientBuilder(environment);
+builder.buildJerseyClient(jerseyClientConfig, clientName);  // for Jersey client
+builder.buildHttpClient(httpClientConfig, clientName);      // for Apache client
 +-------------------------------+
 
     That's all the code that's needed. The other features of Soabase are controlled by {{{./soaconfig.html}configuration}}.
@@ -95,7 +102,7 @@ bootstrap.addBundle(new SoaClientBundle<>()); // adds the Jersey and Apache REST
 
     * <<<SoaFeatures>>> - see above
 
-    * <<<HttpClient>>> and/or <<<Client>>> - if you use the SoaClientBundle
+    * <<<HttpClient>>> and/or <<<Client>>> - if you build clients via ClientBuilder
 
     * <<<HealthCheckRegistry>>> - from environment.healthChecks()
 

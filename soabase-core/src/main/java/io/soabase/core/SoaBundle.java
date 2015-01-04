@@ -46,7 +46,7 @@ import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.SafeDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
-import io.soabase.core.features.client.SoaClientFilter;
+import io.soabase.core.features.client.ClientFilter;
 import io.soabase.core.features.discovery.HealthCheckIntegration;
 import io.soabase.core.features.discovery.SafeSoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscovery;
@@ -131,7 +131,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     {
         final SoaConfiguration soaConfiguration = ComposedConfigurationAccessor.access(configuration, environment, SoaConfiguration.class);
 
-        environment.servlets().addFilter("SoaClientFilter", SoaClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        environment.servlets().addFilter("SoaClientFilter", ClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         updateInstanceName(soaConfiguration);
         List<String> scopes = Lists.newArrayList();

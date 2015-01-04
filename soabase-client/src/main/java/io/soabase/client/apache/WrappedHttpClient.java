@@ -17,7 +17,7 @@ package io.soabase.client.apache;
 
 import io.soabase.core.features.client.RequestRunner;
 import io.soabase.core.features.client.RetryComponents;
-import io.soabase.core.features.client.SoaRequestId;
+import io.soabase.core.features.client.RequestId;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -40,7 +40,7 @@ public class WrappedHttpClient implements HttpClient
 {
     private final HttpClient implementation;
     private final RetryComponents retryComponents;
-    private final SoaRequestId.HeaderSetter<HttpRequest> headerSetter = new SoaRequestId.HeaderSetter<HttpRequest>()
+    private final RequestId.HeaderSetter<HttpRequest> headerSetter = new RequestId.HeaderSetter<HttpRequest>()
     {
         @Override
         public void setHeader(HttpRequest request, String header, String value)

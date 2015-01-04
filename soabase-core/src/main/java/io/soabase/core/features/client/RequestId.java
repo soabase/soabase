@@ -18,7 +18,7 @@ package io.soabase.core.features.client;
 import javax.ws.rs.core.HttpHeaders;
 import java.util.UUID;
 
-public class SoaRequestId
+public class RequestId
 {
     private static final ThreadLocal<Entry> requestId = new ThreadLocal<>();
 
@@ -84,7 +84,7 @@ public class SoaRequestId
         requestId.remove();
     }
 
-    private SoaRequestId()
+    private RequestId()
     {
     }
 }

@@ -19,7 +19,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
 import io.soabase.core.features.client.RequestRunner;
 import io.soabase.core.features.client.RetryComponents;
-import io.soabase.core.features.client.SoaRequestId;
+import io.soabase.core.features.client.RequestId;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
@@ -35,7 +35,7 @@ public class JerseyRetryConnector implements Connector
 {
     private final Connector connector;
     private final RetryComponents retryComponents;
-    private final SoaRequestId.HeaderSetter<ClientRequest> headerSetter = new SoaRequestId.HeaderSetter<ClientRequest>()
+    private final RequestId.HeaderSetter<ClientRequest> headerSetter = new RequestId.HeaderSetter<ClientRequest>()
     {
         @Override
         public void setHeader(ClientRequest request, String header, String value)

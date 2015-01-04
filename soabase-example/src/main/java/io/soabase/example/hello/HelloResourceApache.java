@@ -17,7 +17,7 @@ package io.soabase.example.hello;
 
 import com.google.common.io.CharStreams;
 import io.soabase.core.features.client.ClientUtils;
-import io.soabase.core.features.client.SoaRequestId;
+import io.soabase.core.features.client.RequestId;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
 import org.apache.http.HttpHost;
@@ -54,7 +54,7 @@ public class HelloResourceApache
     {
         String result = "Service Name: " + info.getServiceName()
             + "\nInstance Name: " + info.getInstanceName()
-            + "\nRequest Id: " + SoaRequestId.get(headers)
+            + "\nRequest Id: " + RequestId.get(headers)
             + "\n"
             ;
 

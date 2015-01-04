@@ -42,7 +42,7 @@
 
     <name>Soabase</name>
     <description>A suite of Dropwizard bundles and utilities that aid in building Service Oriented Applications.</description>
-    <url>https://github.com/randgalt/soabase</url>
+    <url>https://github.com/soabase/soabase</url>
     <inceptionYear>2014</inceptionYear>
 
     <organization>
@@ -71,21 +71,21 @@
     </developers>
 
     <scm>
-        <url>https://github.com/randgalt/soabase</url>
-        <connection>scm:git:https://github.com/randgalt/soabase.git</connection>
-        <developerConnection>scm:git:git@github.com:randgalt/soabase.git</developerConnection>
+        <url>https://github.com/soabase/soabase</url>
+        <connection>scm:git:https://github.com/soabase/soabase.git</connection>
+        <developerConnection>scm:git:git@github.com:soabase/soabase.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
         <system>Github</system>
-        <url>https://github.com/randgalt/soabase/issues</url>
+        <url>https://github.com/soabase/soabase/issues</url>
     </issueManagement>
 
     <distributionManagement>
         <site>
             <id>website</id>
-            <url>http://randgalt.github.io/soabase/</url>
+            <url>http://soabase.github.io/soabase/</url>
         </site>
         <repository>
             <id>sonatype-nexus-staging</id>

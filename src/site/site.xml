@@ -32,7 +32,7 @@
     <custom>
         <fluidoSkin>
             <gitHub>
-                <projectId>randgalt/soabase</projectId>
+                <projectId>soabase/soabase</projectId>
                 <ribbonOrientation>right</ribbonOrientation>
                 <ribbonColor>black</ribbonColor>
             </gitHub>

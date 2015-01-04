@@ -6,10 +6,10 @@ io.soabase.client
 io.soabase.client.apache
 io.soabase.client.jersey
 io.soabase.core
-io.soabase.core.config
 io.soabase.core.features
 io.soabase.core.features.attributes
 io.soabase.core.features.client
+io.soabase.core.features.config
 io.soabase.core.features.discovery
 io.soabase.core.features.logging
 io.soabase.core.listening

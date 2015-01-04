@@ -9,7 +9,6 @@ import io.soabase.client.apache.WrappedHttpClient;
 import io.soabase.client.jersey.JerseyRetryConnectorProvider;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
-import io.soabase.core.features.client.DefaultRetryHandler;
 import io.soabase.core.features.client.RetryComponents;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -40,7 +39,7 @@ public class ClientBuilder
     {
         this.environment = environment;
         final SoaFeatures features = SoaBundle.getFeatures(environment);
-        retryComponents = new RetryComponents(new DefaultRetryHandler(), features.getDiscovery(), maxRetries, retry500s, features.getExecutorBuilder());
+        retryComponents = new RetryComponents(features.getDiscovery(), maxRetries, retry500s, features.getExecutorBuilder());
 
         AbstractBinder binder = new AbstractBinder()
         {

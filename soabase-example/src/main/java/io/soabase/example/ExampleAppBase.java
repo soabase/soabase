@@ -28,6 +28,9 @@ import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
 import org.apache.curator.test.InstanceSpec;
 import java.io.Closeable;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
@@ -35,6 +38,21 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
 {
     private final List<Closeable> closeables = Lists.newArrayList();
     private final String configFqpn;
+
+    public static void checkNullConsole()
+    {
+        if ( !Boolean.getBoolean("debug") )
+        {
+            OutputStream nullOut = new OutputStream()
+            {
+                @Override
+                public void write(int b) throws IOException
+                {
+                }
+            };
+            System.setOut(new PrintStream(nullOut));
+        }
+    }
 
     public ExampleAppBase(String configFqpn)
     {
@@ -64,11 +82,7 @@ public abstract class ExampleAppBase extends Application<ExampleConfiguration> i
 
     public static String[] setSystemAndAdjustArgs(String configFqpn)
     {
-        if ( Boolean.getBoolean("debug") )
-        {
-            System.setProperty("dw.logging.appenders[1].threshold", "DEBUG");
-        }
-
+        checkNullConsole();
         System.setProperty("dw.curator.connectionString", "localhost:2181");
         System.setProperty("dw.soa.instanceName", "instance-" + new Random().nextInt(10000));
         System.setProperty("dw.soa.discovery.type", "zookeeper");

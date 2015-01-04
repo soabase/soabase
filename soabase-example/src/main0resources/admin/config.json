@@ -1,8 +1,4 @@
 {
-  "soa": {
-    "serviceName": "hello"
-  },
-
   "server": {
     "applicationConnectors": [
       {
@@ -21,8 +17,8 @@
     "appenders": [
       {
         "type": "file",
-        "currentLogFilename": "./logs/goodbye.log",
-        "archivedLogFilenamePattern": "./logs/goodbye-%d.log.gz",
+        "currentLogFilename": "./logs/admin.log",
+        "archivedLogFilenamePattern": "./logs/admin-%d.log.gz",
         "archivedFileCount": "5",
         "timeZone": "UTC"
       },

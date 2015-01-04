@@ -34,17 +34,7 @@ public class MockDatabase
     @SuppressWarnings("ParameterCanBeLocal")
     public static void main(String[] args) throws Exception
     {
-        if ( !Boolean.getBoolean("debug") )
-        {
-            OutputStream nullOut = new OutputStream()
-            {
-                @Override
-                public void write(int b) throws IOException
-                {
-                }
-            };
-            System.setOut(new PrintStream(nullOut));
-        }
+        ExampleAppBase.checkNullConsole();
 
         args = new String[]
             {

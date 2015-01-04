@@ -125,7 +125,8 @@ curl http://localhost:GoodbyeAdminPort/api/soa/attributes/test2
 ** Details Screen
 
     Clicking the "Details" button for an instance shows real time monitoring of various metrics for
-    the instance. You can also define your own metrics. Note the "Custom" metric displayed on this screen.
+    the instance. You can also define your own metrics. Note the "Custom" metric displayed on this
+    screen (only for the Goodbye service).
 
 [images/admin-details.png]
 

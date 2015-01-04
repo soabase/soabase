@@ -29,7 +29,7 @@
 
       {
         "type": "console",
-        "threshold": "OFF"
+        "threshold": "DEBUG"
       }
     ]
   }

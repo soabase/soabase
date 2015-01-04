@@ -24,11 +24,7 @@ public class MockZooKeeper
 {
     public static void main(String[] args) throws Exception
     {
-        if ( !Boolean.getBoolean("debug") )
-        {
-            Logger logger = (Logger)LoggerFactory.getILoggerFactory().getLogger(Logger.ROOT_LOGGER_NAME);
-            logger.setLevel(Level.ERROR);
-        }
+        ExampleAppBase.checkNullConsole();
 
         new TestingServer(2181);
         Thread.currentThread().join();

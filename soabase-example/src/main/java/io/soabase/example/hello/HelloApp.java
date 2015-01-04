@@ -39,8 +39,8 @@ public class HelloApp extends ExampleAppBase
     protected void internalRun(Configuration configuration, Environment environment)
     {
         ClientBuilder builder = new ClientBuilder(environment);
-        builder.buildJerseyClient(new JerseyClientConfiguration(), SoaFeatures.DEFAULT_NAME);
-        builder.buildHttpClient(new HttpClientConfiguration(), SoaFeatures.DEFAULT_NAME);
+        builder.buildJerseyClient(new JerseyClientConfiguration(), "jersey");
+        builder.buildHttpClient(new HttpClientConfiguration(), "apache");
 
         environment.jersey().register(HelloResourceJersey.class);
         environment.jersey().register(HelloResourceApache.class);

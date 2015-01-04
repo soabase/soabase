@@ -37,7 +37,7 @@ public class HelloResourceJersey
     private final Client client;
 
     @Inject
-    public HelloResourceJersey(SoaFeatures features, @Named(SoaFeatures.DEFAULT_NAME) Client client)
+    public HelloResourceJersey(SoaFeatures features, @Named("jersey") Client client)
     {
         this.info = features.getSoaInfo();
         this.client = client;

@@ -43,7 +43,7 @@ public class HelloResourceApache
     private final HttpClient client;
 
     @Inject
-    public HelloResourceApache(SoaFeatures features, @Named(SoaFeatures.DEFAULT_NAME) HttpClient client)
+    public HelloResourceApache(SoaFeatures features, @Named("apache") HttpClient client)
     {
         this.info = features.getSoaInfo();
         this.client = client;

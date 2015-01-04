@@ -42,4 +42,4 @@ Features
 Details
 -------
 
-For full details, see the website: http://randgalt.github.io/soabase
+For full details, see the website: http://soabase.github.io/soabase

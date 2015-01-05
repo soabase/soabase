@@ -15,20 +15,52 @@
  */
 package io.soabase.admin.components;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import java.util.List;
+import java.util.UUID;
 
 public class StandardComponents
 {
+    public static void main(String[] args)
+    {
+        String id = UUID.randomUUID().toString();
+        for ( int i = 1; i <= 100; ++i )
+        {
+            System.out.println(Hashing.consistentHash(Hashing.sha256().hashString(id, Charsets.UTF_8), i));
+        }
+    }
+
     public static MetricComponent newGcMetric()
     {
         // TODO - get all collectors
         List<Metric> metrics = Lists.newArrayList
         (
             new Metric("MarkSweep", "gauges['jvm.gc.PS-MarkSweep.count'].value"),
+            new Metric("MarkSweep", "gauges['jvm.gc.MarkSweepCompact.count'].value"),
+            new Metric("MarkSweep", "gauges['jvm.gc.PS-ConcurrentMarkSweep.count'].value"),
+            new Metric("MarkSweep", "gauges['jvm.gc.PSYoungGen.count'].value"),
+            new Metric("MarkSweep", "gauges['jvm.gc.PSOldGen.count'].value"),
             new Metric("Scavenge", "gauges['jvm.gc.PS-Scavenge.count'].value")
         );
         return new MetricComponent("soa-gc", MetricType.DELTA, "GC", "# of GCs", metrics);
+    }
+
+    public static MetricComponent newGcTimesMetric()
+    {
+        // TODO - get all collectors
+        List<Metric> metrics = Lists.newArrayList
+            (
+                new Metric("MarkSweep", "gauges['jvm.gc.PS-MarkSweep.time'].value"),
+                new Metric("MarkSweep", "gauges['jvm.gc.MarkSweepCompact.time'].value"),
+                new Metric("MarkSweep", "gauges['jvm.gc.ConcurrentMarkSweep.time'].value"),
+                new Metric("MarkSweep", "gauges['jvm.gc.PSYoungGen.time'].value"),
+                new Metric("MarkSweep", "gauges['jvm.gc.PSOldGen.time'].value"),
+                new Metric("Scavenge", "gauges['jvm.gc.PS-Scavenge.time'].value")
+            );
+        return new MetricComponent("soa-gc-times", MetricType.DELTA, "GC Times", "Time", metrics);
     }
 
     public static MetricComponent newHeapMetric()
@@ -38,17 +70,6 @@ public class StandardComponents
                 new Metric("Heap", "gauges['jvm.memory.heap.usage'].value")
             );
         return new MetricComponent("soa-heap", MetricType.PERCENT, "Heap", "% Used", metrics);
-    }
-
-    public static MetricComponent newGcTimesMetric()
-    {
-        // TODO - get all collectors
-        List<Metric> metrics = Lists.newArrayList
-        (
-            new Metric("MarkSweep", "gauges['jvm.gc.PS-MarkSweep.time'].value"),
-            new Metric("Scavenge", "gauges['jvm.gc.PS-Scavenge.time'].value")
-        );
-        return new MetricComponent("soa-gc-times", MetricType.DELTA, "GC Times", "Time", metrics);
     }
 
     public static MetricComponent newThreadsMetric()

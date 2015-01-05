@@ -193,7 +193,7 @@ function vmBuildMetrics() {
                 }
             },
             transition: {
-                duration: 250
+                duration: 0
             },
             size: {
                 height: 200

@@ -185,7 +185,7 @@ var template = soaGetTemplate('unique-template-id', {
 
 *** Development Mode
 
-    The Administration Console caches the merge HTML file at runtime. This can make developing
+    The Administration Console caches the merged HTML file at runtime. This can make developing
     your custom tab a pain; needing to restart the app after every change. During development,
     take advantage of "force mode". Instead of the normal URL, use <<<http://localhost:8080/force>>>.
     This will cause the Administration Console to rebuild the HTML file on every request.

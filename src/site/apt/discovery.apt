@@ -20,7 +20,7 @@ Service Discovery
 * Usage
 
     Service Discovery is enabled via configuration. See the {{{./soaconfig.html#Service_Discovery}Service Discovery Configuration}}
-    section for details. To use the default Apache Curator/ZooKeeper implementation, add <<<CuratorConfiguration>>> configuration to
+    section for details. To use the default Apache Curator/ZooKeeper implementation, add a <<<CuratorConfiguration>>> field to
     your application's Configuration object. If needed, you can access the <<<SoaDiscovery>>> instance from <<<SoaFeatures>>>.
 
 * Curator

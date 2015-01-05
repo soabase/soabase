@@ -42,6 +42,7 @@ public class ComposedConfigurationAccessor
             @Override
             public Field load(Class<?> clazz) throws Exception
             {
+                Field foundField = null;
                 Class<?> configurationClass = configuration.getClass();
                 while ( configurationClass != null )
                 {
@@ -49,14 +50,22 @@ public class ComposedConfigurationAccessor
                     {
                         if ( field.getType().equals(clazz) )
                         {
+                            if ( foundField != null )
+                            {
+                                throw new Exception("More than 1 field found of the type: " + clazz);
+                            }
                             field.setAccessible(true);
-                            return field;
+                            foundField = field;
                         }
                     }
                     configurationClass = configurationClass.getSuperclass();
                 }
                 // TODO logging
-                throw new Exception("Could not find a field of the type: " + clazz);
+                if ( foundField == null )
+                {
+                    throw new Exception("Could not find a field of the type: " + clazz);
+                }
+                return foundField;
             }
         };
         fieldCache = CacheBuilder.newBuilder().build(loader);

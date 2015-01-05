@@ -23,7 +23,7 @@
 - Admin console
     * Get more accurate CPU/disk load
     * Have a way to specify metrics with wildcards
-* Have a way to specify metrics with wildcards* Tests
+* Tests
 * javadoc/doc
 * TO-DOs
 * Figure out why config isn't validating
@@ -41,3 +41,4 @@
 * Support user identity on attributes for auditing
 * Discovery meta data
 * What is Instance name used for? Is it needed?
+* Note error for discovery even if non-idempotent

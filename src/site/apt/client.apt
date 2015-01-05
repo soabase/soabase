@@ -79,7 +79,7 @@ while ( requestRunner.shouldContinue() ) {
         }
     } catch ( Exception e ) {
         if ( !requestRunner.shouldBeRetried(e) ) {
-            throw new ProcessingException(e);
+            throw e;
         }
     }
 }

@@ -7,7 +7,7 @@ Dynamic Attributes
 * Usage
 
     Dynamic Attribute support is enabled via configuration. See the {{{./soaconfig.html#Dynamic_Attributes}Dynamic Attributes Configuration}}
-    section for details. To use the default JDBC, add <<<SqlConfiguration>>> configuration to
+    section for details. To use the default JDBC implementation, add a <<<SqlConfiguration>>> field to
     your application's Configuration object. If needed, you can access the Mybatis <<<SqlSession>>> instance from <<<SoaFeatures>>>.
 
 * Mybatis

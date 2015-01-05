@@ -56,3 +56,8 @@
     margin-left: 8px;
     margin-right: 8px;
 }
+
+.soa-expand {
+    margin-left: 16px;
+    cursor: pointer;
+}

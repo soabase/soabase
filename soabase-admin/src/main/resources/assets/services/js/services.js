@@ -77,6 +77,20 @@ function soaServicesBuildContainer(serviceName) {
         $('#soa-service-body-collapse-' + serviceName).collapse('toggle');
         return true;
     });
+
+    if ( getParameterByName("service") === serviceName ) {
+        $('#soa-service-expand-' + serviceName).toggleClass('glyphicon-resize-full glyphicon-resize-small');
+    }
+
+    $('#soa-service-expand-' + serviceName).click(function(){
+        var focusedService = getParameterByName("service");
+        var url = focusedService ? "/" : ("/?service=" + serviceName);
+        if ( location.hash ) {
+            url = url + location.hash;
+        }
+        location.href = url;
+        return true;
+    });
 }
 
 function soaUpdateInstancesForService(serviceName) {
@@ -160,6 +174,11 @@ function soaUpdateInstances() {
         var id = SOA_SERVICE_ID_PREFIX + serviceName;
         var serviceName;
         var i;
+
+        var focusedService = getParameterByName("service");
+        if ( focusedService ) {
+            data = (data.indexOf(focusedService) >= 0) ? [focusedService] : [];
+        }
 
         // remove services that don't exist anymore
         for ( i in soaServices ) {

@@ -132,3 +132,7 @@ public class MyAttributesFactory implements SqlDynamicAttributesFactory {
     file add a line containing: <<<io.soabase.core.features.attributes.SoaDynamicAttributesFactory>>>. In the <<<io.soabase.core.features.attributes.SoaDynamicAttributesFactory>>>
     file add a line the with fully-qualified path name of your class. E.g. <<<com.me.my.MyAttributesFactory>>>
 
+** StandardAttributesContainer
+
+    Take advantage of the <<<StandardAttributesContainer>>> which has basic implementations for most of the features of Dynamic Attributes.
+    Look at <<<SqlDynamicAttributes>>> for an example of how to use it.

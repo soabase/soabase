@@ -15,11 +15,32 @@
  */
 package io.soabase.core.features.attributes;
 
+/**
+ * Listener for dynamic attribute changes
+ */
 public interface SoaDynamicAttributeListener
 {
+    /**
+     * The given key/scope has changed
+     *
+     * @param key key
+     * @param scope scope
+     */
     public void attributeChanged(String key, String scope);
 
+    /**
+     * The given key/scope was added
+     *
+     * @param key key
+     * @param scope scope
+     */
     public void attributeAdded(String key, String scope);
 
+    /**
+     * The given key/scope was removed
+     *
+     * @param key key
+     * @param scope scope
+     */
     public void attributeRemoved(String key, String scope);
 }

@@ -174,10 +174,17 @@ public class SqlDynamicAttributes implements SoaWritableDynamicAttributes, Manag
     {
         StandardAttributesContainer.Updater updater = container.newUpdater();
         AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
-        for ( AttributeEntity entity : mapper.selectAll() )
+        try
         {
-            updater.put(entity.getfKEY(), entity.getfSCOPE(), entity.getfVALUE());
+            for ( AttributeEntity entity : mapper.selectAll() )
+            {
+                updater.put(entity.getfKEY(), entity.getfSCOPE(), entity.getfVALUE());
+            }
+            updater.commit();
         }
-        updater.commit();
+        catch ( Exception e )
+        {
+            // TODO logging
+        }
     }
 }

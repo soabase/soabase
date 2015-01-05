@@ -18,11 +18,11 @@ package io.soabase.core.features.attributes;
 import io.soabase.core.listening.Listenable;
 import java.util.Collection;
 
-public class SafeDynamicAttributes implements SoaDynamicAttributes
+class SafeDynamicAttributes implements SoaDynamicAttributes
 {
     private final SoaDynamicAttributes implementation;
 
-    public SafeDynamicAttributes(SoaDynamicAttributes implementation)
+    SafeDynamicAttributes(SoaDynamicAttributes implementation)
     {
         this.implementation = implementation;
     }

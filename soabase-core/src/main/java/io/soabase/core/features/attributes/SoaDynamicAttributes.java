@@ -18,6 +18,11 @@ package io.soabase.core.features.attributes;
 import io.soabase.core.listening.Listenable;
 import java.util.Collection;
 
+/**
+ * Gives access to dynamic attributes. The various get methods return
+ * the current value for the given key after applying overrides and scopes, etc.
+ * Always call the methods to get the current value as it may change during runtime.
+ */
 public interface SoaDynamicAttributes
 {
     public String getAttribute(String key);

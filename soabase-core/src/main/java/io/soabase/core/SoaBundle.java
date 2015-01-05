@@ -40,13 +40,12 @@ import io.dropwizard.server.ServerFactory;
 import io.dropwizard.server.SimpleServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.soabase.core.features.ExecutorBuilder;
+import io.soabase.core.features.attributes.SoaDynamicAttributes;
+import io.soabase.core.features.attributes.StandardAttributesContainer;
+import io.soabase.core.features.client.ClientFilter;
 import io.soabase.core.features.config.ComposedConfigurationAccessor;
 import io.soabase.core.features.config.SoaConfiguration;
-import io.soabase.core.features.ExecutorBuilder;
-import io.soabase.core.features.attributes.SafeDynamicAttributes;
-import io.soabase.core.features.attributes.SoaDynamicAttributes;
-import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
-import io.soabase.core.features.client.ClientFilter;
 import io.soabase.core.features.discovery.HealthCheckIntegration;
 import io.soabase.core.features.discovery.SafeSoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscovery;
@@ -143,7 +142,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
 
         SoaDiscovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(environment, soaInfo)));
-        SoaDynamicAttributes attributes = wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)));
+        SoaDynamicAttributes attributes = StandardAttributesContainer.wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)), hasAdminKey);
 
         final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, new ExecutorBuilder(environment.lifecycle()));
         final LoggingReader loggingReader = initLogging(configuration);
@@ -190,15 +189,6 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return discovery;
     }
 
-    private SoaDynamicAttributes wrapAttributes(SoaDynamicAttributes attributes)
-    {
-        if ( (attributes instanceof SoaWritableDynamicAttributes) && !hasAdminKey )
-        {
-            return new SafeDynamicAttributes(attributes);
-        }
-        return attributes;
-    }
-
     private static class Ports
     {
         final int mainPort;
@@ -238,6 +228,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 
         if ( SimpleServerFactory.class.isAssignableFrom(serverFactory.getClass()) )
         {
+            //noinspection ConstantConditions
             mainPort = adminPort = portFromConnectorFactory(((SimpleServerFactory)serverFactory).getConnector());
         }
 
@@ -259,7 +250,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 
     private int portFromConnectorFactory(ConnectorFactory connectorFactory)
     {
-        if ( HttpConnectorFactory.class.isAssignableFrom(connectorFactory.getClass()) )
+        if ( (connectorFactory != null) && HttpConnectorFactory.class.isAssignableFrom(connectorFactory.getClass()) )
         {
             HttpConnectorFactory factory = (HttpConnectorFactory)connectorFactory;
             return factory.getPort();

@@ -177,6 +177,10 @@ function soaUpdateInstances() {
             soaUpdateInstancesForService(serviceName);
         }
 
+        if ( data.length == 0 ) {
+            $('#soa-services').html(soaGetTemplate('soa-no-instances'));
+        }
+
         soaServices = data;
     });
 }

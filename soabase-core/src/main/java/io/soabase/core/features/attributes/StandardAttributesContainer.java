@@ -39,6 +39,15 @@ public class StandardAttributesContainer
     private final List<String> scopes;
     private final AtomicBoolean firstTime = new AtomicBoolean(true);
 
+    public static SoaDynamicAttributes wrapAttributes(SoaDynamicAttributes attributes, boolean hasAdminKey)
+    {
+        if ( (attributes instanceof SoaWritableDynamicAttributes) && !hasAdminKey )
+        {
+            return new SafeDynamicAttributes(attributes);
+        }
+        return attributes;
+    }
+
     public StandardAttributesContainer(List<String> scopes)
     {
         scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");

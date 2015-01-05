@@ -16,6 +16,7 @@
 package io.soabase.admin.rest;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.SoaDiscovery;
@@ -52,7 +53,17 @@ public class DiscoveryResource
     public List<String> getServiceNames()
     {
         SoaExtendedDiscovery discovery = getDiscovery();
-        List<String> services = Lists.newArrayList(discovery.queryForServiceNames());
+        Collection<String> names;
+        try
+        {
+            names = discovery.queryForServiceNames();
+        }
+        catch ( Exception e )
+        {
+            // TODO logging
+            names = Sets.newHashSet();
+        }
+        List<String> services = Lists.newArrayList(names);
         Collections.sort(services);
         return services;
     }

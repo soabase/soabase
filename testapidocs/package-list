@@ -1,2 +1,2 @@
-io.soabase.core.config
-io.soabase.core.config.mocks
+io.soabase.core.features.config
+io.soabase.core.features.config.mocks

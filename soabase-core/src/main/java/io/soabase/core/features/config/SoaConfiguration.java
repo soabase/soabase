@@ -18,6 +18,7 @@ package io.soabase.core.features.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
@@ -25,7 +26,9 @@ import io.soabase.core.features.discovery.DefaultDiscoveryHealthFactory;
 import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
 import io.soabase.core.features.discovery.SoaDiscoveryHealthFactory;
+import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
@@ -35,42 +38,36 @@ import java.util.concurrent.TimeUnit;
 
 public class SoaConfiguration
 {
-    @Valid
     @NotNull
     private SoaDiscoveryFactory discoveryFactory = new NullDiscoveryFactory();
 
-    @Valid
     @NotNull
     private SoaDiscoveryHealthFactory discoveryHealthFactory = new DefaultDiscoveryHealthFactory();
 
-    @Valid
     @NotNull
     private SoaDynamicAttributesFactory attributesFactory = new NullDynamicAttributesFactory();
 
-    @Valid
-    @NotNull
+    @NotEmpty
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Service Names can only contain letters and numbers")
     private String serviceName;
 
-    @Valid
+    @Min(0)
     private int shutdownWaitMaxMs = (int)TimeUnit.MINUTES.toMillis(1);
 
-    @Valid
     private String instanceName;
 
-    @Valid
-    private List<String> scopes = ImmutableList.of();
+    @NotNull
+    private List<String> scopes = Lists.newArrayList();
 
-    @Valid
     private boolean addCorsFilter = true;
 
-    @Valid
     private boolean registerInDiscovery = true;
 
-    @Valid
+    @Min(0)
     private int discoveryHealthCheckPeriodMs = (int)TimeUnit.SECONDS.toMillis(10);
 
-    @Valid
+    @NotEmpty
+    @Pattern(regexp = "/.*")
     private String adminJerseyPath = "/api";
 
     @JsonProperty("checkPeriodMs")

@@ -38,7 +38,7 @@ public class RequestRunner<T>
     public URI prepareRequest(T request)
     {
         RequestId.checkSetHeaders(request, headerSetter);
-        SoaDiscoveryInstance instance = ClientUtils.hostToInstance(retryContext.getComponents().getDiscovery(), retryContext.getOriginalHost());
+        SoaDiscoveryInstance instance = getSoaDiscoveryInstance();
         retryContext.setInstance(instance);
         URI filteredUri = ClientUtils.filterUri(retryContext.getOriginalUri(), instance);
         return (filteredUri != null) ? filteredUri : retryContext.getOriginalUri();
@@ -57,5 +57,10 @@ public class RequestRunner<T>
     public boolean shouldBeRetried(Throwable exception)
     {
         return retryContext.shouldBeRetried(retryCount++, 0, exception);
+    }
+
+    protected SoaDiscoveryInstance getSoaDiscoveryInstance()
+    {
+        return ClientUtils.hostToInstance(retryContext.getComponents().getDiscovery(), retryContext.getOriginalHost());
     }
 }

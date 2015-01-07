@@ -24,6 +24,7 @@ import io.soabase.core.SoaInfo;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
 import org.apache.curator.framework.CuratorFramework;
+import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -31,11 +32,9 @@ import javax.validation.constraints.Pattern;
 @JsonTypeName("zookeeper")
 public class ZooKeeperDiscoveryFactory implements SoaDiscoveryFactory
 {
-    @Valid
     private String bindAddress;
 
-    @Valid
-    @NotNull
+    @NotEmpty
     @Pattern(regexp = "/..*")
     private String zookeeperPath = "/discovery";
 

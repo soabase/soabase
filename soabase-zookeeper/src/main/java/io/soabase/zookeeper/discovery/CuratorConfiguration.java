@@ -16,18 +16,18 @@
 package io.soabase.zookeeper.discovery;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.dropwizard.validation.MinSize;
 import io.soabase.core.SoaFeatures;
+import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public class CuratorConfiguration
 {
-    @Valid
-    @NotNull
+    @NotEmpty
     private String connectionString;
 
-    @Valid
-    @NotNull
+    @NotEmpty
     private String curatorName = SoaFeatures.DEFAULT_NAME;
 
     @JsonProperty("connectionString")

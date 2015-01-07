@@ -23,7 +23,9 @@ import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.attributes.SoaDynamicAttributes;
 import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
 import org.apache.ibatis.session.SqlSession;
+import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,11 +34,10 @@ import java.util.concurrent.TimeUnit;
 @JsonTypeName("sql")
 public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
 {
-    @Valid
+    @Min(0)
     private int refreshPeriodSeconds = 30;
 
-    @Valid
-    @NotNull
+    @NotEmpty
     private String sessionName = SoaFeatures.DEFAULT_NAME;
 
     @JsonProperty("refreshPeriodSeconds")

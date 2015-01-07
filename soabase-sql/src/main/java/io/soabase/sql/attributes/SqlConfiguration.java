@@ -16,18 +16,18 @@
 package io.soabase.sql.attributes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.dropwizard.validation.MinSize;
 import io.soabase.core.SoaFeatures;
+import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public class SqlConfiguration
 {
-    @Valid
-    @NotNull
+    @NotEmpty
     private String mybatisConfigUrl;
 
-    @Valid
-    @NotNull
+    @NotEmpty
     private String name = SoaFeatures.DEFAULT_NAME;
 
     @JsonProperty("mybatisConfigUrl")

@@ -16,6 +16,7 @@
 package io.soabase.core.features.discovery;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class SafeSoaDiscovery implements SoaDiscovery
 {
@@ -54,5 +55,11 @@ public class SafeSoaDiscovery implements SoaDiscovery
     public void setHealthyState(HealthyState healthyState)
     {
         implementation.setHealthyState(healthyState);
+    }
+
+    @Override
+    public void setMetaData(Map<String, String> newMetaData)
+    {
+        implementation.setMetaData(newMetaData);
     }
 }

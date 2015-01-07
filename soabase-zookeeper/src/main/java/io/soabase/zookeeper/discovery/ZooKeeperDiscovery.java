@@ -43,6 +43,7 @@ import org.apache.curator.x.discovery.ServiceInstanceBuilder;
 import org.apache.curator.x.discovery.ServiceProvider;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -118,9 +119,17 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public void setHealthyState(HealthyState healthyState)
+    public void setHealthyState(HealthyState newHealthyState)
     {
-        updateRegistration(healthyState, us.get().getPayload().getForcedState());
+        Payload payload = us.get().getPayload();
+        updateRegistration(new Payload(payload.getAdminPort(), payload.getMetaData(), payload.getForcedState(), newHealthyState));
+    }
+
+    @Override
+    public void setMetaData(Map<String, String> newMetaData)
+    {
+        Payload payload = us.get().getPayload();
+        updateRegistration(new Payload(payload.getAdminPort(), newMetaData, payload.getForcedState(), payload.getHealthyState()));
     }
 
     @Override
@@ -314,7 +323,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         return new SoaDiscoveryInstanceImpl(instance.getId(), instance.getAddress(), port, instance.getSslPort() != null, payload);
     }
 
-    private void updateRegistration(HealthyState newHealthyState, ForcedState newForcedState)
+    private void updateRegistration(Payload newPayload)
     {
         if ( !soaInfo.isRegisterInDiscovery() )
         {
@@ -323,7 +332,6 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
 
         ServiceInstance<Payload> localUs = us.get();
         Payload currentPayload = localUs.getPayload();
-        Payload newPayload = new Payload(currentPayload.getAdminPort(), currentPayload.getMetaData(), newForcedState, newHealthyState);
         if ( !newPayload.equals(currentPayload) )
         {
             try

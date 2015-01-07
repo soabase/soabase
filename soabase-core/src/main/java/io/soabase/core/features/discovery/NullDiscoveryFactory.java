@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableSet;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaInfo;
 import java.util.Collection;
+import java.util.Map;
 
 @JsonTypeName("default")
 public class NullDiscoveryFactory implements SoaDiscoveryFactory
@@ -49,6 +50,12 @@ public class NullDiscoveryFactory implements SoaDiscoveryFactory
 
             @Override
             public void noteError(String serviceName, SoaDiscoveryInstance errorInstance)
+            {
+                // NOP
+            }
+
+            @Override
+            public void setMetaData(Map<String, String> newMetaData)
             {
                 // NOP
             }

@@ -16,6 +16,7 @@
 package io.soabase.core.features.discovery;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface SoaDiscovery
 {
@@ -28,4 +29,6 @@ public interface SoaDiscovery
     public void noteError(String serviceName, SoaDiscoveryInstance errorInstance);
 
     public void setHealthyState(HealthyState healthyState);
+
+    public void setMetaData(Map<String, String> newMetaData);
 }

@@ -16,6 +16,7 @@
 package io.soabase.core.features.config;
 
 import io.soabase.core.features.config.mocks.BaseConfiguration;
+import io.soabase.core.features.config.mocks.ConfigurationWithArray;
 import io.soabase.core.features.config.mocks.ContainerConfiguration;
 import io.soabase.core.features.config.mocks.DuplicateConfiguration;
 import io.soabase.core.features.config.mocks.MyConfiguration;
@@ -61,5 +62,14 @@ public class TestComposedConfigurationAccessor
     public void testDuplicate()
     {
         new ComposedConfigurationAccessor(new DuplicateConfiguration()).access(MyConfiguration.class);
+    }
+
+    @Test
+    public void testArray()
+    {
+        ComposedConfigurationAccessor accessor = new ComposedConfigurationAccessor(new ConfigurationWithArray());
+        MyConfiguration[] configurations = accessor.access(MyConfiguration[].class);
+        Assert.assertNotNull(configurations);
+        Assert.assertEquals(configurations.length, 5);
     }
 }

@@ -29,6 +29,9 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+/**
+ * Manages the Request Id header
+ */
 public class ClientFilter implements Filter
 {
     @Override

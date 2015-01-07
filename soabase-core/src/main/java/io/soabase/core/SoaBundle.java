@@ -319,6 +319,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         }
 
         DropwizardResourceConfig jerseyConfig = new DropwizardResourceConfig(environment.metrics());
+        jerseyConfig.setUrlPattern(jerseyRootPath);
+
         JerseyContainerHolder jerseyServletContainer = new JerseyContainerHolder(new ServletContainer(jerseyConfig));
         environment.admin().addServlet("soa-admin-jersey", jerseyServletContainer.getContainer()).addMapping(jerseyRootPath);
 

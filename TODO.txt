@@ -29,7 +29,6 @@
 * Logging
 - Don't deploy ExampleApp - config added to pom. Needs to be tested.
 * Don't register Discovery until managed is started
-* Figure out why admin jersey apis DW info output doesn't include "api"
 * kill isn't working for soa apps
 * Maybe it's better for all the configs to just have public fields?
 * Discovery registration should be in background

@@ -61,3 +61,8 @@
     margin-left: 16px;
     cursor: pointer;
 }
+
+.soa-services-icon-button {
+    cursor: pointer;
+    font-weight: normal !important;
+}

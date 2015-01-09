@@ -51,9 +51,7 @@ public class LdapAuthMethod extends SimpleAuthMethod
     {
         // from http://docs.oracle.com/javase/jndi/tutorial/ldap/security/ldap.html
 
-        String localQuery = query.replace(USER_REPLACEMENT, sanitize(username));
-        localQuery = localQuery.replace(EMAIL_REPLACEMENT, sanitize(email));
-        localQuery = localQuery.replace(DOMAIN_REPLACEMENT, sanitize(domain));
+        String localQuery = buildQuery(username, email, domain);
 
         Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -85,6 +83,7 @@ public class LdapAuthMethod extends SimpleAuthMethod
     }
 
     // from http://blog.dzhuvinov.com/?p=585
+
     /**
      * Escapes any special chars (RFC 4515) from a string representing a
      * a search filter assertion value.
@@ -160,5 +159,28 @@ public class LdapAuthMethod extends SimpleAuthMethod
         }
 
         return s;
+    }
+
+    public String getAuthenticationType()
+    {
+        return authenticationType;
+    }
+
+    public String getQuery()
+    {
+        return query;
+    }
+
+    public URI getLdapUri()
+    {
+        return ldapUri;
+    }
+
+    protected String buildQuery(String username, String email, String domain)
+    {
+        String localQuery = query.replace(USER_REPLACEMENT, sanitize(username));
+        localQuery = localQuery.replace(EMAIL_REPLACEMENT, sanitize(email));
+        localQuery = localQuery.replace(DOMAIN_REPLACEMENT, sanitize(domain));
+        return localQuery;
     }
 }

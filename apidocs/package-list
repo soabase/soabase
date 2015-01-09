@@ -1,4 +1,5 @@
 io.soabase.admin
+io.soabase.admin.auth
 io.soabase.admin.components
 io.soabase.admin.details
 io.soabase.admin.rest

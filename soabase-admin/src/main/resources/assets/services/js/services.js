@@ -62,6 +62,8 @@ function soaHandleDetailsButton(localInstance) {
 }
 
 function soaServicesBuildContainer(serviceName) {
+    $('#soa-no-services').hide();
+
     var id = SOA_SERVICE_ID_PREFIX + serviceName;
 
     var div = document.createElement('div');
@@ -94,79 +96,106 @@ function soaServicesBuildContainer(serviceName) {
 }
 
 function soaUpdateInstancesForService(serviceName) {
-    $.getJSON('/soa/discovery/all/' + serviceName, function(data){
-        var stoplightGreen = soaGetTemplate('soa-stoplight-set-green');
-        var stoplightRed = soaGetTemplate('soa-stoplight-set-red');
-        var healthy = soaGetTemplate('soa-service-healthy');
-        var unHealthy = soaGetTemplate('soa-service-unhealthy');
-        var forced = soaGetTemplate('soa-service-forced');
+    $.ajax({
+        type: 'GET',
+        url: '/soa/discovery/all/' + serviceName,
+        success: function(data){
+            var stoplightGreen = soaGetTemplate('soa-stoplight-set-green');
+            var stoplightRed = soaGetTemplate('soa-stoplight-set-red');
+            var healthy = soaGetTemplate('soa-service-healthy');
+            var unHealthy = soaGetTemplate('soa-service-unhealthy');
+            var forced = soaGetTemplate('soa-service-forced');
 
-        function trim(s) {
-            var max = 20;
-            if ( s.length >= max ) {
-                return s.substring(0, max / 2) + '&hellip;' + s.substring(s.length - (max / 2));
-            }
-            return s;
-        }
-
-        var id = SOA_SERVICE_ID_PREFIX + serviceName;
-        if ( data.length > 0 ) {
-            var instances = "";
-            for ( var i in data ) {
-                var instance = data[i];
-                var isDiscoverable;
-                if ( instance.forcedState != 'CLEARED' ) {
-                    isDiscoverable = (instance.forcedState === 'REGISTER');
-                } else {
-                    isDiscoverable = (instance.healthyState === 'HEALTHY');
+            function trim(s) {
+                var max = 20;
+                if ( s.length >= max ) {
+                    return s.substring(0, max / 2) + '&hellip;' + s.substring(s.length - (max / 2));
                 }
-                var stopLight = isDiscoverable ? stoplightGreen : stoplightRed;
-                var details = (instance.healthyState === 'HEALTHY') ? healthy : unHealthy;
-                if ( instance.forcedState != 'CLEARED' ) {
-                    details = details + forced.replace('$VALUE$', instance.forcedState.toLowerCase());
+                return s;
+            }
+
+            var id = SOA_SERVICE_ID_PREFIX + serviceName;
+            if ( data.length > 0 ) {
+                var instances = "";
+                for ( var i in data ) {
+                    var instance = data[i];
+                    var isDiscoverable;
+                    if ( instance.forcedState != 'CLEARED' ) {
+                        isDiscoverable = (instance.forcedState === 'REGISTER');
+                    } else {
+                        isDiscoverable = (instance.healthyState === 'HEALTHY');
+                    }
+                    var stopLight = isDiscoverable ? stoplightGreen : stoplightRed;
+                    var details = (instance.healthyState === 'HEALTHY') ? healthy : unHealthy;
+                    if ( instance.forcedState != 'CLEARED' ) {
+                        details = details + forced.replace('$VALUE$', instance.forcedState.toLowerCase());
+                    }
+                    var thisInstance = soaGetTemplate('soa-service-instance-template', {
+                        '$STOPLIGHT$': stopLight,
+                        '$INSTANCE_DATA$': trim(soaToName(instance)),
+                        '$INSTANCE_DETAILS$': details,
+                        '$ID$': instance.id
+                    });
+                    instances = instances + thisInstance;
                 }
-                var thisInstance = soaGetTemplate('soa-service-instance-template', {
-                    '$STOPLIGHT$': stopLight,
-                    '$INSTANCE_DATA$': trim(soaToName(instance)),
-                    '$INSTANCE_DETAILS$': details,
-                    '$ID$': instance.id
-                });
-                instances = instances + thisInstance;
-            }
 
-            $('#soa-service-instance-qty-' + serviceName).text(data.length);
-            $('#soa-service-instances-' + serviceName).html(instances);
+                $('#soa-service-instance-qty-' + serviceName).text(data.length);
+                $('#soa-service-instances-' + serviceName).html(instances);
 
-            function setHandlers(instance) {
-                $('#soa-force-button-' + instance.id).click(function(){
-                    soaHandleForceButton(serviceName, instance);
-                });
-                $('#soa-logs-button-' + instance.id).click(function(){
-                    soaHandleLogButton(instance);
-                });
-                $('#soa-trace-button-' + instance.id).click(function(){
-                    soaHandleTraceButton(instance);
-                });
-                $('#soa-details-button-' + instance.id).click(function(){
-                    soaHandleDetailsButton(instance);
-                });
-            }
-            for ( var j in data ) {
-                setHandlers(data[j]);
-            }
+                function setHandlers(instance) {
+                    $('#soa-force-button-' + instance.id).click(function(){
+                        soaHandleForceButton(serviceName, instance);
+                    });
+                    $('#soa-logs-button-' + instance.id).click(function(){
+                        soaHandleLogButton(instance);
+                    });
+                    $('#soa-trace-button-' + instance.id).click(function(){
+                        soaHandleTraceButton(instance);
+                    });
+                    $('#soa-details-button-' + instance.id).click(function(){
+                        soaHandleDetailsButton(instance);
+                    });
+                }
+                for ( var j in data ) {
+                    setHandlers(data[j]);
+                }
 
-            $('#soa-services-last-updated').text('Last updated ' + (new Date()).toLocaleString());
-        } else {
-            $('#' + id).remove();
+                $('#soa-services-last-updated').text('Last updated ' + (new Date()).toLocaleString());
+            } else {
+                soaRemoveInstance(id);
+            }
+        },
+        error: function() {
+            var id = SOA_SERVICE_ID_PREFIX + serviceName;
+            soaRemoveInstance(id);
         }
     });
 }
 
 var soaServices = [];
 
+function soaRemoveInstance(id) {
+    $('#' + id).remove();
+
+    var serviceCount = 0;
+    for ( var k in soaServices ) {
+        var serviceName = soaServices[k];
+        if ( soaServiceDivExists(serviceName) ) {
+            ++serviceCount;
+        }
+    }
+    if ( serviceCount == 0 ) {
+        soaSetNoInstances();
+    }
+}
+
 function soaServiceDivExists(serviceName) {
     var id = SOA_SERVICE_ID_PREFIX + serviceName;
     return $('#' + id).length > 0;
+}
+
+function soaSetNoInstances() {
+    $('#soa-no-services').show();
 }
 
 function soaUpdateInstances() {
@@ -197,7 +226,7 @@ function soaUpdateInstances() {
         }
 
         if ( data.length == 0 ) {
-            $('#soa-services').html(soaGetTemplate('soa-no-instances'));
+            soaSetNoInstances();
         }
 
         soaServices = data;

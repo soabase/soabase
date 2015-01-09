@@ -212,15 +212,22 @@ public class IndexServlet extends HttpServlet
             metricsBuilder.append("vmMetrics.push(").append(obj).append(");\n");
         }
 
-        for ( AuthFields field : AuthFields.values() )
+        String signInHeading = "";
+        String signInButton = "";
+        if ( authSpec != null )
         {
-            if ( authSpec.getFields().contains(field) )
+            signInHeading = authSpec.getSignInHeading();
+            signInButton = authSpec.getSignInButton();
+            for ( AuthFields field : AuthFields.values() )
             {
-                authFieldsBuilder.append("$('#").append(field.name().toLowerCase()).append("').removeClass('soa-hidden');\n");
-            }
-            else
-            {
-                authFieldsBuilder.append("$('#").append(field.name().toLowerCase()).append("').remove();\n");
+                if ( authSpec.getFields().contains(field) )
+                {
+                    authFieldsBuilder.append("$('#").append(field.name().toLowerCase()).append("').removeClass('soa-hidden');\n");
+                }
+                else
+                {
+                    authFieldsBuilder.append("$('#").append(field.name().toLowerCase()).append("').remove();\n");
+                }
             }
         }
 
@@ -249,8 +256,8 @@ public class IndexServlet extends HttpServlet
             content = content.replace("$SOA_COPYRIGHT$", "" + currentYear + " " + componentManager.getCompanyName());
             content = content.replace("$SOA_FOOTER_MESSAGE$", "" + componentManager.getFooterMessage());
             content = content.replace("$SOA_AUTH_FIELDS$", authFields);
-            content = content.replace("$SOA_AUTH_HEADING$", authSpec.getSignInHeading());
-            content = content.replace("$SOA_AUTH_BUTTON$", authSpec.getSignInButton());
+            content = content.replace("$SOA_AUTH_HEADING$", signInHeading);
+            content = content.replace("$SOA_AUTH_BUTTON$", signInButton);
 
             String eTag = '"' + Hashing.murmur3_128().hashBytes(content.getBytes()).toString() + '"';
             files.put(mapping.getKey(), new Entry(content, eTag));

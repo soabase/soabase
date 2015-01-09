@@ -50,6 +50,8 @@ Soabase
 
         * Watch any Dropwizard metric
 
+        * Supports LDAP or custom authentication
+
     * {{{./config.html}Configuration Utilities}}
 
         * A flexible Dropwizard ConfigurationSourceProvider. Allows configuration to be either a string, an external file or a resource in the classpath.

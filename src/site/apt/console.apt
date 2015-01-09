@@ -38,6 +38,8 @@ Administration Console
 *----------------------------*------------------------------------------------------------------------------------------------------*
 | addingMetricComponent()    | adds a custom metric                                                                                 |
 *----------------------------*------------------------------------------------------------------------------------------------------*
+| withAuthSpec()             | adds authentication (see below)                                                                      |
+*----------------------------*------------------------------------------------------------------------------------------------------*
 
     Call <<<build()>>> to build a new admin console application instance. Then, use Dropwizard methods to run the application.
 
@@ -52,6 +54,28 @@ Administration Console
     <<< >>>
 
     For details on using the console, see the {{{./example-console.html}Admin Console Example page}}.
+
+* Authentication
+
+    The console supports simple, LDAP or custom authentication. To enable authentication, add an <<<AuthSpec>>> instance to the
+    <<<AdminConsoleAppBuilder>>>. Supply the <<<AuthSpec>>> with an <<<AuthMethod>>>, the set of fields (username, email, etc.)
+    to add to the login form and, optionally, the SSL port to use for login.
+
+    Two AuthMethod implementations are provided. You can also write your own.
+
+** SimpleAuthMethod
+
+    This auth method allows you to hard code a set of username/passwords that will be accepted for login.
+
+** LdapAuthMethod
+
+    Uses the Java "com.sun.jndi.ldap.LdapCtxFactory" to do LDAP authentication. Supply LdapAuthMethod with the LDAP
+    URI and query string. The query string can have substitutions for username, email and domain via <<<$USER$>>>,
+    <<<$EMAIL$>>>, and <<<$DOMAIN$>>>. E.g. <<<uid=$USER$,dc=$DOMAIN$>>>.
+
+** Custom
+
+    You can add a custom authentication mechanism by implementing the <<<AuthMethod>>> interface.
 
 * Customizing
 

@@ -24,15 +24,20 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
 import com.google.common.net.HttpHeaders;
 import io.dropwizard.jetty.setup.ServletEnvironment;
+import io.soabase.admin.auth.AuthFields;
+import io.soabase.admin.auth.AuthFilter;
+import io.soabase.admin.auth.AuthSpec;
 import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.MetricComponent;
 import io.soabase.admin.components.TabComponent;
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,25 +51,12 @@ public class IndexServlet extends HttpServlet
     private static final String FORCE = "/force";
 
     private final ComponentManager componentManager;
-    private final List<Mapping> mappings;
+    private final AuthSpec authSpec;
+    private final List<IndexMapping> mappings;
     private final AtomicReference<Map<String, Entry>> files = new AtomicReference<Map<String, Entry>>(Maps.<String, Entry>newHashMap());
     private final AtomicLong lastModified = new AtomicLong(0);
     private final AtomicInteger builtFromVersion = new AtomicInteger(-1);
     private final ObjectMapper mapper = new ObjectMapper();
-
-    public static class Mapping
-    {
-        private final String path;
-        private final String file;
-        private final String key;
-
-        public Mapping(String path, String file)
-        {
-            this.key = path.equals("") ? "/" : path;
-            this.path = path;
-            this.file = file;
-        }
-    }
 
     private static class Entry
     {
@@ -78,20 +70,33 @@ public class IndexServlet extends HttpServlet
         }
     }
 
-    public IndexServlet(ComponentManager componentManager, List<Mapping> mappings)
+    public IndexServlet(ComponentManager componentManager, List<IndexMapping> mappings, AuthSpec authSpec)
     {
         this.componentManager = componentManager;
+        this.authSpec = authSpec;
         this.mappings = ImmutableList.copyOf(mappings);
     }
 
     public void setServlets(ServletEnvironment servlets)
     {
-        for ( Mapping mapping : mappings )
+        AuthFilter authFilter = (authSpec != null) ? new AuthFilter(authSpec) : null;
+        for ( IndexMapping mapping : mappings )
         {
-            String name = Splitter.on('.').split(mapping.file).iterator().next();
-            servlets.addServlet(name, this).addMapping(mapping.path);
-            servlets.addServlet(name + "-force", this).addMapping(FORCE + mapping.path);
+            String name = Splitter.on('.').split(mapping.getFile()).iterator().next();
+            servlets.addServlet(name, this).addMapping(mapping.getPath());
+            servlets.addServlet(name + "-force", this).addMapping(FORCE + mapping.getPath());
+            if ( !mapping.isAuthServlet() && (authFilter != null) )
+            {
+                servlets.addFilter("auth-" + name, authFilter).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, mapping.getPath());
+                servlets.addFilter("auth-" + name + "-force", authFilter).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, FORCE + mapping.getPath());
+            }
         }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        doGet(request, response);
     }
 
     @Override
@@ -135,12 +140,12 @@ public class IndexServlet extends HttpServlet
     private synchronized void rebuild()
     {
         Map<String, Entry> newFiles = Maps.newHashMap();
-        for ( Mapping mapping : mappings )
+        for ( IndexMapping mapping : mappings )
         {
             try
             {
-                String content = Resources.toString(Resources.getResource(mapping.file), Charsets.UTF_8);
-                newFiles.put(mapping.key, new Entry(content, "")); // temp entry
+                String content = Resources.toString(Resources.getResource(mapping.getFile()), Charsets.UTF_8);
+                newFiles.put(mapping.getKey(), new Entry(content, "")); // temp entry
             }
             catch ( IOException e )
             {
@@ -175,6 +180,7 @@ public class IndexServlet extends HttpServlet
         StringBuilder jsBuilder = new StringBuilder();
         StringBuilder tabContentBuilder = new StringBuilder();
         StringBuilder metricsBuilder = new StringBuilder();
+        StringBuilder authFieldsBuilder = new StringBuilder();
 
         for ( TabComponent tab : componentManager.getTabs() )
         {
@@ -206,18 +212,32 @@ public class IndexServlet extends HttpServlet
             metricsBuilder.append("vmMetrics.push(").append(obj).append(");\n");
         }
 
+        for ( AuthFields field : AuthFields.values() )
+        {
+            if ( authSpec.getFields().contains(field) )
+            {
+                authFieldsBuilder.append("$('#").append(field.name().toLowerCase()).append("').removeClass('soa-hidden');\n");
+            }
+            else
+            {
+                authFieldsBuilder.append("$('#").append(field.name().toLowerCase()).append("').remove();\n");
+            }
+        }
+
         String tabs = tabsBuilder.toString();
         String metrics = metricsBuilder.toString();
         String tabContent = tabContentBuilder.toString();
         String ids = idsBuilder.toString();
         String css = cssBuilder.toString();
         String js = jsBuilder.toString();
+        String authFields = authFieldsBuilder.toString();
 
-        for ( Mapping mapping : mappings )
+        for ( IndexMapping mapping : mappings )
         {
-            Entry entry = files.get(mapping.key);
+            Entry entry = files.get(mapping.getKey());
             String content = entry.content;
 
+            content = content.replace("$SOA_HAS_AUTH$", (authSpec != null) ? "true" : "false");
             content = content.replace("$SOA_TABS$", tabs);
             content = content.replace("$SOA_TABS_CONTENT$", tabContent);
             content = content.replace("$SOA_METRICS$", metrics);
@@ -228,9 +248,12 @@ public class IndexServlet extends HttpServlet
             content = content.replace("$SOA_NAME$", componentManager.getAppName());
             content = content.replace("$SOA_COPYRIGHT$", "" + currentYear + " " + componentManager.getCompanyName());
             content = content.replace("$SOA_FOOTER_MESSAGE$", "" + componentManager.getFooterMessage());
+            content = content.replace("$SOA_AUTH_FIELDS$", authFields);
+            content = content.replace("$SOA_AUTH_HEADING$", authSpec.getSignInHeading());
+            content = content.replace("$SOA_AUTH_BUTTON$", authSpec.getSignInButton());
 
             String eTag = '"' + Hashing.murmur3_128().hashBytes(content.getBytes()).toString() + '"';
-            files.put(mapping.key, new Entry(content, eTag));
+            files.put(mapping.getKey(), new Entry(content, eTag));
         }
     }
 }

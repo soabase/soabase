@@ -18,6 +18,9 @@ package io.soabase.example.admin;
 import com.google.common.collect.Lists;
 import io.soabase.admin.AdminConsoleApp;
 import io.soabase.admin.AdminConsoleAppBuilder;
+import io.soabase.admin.auth.AuthFields;
+import io.soabase.admin.auth.AuthSpec;
+import io.soabase.admin.auth.SimpleAuthMethod;
 import io.soabase.admin.components.Metric;
 import io.soabase.admin.components.MetricComponent;
 import io.soabase.admin.components.MetricType;
@@ -27,6 +30,7 @@ import io.soabase.admin.details.BundleSpec;
 import io.soabase.example.ExampleAppBase;
 import io.soabase.sql.attributes.SqlBundle;
 import io.soabase.zookeeper.discovery.CuratorBundle;
+import jersey.repackaged.com.google.common.collect.Sets;
 import java.util.List;
 
 public class ExampleAdminConsoleMain
@@ -45,10 +49,13 @@ public class ExampleAdminConsoleMain
 
         List<Metric> metrics = Lists.newArrayList(new Metric("random", "gauges['goodbye-random'].value"));
         MetricComponent customMetric = new MetricComponent("custom-metric", MetricType.STANDARD, "Custom", "Value", metrics);
+        SimpleAuthMethod.User user = new SimpleAuthMethod.User("jordan", "jordan");
+        AuthSpec authSpec = new AuthSpec(new SimpleAuthMethod(Lists.newArrayList(user)), Sets.newHashSet(AuthFields.USERNAME, AuthFields.PASSWORD));
         AdminConsoleApp<ExampleAdminConfiguration> app = AdminConsoleAppBuilder.<ExampleAdminConfiguration>builder()
             .withAppName("Example")
             .withCompanyName("My Company")
             .withConfigurationClass(ExampleAdminConfiguration.class)
+            .withAuthSpec(authSpec)
             .addingTabComponent(component)
             .addingMetricComponent(customMetric)
             .addingBundle(new BundleSpec<>(new CuratorBundle<ExampleAdminConfiguration>(), BundleSpec.Phase.PRE_SOA))

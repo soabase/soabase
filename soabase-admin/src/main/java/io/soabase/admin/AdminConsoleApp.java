@@ -29,17 +29,21 @@ import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.servlets.assets.AssetServlet;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.soabase.admin.auth.AuthSpecHolder;
 import io.soabase.admin.components.AssetsPath;
 import io.soabase.admin.components.ComponentBundle;
 import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.details.BundleSpec;
 import io.soabase.admin.rest.AttributesResource;
+import io.soabase.admin.rest.AuthResource;
 import io.soabase.admin.rest.DiscoveryResource;
 import io.soabase.admin.rest.PreferencesResource;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.config.FlexibleConfigurationSourceProvider;
+import org.eclipse.jetty.server.session.SessionHandler;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import javax.validation.Validator;
 
 public class AdminConsoleApp<T extends Configuration> extends Application<T>
@@ -91,7 +95,7 @@ public class AdminConsoleApp<T extends Configuration> extends Application<T>
         addBundles(bootstrap, BundleSpec.Phase.PRE_SOA);
         bootstrap.addBundle(bundle);
         bootstrap.addBundle(new SoaBundle<>());
-        bootstrap.addBundle(new ComponentBundle(builder.getAppName(), builder.getCompanyName(), builder.getFooterMessage(), builder.getTabs(), builder.getMetrics()));
+        bootstrap.addBundle(new ComponentBundle(builder.getAppName(), builder.getCompanyName(), builder.getFooterMessage(), builder.getTabs(), builder.getMetrics(), builder.getAuthSpec()));
         bootstrap.addBundle(new AssetsBundle("/assets/soa"));
         addBundles(bootstrap, BundleSpec.Phase.POST_SOA);
     }
@@ -103,6 +107,22 @@ public class AdminConsoleApp<T extends Configuration> extends Application<T>
         environment.jersey().register(AttributesResource.class);
         environment.jersey().register(PreferencesResource.class);
 
+        environment.jersey().register(AuthResource.class);
+        AbstractBinder binder = new AbstractBinder()
+        {
+            @Override
+            protected void configure()
+            {
+                AuthSpecHolder holder = new AuthSpecHolder(builder.getAuthSpec());
+                bind(holder).to(AuthSpecHolder.class);
+            }
+        };
+        environment.jersey().register(binder);
+        if ( builder.getAuthSpec() != null )
+        {
+            environment.servlets().setSessionHandler(new SessionHandler());
+        }
+
         ComponentManager componentManager = SoaBundle.getFeatures(environment).getNamed(ComponentManager.class, SoaFeatures.DEFAULT_NAME);
         for ( TabComponent component : componentManager.getTabs() )
         {
@@ -113,6 +133,7 @@ public class AdminConsoleApp<T extends Configuration> extends Application<T>
                 environment.servlets().addServlet(component.getName() + index++, servlet).addMapping(assetsPath.getUriPath() + '*');
             }
         }
+
     }
 
     private void addBundles(Bootstrap<T> bootstrap, BundleSpec.Phase phase)

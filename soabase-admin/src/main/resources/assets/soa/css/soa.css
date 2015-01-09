@@ -41,13 +41,30 @@ body {
 }
 
 .soa-progress {
-    margin-top: 12px;
-    width: 100px;
+    width: 120px;
     height: 1em;
-    float: right;
-    display: inline;
 }
 
 .soa-progress-bar {
-    width: 100px;
+    width: 120px;
+}
+
+#soa-progress-container {
+    position: absolute;
+    top: 6px;
+    left: 100%;
+    margin-left: -200px;
+    z-index: 9999;
+}
+
+#soa-login {
+    position: absolute;
+    top: 22px;
+    left: 100%;
+    margin-left: -250px;
+    z-index: 9999;
+}
+
+#soa-login button {
+    margin-left: 3px;
 }

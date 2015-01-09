@@ -23,6 +23,7 @@
 - Admin console
     * Get more accurate CPU/disk load
     * Have a way to specify metrics with wildcards
+    * Add optional LDAP integration
 * Tests
 * javadoc/doc
 * TO-DOs

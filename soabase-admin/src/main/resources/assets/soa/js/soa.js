@@ -53,7 +53,41 @@ function soaShowPage() {
     }
 }
 
+function soaInitAuth() {
+    if ( soaHasAuth ) {
+        $('#soa-login-button').click(function(){
+            $.ajax({
+                type: "DELETE",
+                url: "/soa/auth",
+                success: function() {
+                    location.href = '/';
+                }
+            });
+        });
+
+        function checkAuth() {
+            $.getJSON('/soa/auth', function(data){
+                if ( data.type === 'MUST_LOG_IN' ) {
+                    location.href = '/';
+                } else if ( data.type === 'LOGGED_IN' ) {
+                    var name = data.name;
+                    if ( name.length > 20 ) {
+                        name = name.substring(0, 17) + '...';
+                    }
+                    $('#soa-login-name').text(name);
+                    $('#soa-login').show();
+                } else {
+                    $('#soa-login').hide();
+                }
+            });
+        }
+        setInterval(checkAuth, 5000);
+        checkAuth();
+    }
+}
+
 $(function() {
+    soaInitAuth();
     soaAutoLoadTemplates();
     soaShowPage();
     $(window).on('hashchange', function() {

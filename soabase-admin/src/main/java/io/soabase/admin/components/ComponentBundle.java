@@ -20,6 +20,8 @@ import com.google.common.collect.Lists;
 import io.dropwizard.Bundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.soabase.admin.auth.AuthSpec;
+import io.soabase.admin.details.IndexMapping;
 import io.soabase.admin.details.IndexServlet;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
@@ -33,14 +35,16 @@ public class ComponentBundle implements Bundle
     private final String companyName;
     private final String footerMessage;
     private final List<MetricComponent> metrics;
+    private final AuthSpec authSpec;
     private final List<TabComponent> tabs;
 
-    public ComponentBundle(String appName, String companyName, String footerMessage, List<TabComponent> tabs, List<MetricComponent> metrics)
+    public ComponentBundle(String appName, String companyName, String footerMessage, List<TabComponent> tabs, List<MetricComponent> metrics, AuthSpec authSpec)
     {
         this.appName = appName;
         this.companyName = companyName;
         this.footerMessage = footerMessage;
         this.metrics = metrics;
+        this.authSpec = authSpec;
         this.tabs = ImmutableList.copyOf(tabs);
     }
 
@@ -64,13 +68,14 @@ public class ComponentBundle implements Bundle
         componentManager.getTabs().addAll(tabs);
         componentManager.getMetrics().addAll(metrics);
 
-        List<IndexServlet.Mapping> mappings = Lists.newArrayList
+        List<IndexMapping> mappings = Lists.newArrayList
         (
-            new IndexServlet.Mapping("", "index.html"),
-            new IndexServlet.Mapping("/vm", "vm.html"),
-            new IndexServlet.Mapping("/logs", "logs.html")
+            new IndexMapping("", "index.html"),
+            new IndexMapping("/vm", "vm.html"),
+            new IndexMapping("/logs", "logs.html"),
+            new IndexMapping("/signin", "signin.html", true)
         );
-        IndexServlet servlet = new IndexServlet(componentManager, mappings);
+        IndexServlet servlet = new IndexServlet(componentManager, mappings, authSpec);
         servlet.setServlets(environment.servlets());
 
         environment.jersey().register(binder);

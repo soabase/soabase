@@ -25,14 +25,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="/assets/soa/css/soa.css">
-    $SOA_CSS$
-
-    <script type="text/javascript">
-        var soaHasAuth = $SOA_HAS_AUTH$;
-        var soaDefaultTabId = '$SOA_DEFAULT_TAB_ID$';
-        var soaTabIds = [];
-        $SOA_TAB_IDS$
-    </script>
+    <link rel="stylesheet" href="/assets/soa/css/signin.css">
 </head>
 
 <body>
@@ -42,27 +35,28 @@
         <div class="navbar-header">
             <a class="navbar-brand" href="#">$SOA_NAME$</a>
         </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul id="soa-navbar-nav" class="nav navbar-nav">
-                $SOA_TABS$
-            </ul>
-        </div>
     </div>
 </nav>
 
-<div class="container soa-top-margin">
-    $SOA_TABS_CONTENT$
-</div>
+<div class="container">
+    <form class="form-signin" name="formSignin" method="post" action="/soa/auth" enctype="application/x-www-form-urlencoded">
+        <h2 class="form-signin-heading">$SOA_AUTH_HEADING$</h2>
 
-<div id="soa-progress-container" class="soa-hidden">
-    <div class="progress soa-progress">
-        <div class="soa-progress-bar progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-</div>
+        <div class="alert alert-danger alert-dismissible soa-hidden" id="error" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>$SOA_AUTH_BUTTON$ failed</strong>
+        </div>
 
-<div id="soa-login" class="soa-hidden">
-    <span id="soa-login-name" class="text-muted"></span>
-    <button id="soa-login-button" type="button" class="btn btn-default btn-xs">Log Out</button>
+        <label for="email" class="sr-only">Email address</label>
+        <input type="email" id="email" name="email" class="form-control soa-hidden" placeholder="Email address" required>
+        <label for="username" class="sr-only">Email address</label>
+        <input type="text" id="username" name="username" class="form-control soa-hidden" placeholder="User name" required>
+        <label for="domain" class="sr-only">Domain</label>
+        <input type="text" id="domain" name="domain" class="form-control soa-hidden" placeholder="Domain" required>
+        <label for="password" class="sr-only">Password</label>
+        <input type="password" id="password" name="password" class="form-control soa-hidden" placeholder="Password" required>
+        <input class="btn btn-lg btn-primary btn-block" type="submit" value="$SOA_AUTH_BUTTON$">
+    </form>
 </div>
 
 <footer class="soa-footer">
@@ -75,8 +69,16 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 <script src="/assets/soa/js/bootbox.min.js"></script>
 <script src="/assets/soa/js/soa-templates.js"></script>
-<script src="/assets/soa/js/soa.js"></script>
-$SOA_JS$
+
+<script type="text/javascript">
+    $(function(){
+        $SOA_AUTH_FIELDS$
+
+        if ( getParameterByName("error") ) {
+            $('#error').show();
+        }
+    });
+</script>
 
 </body>
 </html>

@@ -18,6 +18,7 @@ package io.soabase.admin;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.dropwizard.Configuration;
+import io.soabase.admin.auth.AuthSpec;
 import io.soabase.admin.components.MetricComponent;
 import io.soabase.admin.components.StandardComponents;
 import io.soabase.admin.components.TabComponent;
@@ -30,6 +31,7 @@ public class AdminConsoleAppBuilder<T extends Configuration>
     private String companyName = "";
     private String footerMessage = "- Internal use only - Proprietary and Confidential";
     private String soaConfigFieldName = "soa";
+    private AuthSpec authSpec = null;
     private Class<? extends Configuration> configurationClass = Configuration.class;
     private final List<TabComponent> tabs = Lists.newArrayList();
     private final List<BundleSpec<T>> bundles = Lists.newArrayList();
@@ -72,6 +74,12 @@ public class AdminConsoleAppBuilder<T extends Configuration>
     public AdminConsoleAppBuilder<T> withFooterMessage(String footerMessage)
     {
         this.footerMessage = Preconditions.checkNotNull(footerMessage, "footerMessage cannot be null");
+        return this;
+    }
+
+    public AdminConsoleAppBuilder<T> withAuthSpec(AuthSpec authSpec)
+    {
+        this.authSpec = authSpec;
         return this;
     }
 
@@ -141,6 +149,11 @@ public class AdminConsoleAppBuilder<T extends Configuration>
     List<MetricComponent> getMetrics()
     {
         return metrics;
+    }
+
+    AuthSpec getAuthSpec()
+    {
+        return authSpec;
     }
 
     private AdminConsoleAppBuilder()

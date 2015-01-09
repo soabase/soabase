@@ -74,8 +74,7 @@ public class SimpleAuthMethod implements AuthMethod
         User findUser = new User(username, password);
         if ( validUsers.contains(findUser) )
         {
-            HttpSession session = request.getSession(true);
-            session.setAttribute(SimpleAuthMethod.class.getName(), findUser.username);
+            internalSetLogin(request, findUser.username);
             return true;
         }
         return false;
@@ -104,5 +103,16 @@ public class SimpleAuthMethod implements AuthMethod
             }
         }
         return new AuthDetails(false, "");
+    }
+
+    protected SimpleAuthMethod()
+    {
+        this.validUsers = ImmutableList.of();
+    }
+
+    protected void internalSetLogin(HttpServletRequest request, String name)
+    {
+        HttpSession session = request.getSession(true);
+        session.setAttribute(SimpleAuthMethod.class.getName(), name);
     }
 }

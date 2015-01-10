@@ -16,7 +16,7 @@
 package io.soabase.core.features.client;
 
 import com.google.common.base.Preconditions;
-import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import io.soabase.core.features.discovery.DiscoveryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
@@ -30,7 +30,7 @@ class RetryContext
     private final String originalHost;
     private final String method;
     private final RetryComponents components;
-    private volatile SoaDiscoveryInstance instance;
+    private volatile DiscoveryInstance instance;
 
     RetryContext(RetryComponents components, URI originalUri, String method)
     {
@@ -40,12 +40,12 @@ class RetryContext
         this.method = Preconditions.checkNotNull(method, "method cannot be null");
     }
 
-    SoaDiscoveryInstance getInstance()
+    DiscoveryInstance getInstance()
     {
         return instance;
     }
 
-    void setInstance(SoaDiscoveryInstance instance)
+    void setInstance(DiscoveryInstance instance)
     {
         this.instance = instance;
     }

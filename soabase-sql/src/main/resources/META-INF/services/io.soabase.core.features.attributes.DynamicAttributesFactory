@@ -1,1 +1,1 @@
-io.soabase.sql.attributes.DynamicAttributesFactory
+io.soabase.sql.attributes.SqlDynamicAttributesFactory

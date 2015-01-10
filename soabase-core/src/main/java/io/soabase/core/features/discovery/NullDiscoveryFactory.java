@@ -23,12 +23,12 @@ import java.util.Collection;
 import java.util.Map;
 
 @JsonTypeName("default")
-public class NullDiscoveryFactory implements SoaDiscoveryFactory
+public class NullDiscoveryFactory implements DiscoveryFactory
 {
     @Override
-    public SoaDiscovery build(Environment environment, SoaInfo soaInfo)
+    public Discovery build(Environment environment, SoaInfo soaInfo)
     {
-        return new SoaDiscovery()
+        return new Discovery()
         {
             @Override
             public Collection<String> getServiceNames()
@@ -37,19 +37,19 @@ public class NullDiscoveryFactory implements SoaDiscoveryFactory
             }
 
             @Override
-            public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
+            public Collection<DiscoveryInstance> getAllInstances(String serviceName)
             {
                 return ImmutableSet.of();
             }
 
             @Override
-            public SoaDiscoveryInstance getInstance(String serviceName)
+            public DiscoveryInstance getInstance(String serviceName)
             {
                 return null;
             }
 
             @Override
-            public void noteError(String serviceName, SoaDiscoveryInstance errorInstance)
+            public void noteError(String serviceName, DiscoveryInstance errorInstance)
             {
                 // NOP
             }

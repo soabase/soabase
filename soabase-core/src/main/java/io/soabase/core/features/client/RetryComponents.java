@@ -17,17 +17,17 @@ package io.soabase.core.features.client;
 
 import com.google.common.base.Preconditions;
 import io.soabase.core.features.ExecutorBuilder;
-import io.soabase.core.features.discovery.SoaDiscovery;
+import io.soabase.core.features.discovery.Discovery;
 import java.util.concurrent.ExecutorService;
 
 public class RetryComponents
 {
-    private final SoaDiscovery discovery;
+    private final Discovery discovery;
     private final int maxRetries;
     private final boolean retry500s;
     private final ExecutorService executorService;
 
-    public RetryComponents(SoaDiscovery discovery, int maxRetries, boolean retry500s, ExecutorBuilder executorBuilder)
+    public RetryComponents(Discovery discovery, int maxRetries, boolean retry500s, ExecutorBuilder executorBuilder)
     {
         this.discovery = Preconditions.checkNotNull(discovery, "discovery cannot be null");
         this.maxRetries = maxRetries;
@@ -41,7 +41,7 @@ public class RetryComponents
         return executorService;
     }
 
-    public SoaDiscovery getDiscovery()
+    public Discovery getDiscovery()
     {
         return discovery;
     }

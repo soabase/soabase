@@ -18,11 +18,11 @@ package io.soabase.core.features.discovery;
 import java.util.Collection;
 import java.util.Map;
 
-public class SafeSoaDiscovery implements SoaDiscovery
+public class SafeDiscovery implements Discovery
 {
-    private final SoaDiscovery implementation;
+    private final Discovery implementation;
 
-    public SafeSoaDiscovery(SoaDiscovery implementation)
+    public SafeDiscovery(Discovery implementation)
     {
         this.implementation = implementation;
     }
@@ -34,19 +34,19 @@ public class SafeSoaDiscovery implements SoaDiscovery
     }
 
     @Override
-    public SoaDiscoveryInstance getInstance(String serviceName)
+    public DiscoveryInstance getInstance(String serviceName)
     {
         return implementation.getInstance(serviceName);
     }
 
     @Override
-    public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
+    public Collection<DiscoveryInstance> getAllInstances(String serviceName)
     {
         return implementation.getAllInstances(serviceName);
     }
 
     @Override
-    public void noteError(String serviceName, SoaDiscoveryInstance errorInstance)
+    public void noteError(String serviceName, DiscoveryInstance errorInstance)
     {
         implementation.noteError(serviceName, errorInstance);
     }

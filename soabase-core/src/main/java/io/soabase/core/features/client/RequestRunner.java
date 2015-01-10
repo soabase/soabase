@@ -15,7 +15,7 @@
  */
 package io.soabase.core.features.client;
 
-import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import io.soabase.core.features.discovery.DiscoveryInstance;
 import java.net.URI;
 
 public class RequestRunner<T>
@@ -38,7 +38,7 @@ public class RequestRunner<T>
     public URI prepareRequest(T request)
     {
         RequestId.checkSetHeaders(request, headerSetter);
-        SoaDiscoveryInstance instance = getSoaDiscoveryInstance();
+        DiscoveryInstance instance = getDiscoveryInstance();
         retryContext.setInstance(instance);
         URI filteredUri = ClientUtils.filterUri(retryContext.getOriginalUri(), instance);
         return (filteredUri != null) ? filteredUri : retryContext.getOriginalUri();
@@ -59,7 +59,7 @@ public class RequestRunner<T>
         return retryContext.shouldBeRetried(retryCount++, 0, exception);
     }
 
-    protected SoaDiscoveryInstance getSoaDiscoveryInstance()
+    protected DiscoveryInstance getDiscoveryInstance()
     {
         return ClientUtils.hostToInstance(retryContext.getComponents().getDiscovery(), retryContext.getOriginalHost());
     }

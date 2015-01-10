@@ -31,8 +31,8 @@ import io.dropwizard.lifecycle.Managed;
 import io.soabase.core.SoaInfo;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
-import io.soabase.core.features.discovery.SoaDiscoveryInstance;
-import io.soabase.core.features.discovery.SoaExtendedDiscovery;
+import io.soabase.core.features.discovery.DiscoveryInstance;
+import io.soabase.core.features.discovery.ExtendedDiscovery;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.x.discovery.InstanceFilter;
@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 // TODO
-public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payload>> implements SoaExtendedDiscovery, Managed, RemovalListener<String, ServiceProvider<Payload>>
+public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payload>> implements ExtendedDiscovery, Managed, RemovalListener<String, ServiceProvider<Payload>>
 {
     private final ServiceDiscovery<Payload> discovery;
     private final LoadingCache<String, ServiceProvider<Payload>> providers;
@@ -141,7 +141,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
             ServiceInstance<Payload> foundInstance = discovery.queryForInstance(serviceName, instanceId);
             if ( foundInstance != null )
             {
-                SoaDiscoveryInstance soaInstance = toSoaInstance(foundInstance);
+                DiscoveryInstance soaInstance = toSoaInstance(foundInstance);
                 Payload oldPayload = foundInstance.getPayload();
                 Payload newPayload = new Payload(oldPayload.getAdminPort(), oldPayload.getMetaData(), forcedState, oldPayload.getHealthyState());
                 ServiceInstance<Payload> updatedInstance = buildInstance(serviceName, soaInstance.getPort(), newPayload, instanceId, soaInstance.getHost());
@@ -187,16 +187,16 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public Collection<SoaDiscoveryInstance> queryForAllInstances(String serviceName)
+    public Collection<DiscoveryInstance> queryForAllInstances(String serviceName)
     {
         try
         {
             Collection<ServiceInstance<Payload>> serviceInstances = discovery.queryForInstances(serviceName);
-            Iterable<SoaDiscoveryInstance> transformed = Iterables.transform(serviceInstances, new Function<ServiceInstance<Payload>, SoaDiscoveryInstance>()
+            Iterable<DiscoveryInstance> transformed = Iterables.transform(serviceInstances, new Function<ServiceInstance<Payload>, DiscoveryInstance>()
             {
                 @Nullable
                 @Override
-                public SoaDiscoveryInstance apply(ServiceInstance<Payload> instance)
+                public DiscoveryInstance apply(ServiceInstance<Payload> instance)
                 {
                     return toSoaInstance(instance);
                 }
@@ -211,18 +211,18 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName)
+    public Collection<DiscoveryInstance> getAllInstances(String serviceName)
     {
         try
         {
             // TODO - validate service name
             ServiceProvider<Payload> provider = providers.get(serviceName);
             Collection<ServiceInstance<Payload>> allInstances = provider.getAllInstances();
-            return Collections2.transform(allInstances, new Function<ServiceInstance<Payload>, SoaDiscoveryInstance>()
+            return Collections2.transform(allInstances, new Function<ServiceInstance<Payload>, DiscoveryInstance>()
             {
                 @Nullable
                 @Override
-                public SoaDiscoveryInstance apply(@Nullable ServiceInstance<Payload> instance)
+                public DiscoveryInstance apply(@Nullable ServiceInstance<Payload> instance)
                 {
                     return toSoaInstance(instance);
                 }
@@ -236,7 +236,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public SoaDiscoveryInstance getInstance(String serviceName)
+    public DiscoveryInstance getInstance(String serviceName)
     {
         ServiceInstance<Payload> instance;
         try
@@ -254,7 +254,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public void noteError(String serviceName, final SoaDiscoveryInstance errorInstance)
+    public void noteError(String serviceName, final DiscoveryInstance errorInstance)
     {
         FoundInstance foundInstance = findInstanceFromProvider(serviceName, errorInstance);
         if ( foundInstance != null )
@@ -280,7 +280,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         CloseableUtils.closeQuietly(discovery);
     }
 
-    private FoundInstance findInstanceFromProvider(String serviceName, final SoaDiscoveryInstance instanceToFind)
+    private FoundInstance findInstanceFromProvider(String serviceName, final DiscoveryInstance instanceToFind)
     {
         ServiceInstance<Payload> foundInstance = null;
         ServiceProvider<Payload> provider = providers.getUnchecked(serviceName);
@@ -311,7 +311,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         return (foundInstance != null) ? new FoundInstance(foundInstance, provider) : null;
     }
 
-    private SoaDiscoveryInstance toSoaInstance(ServiceInstance<Payload> instance)
+    private DiscoveryInstance toSoaInstance(ServiceInstance<Payload> instance)
     {
         if ( instance == null )
         {
@@ -320,7 +320,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
 
         Payload payload = instance.getPayload();
         int port = Objects.firstNonNull(instance.getPort(), Objects.firstNonNull(instance.getSslPort(), 0));
-        return new SoaDiscoveryInstanceImpl(instance.getId(), instance.getAddress(), port, instance.getSslPort() != null, payload);
+        return new DiscoveryInstanceImpl(instance.getId(), instance.getAddress(), port, instance.getSslPort() != null, payload);
     }
 
     private void updateRegistration(Payload newPayload)

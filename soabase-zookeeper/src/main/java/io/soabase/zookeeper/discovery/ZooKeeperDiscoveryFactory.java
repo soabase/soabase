@@ -21,16 +21,14 @@ import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
-import io.soabase.core.features.discovery.SoaDiscovery;
-import io.soabase.core.features.discovery.SoaDiscoveryFactory;
+import io.soabase.core.features.discovery.Discovery;
+import io.soabase.core.features.discovery.DiscoveryFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.hibernate.validator.constraints.NotEmpty;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @JsonTypeName("zookeeper")
-public class ZooKeeperDiscoveryFactory implements SoaDiscoveryFactory
+public class ZooKeeperDiscoveryFactory implements DiscoveryFactory
 {
     private String bindAddress;
 
@@ -63,7 +61,7 @@ public class ZooKeeperDiscoveryFactory implements SoaDiscoveryFactory
     }
 
     @Override
-    public SoaDiscovery build(Environment environment, SoaInfo soaInfo)
+    public Discovery build(Environment environment, SoaInfo soaInfo)
     {
         CuratorFramework curatorFramework = SoaBundle.getFeatures(environment).getNamedRequired(CuratorFramework.class, SoaFeatures.DEFAULT_NAME);
         return new ZooKeeperDiscovery(curatorFramework, this, soaInfo);

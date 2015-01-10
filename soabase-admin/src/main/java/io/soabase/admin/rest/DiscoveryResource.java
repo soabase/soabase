@@ -19,9 +19,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.discovery.ForcedState;
-import io.soabase.core.features.discovery.SoaDiscovery;
-import io.soabase.core.features.discovery.SoaDiscoveryInstance;
-import io.soabase.core.features.discovery.SoaExtendedDiscovery;
+import io.soabase.core.features.discovery.Discovery;
+import io.soabase.core.features.discovery.DiscoveryInstance;
+import io.soabase.core.features.discovery.ExtendedDiscovery;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -52,7 +52,7 @@ public class DiscoveryResource
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getServiceNames()
     {
-        SoaExtendedDiscovery discovery = getDiscovery();
+        ExtendedDiscovery discovery = getDiscovery();
         Collection<String> names;
         try
         {
@@ -71,10 +71,10 @@ public class DiscoveryResource
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("all/{name}")
-    public Collection<SoaDiscoveryInstance> getInstances(@PathParam("name") String serviceName)
+    public Collection<DiscoveryInstance> getInstances(@PathParam("name") String serviceName)
     {
-        SoaExtendedDiscovery discovery = getDiscovery();
-        List<SoaDiscoveryInstance> instances = Lists.newArrayList(discovery.queryForAllInstances(serviceName));
+        ExtendedDiscovery discovery = getDiscovery();
+        List<DiscoveryInstance> instances = Lists.newArrayList(discovery.queryForAllInstances(serviceName));
         Collections.sort(instances);
         return instances;
     }
@@ -89,12 +89,12 @@ public class DiscoveryResource
         return Response.ok().build();
     }
 
-    private SoaExtendedDiscovery getDiscovery()
+    private ExtendedDiscovery getDiscovery()
     {
-        SoaDiscovery discovery = features.getDiscovery();
-        if ( discovery instanceof SoaExtendedDiscovery )
+        Discovery discovery = features.getDiscovery();
+        if ( discovery instanceof ExtendedDiscovery )
         {
-            return (SoaExtendedDiscovery)discovery;
+            return (ExtendedDiscovery)discovery;
         }
 
         // TODO logging

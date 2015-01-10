@@ -15,20 +15,13 @@
  */
 package io.soabase.core.features.discovery;
 
-import java.util.Collection;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.dropwizard.jackson.Discoverable;
+import io.dropwizard.setup.Environment;
+import io.soabase.core.SoaInfo;
 
-public interface SoaDiscovery
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = NullDiscoveryFactory.class)
+public interface DiscoveryFactory extends Discoverable
 {
-    public Collection<String> getServiceNames();
-
-    public SoaDiscoveryInstance getInstance(String serviceName);
-
-    public Collection<SoaDiscoveryInstance> getAllInstances(String serviceName);
-
-    public void noteError(String serviceName, SoaDiscoveryInstance errorInstance);
-
-    public void setHealthyState(HealthyState healthyState);
-
-    public void setMetaData(Map<String, String> newMetaData);
+    public Discovery build(Environment environment, SoaInfo soaInfo);
 }

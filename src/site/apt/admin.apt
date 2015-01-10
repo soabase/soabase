@@ -13,10 +13,10 @@ Administration APIs
 *------------------------------------------*---------------*----------------------------*--------------------------------------------------------------------------------*
 | /api/soa                                 | GET           | n/a                        | A SoaInfo object (see below)                                                   |
 *------------------------------------------*---------------*----------------------------*--------------------------------------------------------------------------------*
-| /api/soa/discovery/single/\{serviceName} | GET           | n/a                        | A SoaDiscoveryInstance object (see below) representing an available registered |
+| /api/soa/discovery/single/\{serviceName} | GET           | n/a                        | A DiscoveryInstance object (see below) representing an available registered    |
 |                                          |               |                            | instance for the specified service.                                            |
 *------------------------------------------*---------------*----------------------------*--------------------------------------------------------------------------------*
-| /api/soa/discovery/all/\{serviceName}    | GET           | n/a                        | List of SoaDiscoveryInstance objects (see below) representing all available    |
+| /api/soa/discovery/all/\{serviceName}    | GET           | n/a                        | List of DiscoveryInstance objects (see below) representing all available       |
 |                                          |               |                            | registered instances for the specified service.                                |                                     |
 *------------------------------------------*---------------*----------------------------*--------------------------------------------------------------------------------*
 | /api/soa/discovery/services              | GET           | n/a                        | List of all currently known services.                                          |
@@ -66,7 +66,7 @@ adminJerseyEnvironment.register(...)
 *-----------------------------*--------------------------------------------------------------------------------*
 | \                           | \                                                                              |
 *-----------------------------*--------------------------------------------------------------------------------*
-| <<SoaDiscoveryInstance>>    |                                                                                |
+| <<DiscoveryInstance>>       |                                                                                |
 *-----------------------------*--------------------------------------------------------------------------------*
 | id                          | Instance Id                                                                    |
 *-----------------------------*--------------------------------------------------------------------------------*

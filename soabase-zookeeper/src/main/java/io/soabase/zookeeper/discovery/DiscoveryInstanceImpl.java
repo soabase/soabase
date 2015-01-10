@@ -18,10 +18,10 @@ package io.soabase.zookeeper.discovery;
 import com.google.common.base.Preconditions;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
-import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import io.soabase.core.features.discovery.DiscoveryInstance;
 import java.util.Map;
 
-public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
+public class DiscoveryInstanceImpl implements DiscoveryInstance
 {
     private final String host;
     private final int port;
@@ -29,7 +29,7 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
     private final Payload payload;
     private final String id;
 
-    public SoaDiscoveryInstanceImpl(String id, String host, int port, boolean forceSsl, Payload payload)
+    public DiscoveryInstanceImpl(String id, String host, int port, boolean forceSsl, Payload payload)
     {
         this.id = Preconditions.checkNotNull(id, "id cannot be null");
         this.payload = Preconditions.checkNotNull(payload, "payload cannot be null");
@@ -87,7 +87,7 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
     }
 
     @Override
-    public int compareTo(SoaDiscoveryInstance o)
+    public int compareTo(DiscoveryInstance o)
     {
         if ( o == null )
         {
@@ -117,7 +117,7 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
             return false;
         }
 
-        SoaDiscoveryInstanceImpl that = (SoaDiscoveryInstanceImpl)o;
+        DiscoveryInstanceImpl that = (DiscoveryInstanceImpl)o;
 
         if ( forceSsl != that.forceSsl )
         {
@@ -158,7 +158,7 @@ public class SoaDiscoveryInstanceImpl implements SoaDiscoveryInstance
     @Override
     public String toString()
     {
-        return "SoaDiscoveryInstanceImpl{" +
+        return "DiscoveryInstanceImpl{" +
             "host='" + host + '\'' +
             ", port=" + port +
             ", forceSsl=" + forceSsl +

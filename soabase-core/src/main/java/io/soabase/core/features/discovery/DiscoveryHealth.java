@@ -15,13 +15,9 @@
  */
 package io.soabase.core.features.discovery;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.dropwizard.jackson.Discoverable;
-import io.dropwizard.setup.Environment;
-import io.soabase.core.SoaInfo;
+import com.codahale.metrics.health.HealthCheckRegistry;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = NullDiscoveryFactory.class)
-public interface SoaDiscoveryFactory extends Discoverable
+public interface DiscoveryHealth
 {
-    public SoaDiscovery build(Environment environment, SoaInfo soaInfo);
+    public boolean shouldBeInDiscovery(HealthCheckRegistry registry);
 }

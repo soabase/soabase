@@ -20,7 +20,7 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
-public class DefaultDiscoveryHealth implements SoaDiscoveryHealth
+public class DefaultDiscoveryHealth implements DiscoveryHealth
 {
     @Override
     public boolean shouldBeInDiscovery(HealthCheckRegistry registry)

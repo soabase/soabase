@@ -47,10 +47,10 @@ import io.soabase.core.features.client.ClientFilter;
 import io.soabase.core.features.config.ComposedConfigurationAccessor;
 import io.soabase.core.features.config.SoaConfiguration;
 import io.soabase.core.features.discovery.HealthCheckIntegration;
-import io.soabase.core.features.discovery.SafeSoaDiscovery;
-import io.soabase.core.features.discovery.SoaDiscovery;
-import io.soabase.core.features.discovery.SoaDiscoveryHealth;
-import io.soabase.core.features.discovery.SoaExtendedDiscovery;
+import io.soabase.core.features.discovery.SafeDiscovery;
+import io.soabase.core.features.discovery.Discovery;
+import io.soabase.core.features.discovery.DiscoveryHealth;
+import io.soabase.core.features.discovery.ExtendedDiscovery;
 import io.soabase.core.features.logging.LoggingReader;
 import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.core.rest.DynamicAttributeApis;
@@ -141,7 +141,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         Ports ports = getPorts(configuration);
         final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
 
-        SoaDiscovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(environment, soaInfo)));
+        Discovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(environment, soaInfo)));
         DynamicAttributes attributes = StandardAttributesContainer.wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)), hasAdminKey);
 
         final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, new ExecutorBuilder(environment.lifecycle()));
@@ -180,11 +180,11 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         environment.getApplicationContext().setAttribute(SoaFeatures.class.getName(), features);
     }
 
-    private SoaDiscovery wrapDiscovery(SoaDiscovery discovery)
+    private Discovery wrapDiscovery(Discovery discovery)
     {
-        if ( (discovery instanceof SoaExtendedDiscovery) && !hasAdminKey )
+        if ( (discovery instanceof ExtendedDiscovery) && !hasAdminKey )
         {
-            return new SafeSoaDiscovery(discovery);
+            return new SafeDiscovery(discovery);
         }
         return discovery;
     }
@@ -258,9 +258,9 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return 0;
     }
 
-    private void startDiscoveryHealth(SoaDiscovery discovery, SoaConfiguration soaConfiguration, Environment environment)
+    private void startDiscoveryHealth(Discovery discovery, SoaConfiguration soaConfiguration, Environment environment)
     {
-        SoaDiscoveryHealth discoveryHealth = checkManaged(environment, soaConfiguration.getDiscoveryHealthFactory().build(soaConfiguration, environment));
+        DiscoveryHealth discoveryHealth = checkManaged(environment, soaConfiguration.getDiscoveryHealthFactory().build(soaConfiguration, environment));
         ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("DiscoveryHealthChecker-%d").build();
         service.scheduleAtFixedRate(new HealthCheckIntegration(environment.healthChecks(), discovery, discoveryHealth), soaConfiguration.getDiscoveryHealthCheckPeriodMs(), soaConfiguration.getDiscoveryHealthCheckPeriodMs(), TimeUnit.MILLISECONDS);
     }

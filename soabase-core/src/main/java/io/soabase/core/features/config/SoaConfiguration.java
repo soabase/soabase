@@ -16,33 +16,28 @@
 package io.soabase.core.features.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.attributes.DynamicAttributesFactory;
 import io.soabase.core.features.discovery.DefaultDiscoveryHealthFactory;
 import io.soabase.core.features.discovery.NullDiscoveryFactory;
-import io.soabase.core.features.discovery.SoaDiscoveryFactory;
-import io.soabase.core.features.discovery.SoaDiscoveryHealthFactory;
+import io.soabase.core.features.discovery.DiscoveryFactory;
+import io.soabase.core.features.discovery.DiscoveryHealthFactory;
 import org.hibernate.validator.constraints.NotEmpty;
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 public class SoaConfiguration
 {
     @NotNull
-    private SoaDiscoveryFactory discoveryFactory = new NullDiscoveryFactory();
+    private DiscoveryFactory discoveryFactory = new NullDiscoveryFactory();
 
     @NotNull
-    private SoaDiscoveryHealthFactory discoveryHealthFactory = new DefaultDiscoveryHealthFactory();
+    private DiscoveryHealthFactory discoveryHealthFactory = new DefaultDiscoveryHealthFactory();
 
     @NotNull
     private DynamicAttributesFactory attributesFactory = new NullDynamicAttributesFactory();
@@ -83,13 +78,13 @@ public class SoaConfiguration
     }
 
     @JsonProperty("discovery")
-    public SoaDiscoveryFactory getDiscoveryFactory()
+    public DiscoveryFactory getDiscoveryFactory()
     {
         return discoveryFactory;
     }
 
     @JsonProperty("discovery")
-    public void setDiscoveryFactory(SoaDiscoveryFactory discoveryFactory)
+    public void setDiscoveryFactory(DiscoveryFactory discoveryFactory)
     {
         this.discoveryFactory = discoveryFactory;
     }
@@ -155,13 +150,13 @@ public class SoaConfiguration
     }
 
     @JsonProperty("discoveryHealth")
-    public SoaDiscoveryHealthFactory getDiscoveryHealthFactory()
+    public DiscoveryHealthFactory getDiscoveryHealthFactory()
     {
         return discoveryHealthFactory;
     }
 
     @JsonProperty("discoveryHealth")
-    public void setDiscoveryHealthFactory(SoaDiscoveryHealthFactory discoveryHealthFactory)
+    public void setDiscoveryHealthFactory(DiscoveryHealthFactory discoveryHealthFactory)
     {
         this.discoveryHealthFactory = discoveryHealthFactory;
     }

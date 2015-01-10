@@ -21,7 +21,7 @@ Service Discovery
 
     Service Discovery is enabled via configuration. See the {{{./soaconfig.html#Service_Discovery}Service Discovery Configuration}}
     section for details. To use the default Apache Curator/ZooKeeper implementation, add a <<<CuratorConfiguration>>> field to
-    your application's Configuration object. If needed, you can access the <<<SoaDiscovery>>> instance from <<<SoaFeatures>>>.
+    your application's Configuration object. If needed, you can access the <<<Discovery>>> instance from <<<SoaFeatures>>>.
 
 * Curator
 
@@ -33,16 +33,16 @@ Service Discovery
 
     To use something other than the Curator Service Discovery implementation, follow these steps:
 
-    * Create implementations for <<<SoaDiscoveryFactory>>> and <<<SoaExtendedDiscovery>>>
+    * Create implementations for <<<DiscoveryFactory>>> and <<<ExtendedDiscovery>>>
 
     * Add a directory named <<<META-INF/services>>> that contains two files: <<<io.dropwizard.jackson.Discoverable>>>
-      and <<<io.soabase.core.features.discovery.SoaDiscoveryFactory>>>.
+      and <<<io.soabase.core.features.discovery.DiscoveryFactory>>>.
 
     []
 
-    <SoaDiscoveryFactory>
+    <DiscoveryFactory>
 
-    Your SoaDiscoveryFactory implementation is like other Dropwizard factories. It should be both configuration and a factory.
+    Your DiscoveryFactory implementation is like other Dropwizard factories. It should be both configuration and a factory.
     Use <<<ZooKeeperDiscoveryFactory.java>>> as an example. This class must be annotated with <<<JsonTypeName>>> and given a unique
     name. You then use this name as the value for the attributes type in your configuration file. E.g.
 
@@ -50,7 +50,7 @@ Service Discovery
 package com.me.my;
 
 @JsonTypeName("my-discovery")
-public class MyDiscoveryFactory implements SoaDiscoveryFactory {
+public class MyDiscoveryFactory implements DiscoveryFactory {
     public String aConfigValue;
 
     public int anotherConfigValue;
@@ -58,7 +58,7 @@ public class MyDiscoveryFactory implements SoaDiscoveryFactory {
         ...
 
     @Override
-    public SoaDiscovery build(Environment environment, SoaInfo soaInfo)
+    public Discovery build(Environment environment, SoaInfo soaInfo)
     {
             ...
         return new MyDiscovery(...);
@@ -66,15 +66,15 @@ public class MyDiscoveryFactory implements SoaDiscoveryFactory {
 }
 +----------------------------------------+
 
-    <SoaExtendedDiscovery>
+    <ExtendedDiscovery>
 
-    Your SoaDiscovery implementation does the actual work of Service Discovery. The details will depend on your implementation's needs.
-    Note: your custom class should implement <<<SoaExtendedDiscovery>>> not <<<SoaDiscovery>>>. This allows
+    Your Discovery implementation does the actual work of Service Discovery. The details will depend on your implementation's needs.
+    Note: your custom class should implement <<<ExtendedDiscovery>>> not <<<Discovery>>>. This allows
     your implementation to interact with the {{{./console.html}Administration Console}}.
 
     <ServiceLoader files>
 
     Like other Dropwizard plugins, your Service Discovery implementation needs Service Loader files. In the <<<io.dropwizard.jackson.Discoverable>>>
-    file add a line containing: <<<io.soabase.core.features.discovery.SoaDiscoveryFactory>>>. In the <<<io.soabase.core.features.discovery.SoaDiscoveryFactory>>>
+    file add a line containing: <<<io.soabase.core.features.discovery.DiscoveryFactory>>>. In the <<<io.soabase.core.features.discovery.DiscoveryFactory>>>
     file add a line the with fully-qualified path name of your class. E.g. <<<com.me.my.MyDiscoveryFactory>>>
 

@@ -16,8 +16,8 @@
 package io.soabase.core.features.client;
 
 import com.google.common.base.Preconditions;
-import io.soabase.core.features.discovery.SoaDiscovery;
-import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import io.soabase.core.features.discovery.Discovery;
+import io.soabase.core.features.discovery.DiscoveryInstance;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -40,12 +40,12 @@ public class ClientUtils
         return HOST_SUBSTITUTION_TOKEN + serviceName;
     }
 
-    public static SoaDiscoveryInstance hostToInstance(SoaDiscovery discovery, String host)
+    public static DiscoveryInstance hostToInstance(Discovery discovery, String host)
     {
         String serviceName = hostToServiceName(host);
         if ( serviceName != null )
         {
-            SoaDiscoveryInstance instance = discovery.getInstance(serviceName);
+            DiscoveryInstance instance = discovery.getInstance(serviceName);
             if ( instance == null )
             {
                 throw new RuntimeException("Could not find an active instance for service: " + serviceName);
@@ -55,7 +55,7 @@ public class ClientUtils
         return null;
     }
 
-    public static URI filterUri(URI uri, SoaDiscoveryInstance instance)
+    public static URI filterUri(URI uri, DiscoveryInstance instance)
     {
         if ( instance != null )
         {

@@ -17,7 +17,7 @@ package io.soabase.core;
 
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.DynamicAttributes;
-import io.soabase.core.features.discovery.SoaDiscovery;
+import io.soabase.core.features.discovery.Discovery;
 import java.util.Collection;
 
 /**
@@ -76,7 +76,7 @@ public interface SoaFeatures
      *
      * @return service discovery instance
      */
-    public SoaDiscovery getDiscovery();
+    public Discovery getDiscovery();
 
     /**
      * Return the dynamic attributes instance

@@ -15,13 +15,23 @@
  */
 package io.soabase.core.features.discovery;
 
-import java.util.Collection;
+import java.util.Map;
 
-public interface SoaExtendedDiscovery extends SoaDiscovery
+public interface DiscoveryInstance extends Comparable<DiscoveryInstance>
 {
-    public Collection<String> queryForServiceNames();
+    public String getId();
 
-    public Collection<SoaDiscoveryInstance> queryForAllInstances(String serviceName);
+    public String getHost();
 
-    public void setForcedState(String serviceName, String instanceId, ForcedState forcedState);
+    public int getPort();
+
+    public boolean isForceSsl();
+
+    public int getAdminPort();
+
+    public HealthyState getHealthyState();
+
+    public Map<String, String> getMetaData();
+
+    public ForcedState getForcedState();
 }

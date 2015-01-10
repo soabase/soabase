@@ -15,9 +15,20 @@
  */
 package io.soabase.core.features.discovery;
 
-import com.codahale.metrics.health.HealthCheckRegistry;
+import java.util.Collection;
+import java.util.Map;
 
-public interface SoaDiscoveryHealth
+public interface Discovery
 {
-    public boolean shouldBeInDiscovery(HealthCheckRegistry registry);
+    public Collection<String> getServiceNames();
+
+    public DiscoveryInstance getInstance(String serviceName);
+
+    public Collection<DiscoveryInstance> getAllInstances(String serviceName);
+
+    public void noteError(String serviceName, DiscoveryInstance errorInstance);
+
+    public void setHealthyState(HealthyState healthyState);
+
+    public void setMetaData(Map<String, String> newMetaData);
 }

@@ -20,10 +20,10 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 public class HealthCheckIntegration implements Runnable
 {
     private final HealthCheckRegistry registry;
-    private final SoaDiscovery discovery;
-    private final SoaDiscoveryHealth health;
+    private final Discovery discovery;
+    private final DiscoveryHealth health;
 
-    public HealthCheckIntegration(HealthCheckRegistry registry, SoaDiscovery discovery, SoaDiscoveryHealth health)
+    public HealthCheckIntegration(HealthCheckRegistry registry, Discovery discovery, DiscoveryHealth health)
     {
         this.registry = registry;
         this.discovery = discovery;

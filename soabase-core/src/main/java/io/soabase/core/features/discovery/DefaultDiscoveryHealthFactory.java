@@ -20,9 +20,9 @@ import io.dropwizard.setup.Environment;
 import io.soabase.core.features.config.SoaConfiguration;
 
 @JsonTypeName("default")
-public class DefaultDiscoveryHealthFactory implements SoaDiscoveryHealthFactory
+public class DefaultDiscoveryHealthFactory implements DiscoveryHealthFactory
 {
-    public SoaDiscoveryHealth build(SoaConfiguration configuration, Environment environment)
+    public DiscoveryHealth build(SoaConfiguration configuration, Environment environment)
     {
         return new DefaultDiscoveryHealth();
     }

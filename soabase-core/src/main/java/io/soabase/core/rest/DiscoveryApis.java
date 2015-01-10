@@ -17,12 +17,9 @@ package io.soabase.core.rest;
 
 import com.google.common.collect.Lists;
 import io.soabase.core.SoaFeatures;
-import io.soabase.core.features.discovery.ForcedState;
-import io.soabase.core.features.discovery.SoaDiscoveryInstance;
+import io.soabase.core.features.discovery.DiscoveryInstance;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -49,7 +46,7 @@ public class DiscoveryApis
     {
         // TODO logging
 
-        SoaDiscoveryInstance instance = features.getDiscovery().getInstance(serviceName);
+        DiscoveryInstance instance = features.getDiscovery().getInstance(serviceName);
         if ( instance == null )
         {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -61,7 +58,7 @@ public class DiscoveryApis
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("all/{name}")
-    public Collection<SoaDiscoveryInstance> getInstances(@PathParam("name") String serviceName)
+    public Collection<DiscoveryInstance> getInstances(@PathParam("name") String serviceName)
     {
         return features.getDiscovery().getAllInstances(serviceName);
     }

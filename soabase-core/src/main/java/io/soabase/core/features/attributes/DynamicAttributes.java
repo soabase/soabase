@@ -23,7 +23,7 @@ import java.util.Collection;
  * the current value for the given key after applying overrides and scopes, etc.
  * Always call the methods to get the current value as it may change during runtime.
  */
-public interface SoaDynamicAttributes
+public interface DynamicAttributes
 {
     public String getAttribute(String key);
 
@@ -53,5 +53,5 @@ public interface SoaDynamicAttributes
 
     public Collection<String> getKeys();
 
-    public Listenable<SoaDynamicAttributeListener> getListenable();
+    public Listenable<DynamicAttributeListener> getListenable();
 }

@@ -18,8 +18,8 @@ package io.soabase.admin.rest;
 import com.google.common.collect.Lists;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.attributes.AttributeKey;
-import io.soabase.core.features.attributes.SoaDynamicAttributes;
-import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
+import io.soabase.core.features.attributes.DynamicAttributes;
+import io.soabase.core.features.attributes.WritableDynamicAttributes;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -48,7 +48,7 @@ public class AttributesResource
     @Consumes(MediaType.APPLICATION_JSON)
     public Response delete(Attribute attribute)
     {
-        SoaWritableDynamicAttributes attributes = getAttributes();
+        WritableDynamicAttributes attributes = getAttributes();
         attributes.remove(new AttributeKey(attribute.getKey(), attribute.getScope()));
         return Response.ok().build();
     }
@@ -57,7 +57,7 @@ public class AttributesResource
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUpdate(Attribute attribute)
     {
-        SoaWritableDynamicAttributes attributes = getAttributes();
+        WritableDynamicAttributes attributes = getAttributes();
         attributes.put(new AttributeKey(attribute.getKey(), attribute.getScope()), attribute.getValue());
         return Response.ok().build();
     }
@@ -75,12 +75,12 @@ public class AttributesResource
         return result;
     }
 
-    private SoaWritableDynamicAttributes getAttributes()
+    private WritableDynamicAttributes getAttributes()
     {
-        SoaDynamicAttributes attributes = features.getAttributes();
-        if ( attributes instanceof SoaWritableDynamicAttributes )
+        DynamicAttributes attributes = features.getAttributes();
+        if ( attributes instanceof WritableDynamicAttributes )
         {
-            return (SoaWritableDynamicAttributes)attributes;
+            return (WritableDynamicAttributes)attributes;
         }
 
         // TODO logging

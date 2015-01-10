@@ -15,13 +15,32 @@
  */
 package io.soabase.core.features.attributes;
 
-import java.util.Map;
-
-public interface SoaWritableDynamicAttributes extends SoaDynamicAttributes
+/**
+ * Listener for dynamic attribute changes
+ */
+public interface DynamicAttributeListener
 {
-    public void put(AttributeKey key, Object value);
+    /**
+     * The given key/scope has changed
+     *
+     * @param key key
+     * @param scope scope
+     */
+    public void attributeChanged(String key, String scope);
 
-    public void remove(AttributeKey key);
+    /**
+     * The given key/scope was added
+     *
+     * @param key key
+     * @param scope scope
+     */
+    public void attributeAdded(String key, String scope);
 
-    public Map<AttributeKey, Object> getAll();
+    /**
+     * The given key/scope was removed
+     *
+     * @param key key
+     * @param scope scope
+     */
+    public void attributeRemoved(String key, String scope);
 }

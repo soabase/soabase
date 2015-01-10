@@ -20,7 +20,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.soabase.core.features.ExecutorBuilder;
-import io.soabase.core.features.attributes.SoaDynamicAttributes;
+import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import java.util.Collection;
 import java.util.Map;
@@ -30,7 +30,7 @@ class SoaFeaturesImpl implements SoaFeatures
 {
     private final ConcurrentMap<Class<?>, ConcurrentMap<String, Object>> named = Maps.newConcurrentMap();
     private final SoaDiscovery discovery;
-    private final SoaDynamicAttributes dynamicAttributes;
+    private final DynamicAttributes dynamicAttributes;
     private final SoaInfo info;
     private final ExecutorBuilder executorBuilder;
 
@@ -39,7 +39,7 @@ class SoaFeaturesImpl implements SoaFeatures
         this(null, null, null, null);
     }
 
-    SoaFeaturesImpl(SoaDiscovery discovery, SoaDynamicAttributes dynamicAttributes, SoaInfo info, ExecutorBuilder executorBuilder)
+    SoaFeaturesImpl(SoaDiscovery discovery, DynamicAttributes dynamicAttributes, SoaInfo info, ExecutorBuilder executorBuilder)
     {
         this.discovery = discovery;
         this.dynamicAttributes = dynamicAttributes;
@@ -73,7 +73,7 @@ class SoaFeaturesImpl implements SoaFeatures
     }
 
     @Override
-    public SoaDynamicAttributes getAttributes()
+    public DynamicAttributes getAttributes()
     {
         return dynamicAttributes;
     }

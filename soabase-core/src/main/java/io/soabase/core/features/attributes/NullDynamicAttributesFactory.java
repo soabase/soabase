@@ -23,15 +23,15 @@ import java.util.Collection;
 import java.util.List;
 
 @JsonTypeName("default")
-public class NullDynamicAttributesFactory implements SoaDynamicAttributesFactory
+public class NullDynamicAttributesFactory implements DynamicAttributesFactory
 {
     @Override
-    public SoaDynamicAttributes build(Environment environment, List<String> scopes)
+    public DynamicAttributes build(Environment environment, List<String> scopes)
     {
         return new NullAttributes();
     }
 
-    private static class NullAttributes implements SoaDynamicAttributes
+    private static class NullAttributes implements DynamicAttributes
     {
         private final StandardAttributesContainer container = new StandardAttributesContainer(Lists.<String>newArrayList());
 
@@ -120,7 +120,7 @@ public class NullDynamicAttributesFactory implements SoaDynamicAttributesFactory
         }
 
         @Override
-        public Listenable<SoaDynamicAttributeListener> getListenable()
+        public Listenable<DynamicAttributeListener> getListenable()
         {
             return container.getListenable();
         }

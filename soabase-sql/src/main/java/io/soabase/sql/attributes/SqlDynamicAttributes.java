@@ -17,8 +17,8 @@ package io.soabase.sql.attributes;
 
 import io.dropwizard.lifecycle.Managed;
 import io.soabase.core.features.attributes.AttributeKey;
-import io.soabase.core.features.attributes.SoaDynamicAttributeListener;
-import io.soabase.core.features.attributes.SoaWritableDynamicAttributes;
+import io.soabase.core.features.attributes.DynamicAttributeListener;
+import io.soabase.core.features.attributes.WritableDynamicAttributes;
 import io.soabase.core.features.attributes.StandardAttributesContainer;
 import io.soabase.core.listening.Listenable;
 import org.apache.ibatis.session.SqlSession;
@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class SqlDynamicAttributes implements SoaWritableDynamicAttributes, Managed
+public class SqlDynamicAttributes implements WritableDynamicAttributes, Managed
 {
     private final StandardAttributesContainer container;
     private final SqlSession session;
@@ -153,7 +153,7 @@ public class SqlDynamicAttributes implements SoaWritableDynamicAttributes, Manag
     }
 
     @Override
-    public Listenable<SoaDynamicAttributeListener> getListenable()
+    public Listenable<DynamicAttributeListener> getListenable()
     {
         return container.getListenable();
     }

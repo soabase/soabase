@@ -16,7 +16,7 @@
 package io.soabase.core;
 
 import io.soabase.core.features.ExecutorBuilder;
-import io.soabase.core.features.attributes.SoaDynamicAttributes;
+import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.discovery.SoaDiscovery;
 import java.util.Collection;
 
@@ -83,7 +83,7 @@ public interface SoaFeatures
      *
      * @return dynamic attributes instance
      */
-    public SoaDynamicAttributes getAttributes();
+    public DynamicAttributes getAttributes();
 
     /**
      * Returns information about this instance

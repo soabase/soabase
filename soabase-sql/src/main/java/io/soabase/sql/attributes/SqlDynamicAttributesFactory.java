@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
-import io.soabase.core.features.attributes.SoaDynamicAttributes;
-import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
+import io.soabase.core.features.attributes.DynamicAttributes;
+import io.soabase.core.features.attributes.DynamicAttributesFactory;
 import org.apache.ibatis.session.SqlSession;
 import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.Valid;
@@ -32,7 +32,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @JsonTypeName("sql")
-public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
+public class SqlDynamicAttributesFactory implements DynamicAttributesFactory
 {
     @Min(0)
     private int refreshPeriodSeconds = 30;
@@ -65,12 +65,12 @@ public class SqlDynamicAttributesFactory implements SoaDynamicAttributesFactory
     }
 
     @Override
-    public SoaDynamicAttributes build(Environment environment, List<String> scopes)
+    public DynamicAttributes build(Environment environment, List<String> scopes)
     {
         SqlSession sqlSession = SoaBundle.getFeatures(environment).getNamedRequired(SqlSession.class, sessionName);
 
         final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(sqlSession, scopes);
-        ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("SoaDynamicAttributes-%d", true).build();
+        ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("DynamicAttributes-%d", true).build();
         Runnable command = new Runnable()
         {
             @Override

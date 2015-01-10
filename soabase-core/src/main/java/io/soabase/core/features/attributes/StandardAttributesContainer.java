@@ -35,13 +35,13 @@ public class StandardAttributesContainer
 
     private final Map<String, Object> overrides = Maps.newConcurrentMap();
     private final Map<AttributeKey, Object> attributes = Maps.newConcurrentMap();
-    private final ListenerContainer<SoaDynamicAttributeListener> listenable = new ListenerContainer<>();
+    private final ListenerContainer<DynamicAttributeListener> listenable = new ListenerContainer<>();
     private final List<String> scopes;
     private final AtomicBoolean firstTime = new AtomicBoolean(true);
 
-    public static SoaDynamicAttributes wrapAttributes(SoaDynamicAttributes attributes, boolean hasAdminKey)
+    public static DynamicAttributes wrapAttributes(DynamicAttributes attributes, boolean hasAdminKey)
     {
-        if ( (attributes instanceof SoaWritableDynamicAttributes) && !hasAdminKey )
+        if ( (attributes instanceof WritableDynamicAttributes) && !hasAdminKey )
         {
             return new SafeDynamicAttributes(attributes);
         }
@@ -81,10 +81,10 @@ public class StandardAttributesContainer
                 {
                     attributes.put(attributeKey, value);
 
-                    Function<SoaDynamicAttributeListener, Void> notify = new Function<SoaDynamicAttributeListener, Void>()
+                    Function<DynamicAttributeListener, Void> notify = new Function<DynamicAttributeListener, Void>()
                     {
                         @Override
-                        public Void apply(SoaDynamicAttributeListener listener)
+                        public Void apply(DynamicAttributeListener listener)
                         {
                             if ( isNew )
                             {
@@ -112,10 +112,10 @@ public class StandardAttributesContainer
                     attributes.remove(attributeKey);
                     if ( notifyListeners )
                     {
-                        Function<SoaDynamicAttributeListener, Void> notify = new Function<SoaDynamicAttributeListener, Void>()
+                        Function<DynamicAttributeListener, Void> notify = new Function<DynamicAttributeListener, Void>()
                         {
                             @Override
-                            public Void apply(SoaDynamicAttributeListener listener)
+                            public Void apply(DynamicAttributeListener listener)
                             {
                                 listener.attributeRemoved(attributeKey.getKey(), attributeKey.getScope());
                                 return null;
@@ -215,7 +215,7 @@ public class StandardAttributesContainer
         return Maps.newHashMap(attributes);
     }
 
-    public Listenable<SoaDynamicAttributeListener> getListenable()
+    public Listenable<DynamicAttributeListener> getListenable()
     {
         return listenable;
     }

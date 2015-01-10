@@ -80,23 +80,23 @@ mapper.delete(...);
 
 * API
 
-    Dynamic Attributes are accessed via the <<<SoaDynamicAttributes>>> instance from <<<SoaFeatures>>>. It has methods
+    Dynamic Attributes are accessed via the <<<DynamicAttributes>>> instance from <<<SoaFeatures>>>. It has methods
     to get attributes coerced to various types, override attributes and listen for changes.
 
 * Adding a Custom Implementation
 
     To use something other than the JDOBC implementation, follow these steps:
 
-    * Create implementations for <<<SoaDynamicAttributesFactory>>> and <<<SoaWritableDynamicAttributes>>>
+    * Create implementations for <<<DynamicAttributesFactory>>> and <<<WritableDynamicAttributes>>>
 
     * Add a directory named <<<META-INF/services>>> that contains two files: <<<io.dropwizard.jackson.Discoverable>>>
-      and <<<io.soabase.core.features.attributes.SoaDynamicAttributesFactory>>>.
+      and <<<io.soabase.core.features.attributes.DynamicAttributesFactory>>>.
 
     []
 
-    <SoaDynamicAttributesFactory>
+    <DynamicAttributesFactory>
 
-    Your SoaDynamicAttributesFactory implementation is like other Dropwizard factories. It should be both configuration and a factory.
+    Your DynamicAttributesFactory implementation is like other Dropwizard factories. It should be both configuration and a factory.
     Use <<<SqlDynamicAttributesFactory.java>>> as an example. This class must be annotated with <<<JsonTypeName>>> and given a unique
     name. You then use this name as the value for the discovery type in your configuration file. E.g.
 
@@ -112,7 +112,7 @@ public class MyAttributesFactory implements SqlDynamicAttributesFactory {
         ...
 
     @Override
-    public SoaDynamicAttributes build(Environment environment, List<String> scopes)
+    public DynamicAttributes build(Environment environment, List<String> scopes)
     {
             ...
         return new MyAttributes(...);
@@ -120,16 +120,16 @@ public class MyAttributesFactory implements SqlDynamicAttributesFactory {
 }
 +----------------------------------------+
 
-    <SoaWritableDynamicAttributes>
+    <WritableDynamicAttributes>
 
-    Your SoaDynamicAttributes implementation does the actual work. The details will depend on your implementation's needs.
-    Note: your custom class should implement <<<SoaWritableDynamicAttributes>>> not <<<SoaDynamicAttributes>>>. This allows
+    Your DynamicAttributes implementation does the actual work. The details will depend on your implementation's needs.
+    Note: your custom class should implement <<<WritableDynamicAttributes>>> not <<<DynamicAttributes>>>. This allows
     your implementation to interact with the {{{./console.html}Administration Console}}.
 
     <ServiceLoader files>
 
     Like other Dropwizard plugins, your Dynamic Attributes implementation needs Service Loader files. In the <<<io.dropwizard.jackson.Discoverable>>>
-    file add a line containing: <<<io.soabase.core.features.attributes.SoaDynamicAttributesFactory>>>. In the <<<io.soabase.core.features.attributes.SoaDynamicAttributesFactory>>>
+    file add a line containing: <<<io.soabase.core.features.attributes.DynamicAttributesFactory>>>. In the <<<io.soabase.core.features.attributes.DynamicAttributesFactory>>>
     file add a line the with fully-qualified path name of your class. E.g. <<<com.me.my.MyAttributesFactory>>>
 
 ** StandardAttributesContainer

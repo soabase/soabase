@@ -33,8 +33,6 @@
 * kill isn't working for soa apps
 * Maybe it's better for all the configs to just have public fields?
 * Discovery registration should be in background
-* Get rid of soa-hidden
-* Rename SoaDynamicAttributes to DynamicAttributes
 * Get rid of Soa prefix on classes?
 * Support user identity on attributes for auditing
 * What is Instance name used for? Is it needed?

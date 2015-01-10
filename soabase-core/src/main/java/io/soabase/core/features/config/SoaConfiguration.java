@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
-import io.soabase.core.features.attributes.SoaDynamicAttributesFactory;
+import io.soabase.core.features.attributes.DynamicAttributesFactory;
 import io.soabase.core.features.discovery.DefaultDiscoveryHealthFactory;
 import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.SoaDiscoveryFactory;
@@ -45,7 +45,7 @@ public class SoaConfiguration
     private SoaDiscoveryHealthFactory discoveryHealthFactory = new DefaultDiscoveryHealthFactory();
 
     @NotNull
-    private SoaDynamicAttributesFactory attributesFactory = new NullDynamicAttributesFactory();
+    private DynamicAttributesFactory attributesFactory = new NullDynamicAttributesFactory();
 
     @NotEmpty
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Service Names can only contain letters and numbers")
@@ -95,13 +95,13 @@ public class SoaConfiguration
     }
 
     @JsonProperty("attributes")
-    public SoaDynamicAttributesFactory getAttributesFactory()
+    public DynamicAttributesFactory getAttributesFactory()
     {
         return attributesFactory;
     }
 
     @JsonProperty("attributes")
-    public void setAttributesFactory(SoaDynamicAttributesFactory attributesFactory)
+    public void setAttributesFactory(DynamicAttributesFactory attributesFactory)
     {
         this.attributesFactory = attributesFactory;
     }

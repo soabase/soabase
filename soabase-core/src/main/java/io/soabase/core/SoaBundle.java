@@ -41,7 +41,7 @@ import io.dropwizard.server.SimpleServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.features.ExecutorBuilder;
-import io.soabase.core.features.attributes.SoaDynamicAttributes;
+import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.attributes.StandardAttributesContainer;
 import io.soabase.core.features.client.ClientFilter;
 import io.soabase.core.features.config.ComposedConfigurationAccessor;
@@ -142,7 +142,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
 
         SoaDiscovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(environment, soaInfo)));
-        SoaDynamicAttributes attributes = StandardAttributesContainer.wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)), hasAdminKey);
+        DynamicAttributes attributes = StandardAttributesContainer.wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)), hasAdminKey);
 
         final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, new ExecutorBuilder(environment.lifecycle()));
         final LoggingReader loggingReader = initLogging(configuration);

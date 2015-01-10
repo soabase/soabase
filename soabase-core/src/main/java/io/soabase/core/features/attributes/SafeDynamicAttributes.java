@@ -18,11 +18,11 @@ package io.soabase.core.features.attributes;
 import io.soabase.core.listening.Listenable;
 import java.util.Collection;
 
-class SafeDynamicAttributes implements SoaDynamicAttributes
+class SafeDynamicAttributes implements DynamicAttributes
 {
-    private final SoaDynamicAttributes implementation;
+    private final DynamicAttributes implementation;
 
-    SafeDynamicAttributes(SoaDynamicAttributes implementation)
+    SafeDynamicAttributes(DynamicAttributes implementation)
     {
         this.implementation = implementation;
     }
@@ -112,7 +112,7 @@ class SafeDynamicAttributes implements SoaDynamicAttributes
     }
 
     @Override
-    public Listenable<SoaDynamicAttributeListener> getListenable()
+    public Listenable<DynamicAttributeListener> getListenable()
     {
         return implementation.getListenable();
     }

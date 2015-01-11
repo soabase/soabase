@@ -63,21 +63,21 @@ public class StandardAttributesContainer
         this.scopes = builder.build();
     }
 
-    public interface Updater
+    public interface Resetter
     {
-        public Updater put(String key, String scope, Object value);
+        public Resetter resetAttribute(String key, String scope, Object value);
 
-        public void commit();
+        public void complete();
     }
 
-    public Updater newUpdater()
+    public Resetter newUpdater()
     {
         final Set<AttributeKey> deletingKeys = Sets.newHashSet(attributes.keySet());
         final boolean notifyListeners = !firstTime.compareAndSet(true, false);
-        return new Updater()
+        return new Resetter()
         {
             @Override
-            public Updater put(final String key, final String scope, Object value)
+            public Resetter resetAttribute(final String key, final String scope, Object value)
             {
                 AttributeKey attributeKey = new AttributeKey(key, scope);
                 deletingKeys.remove(attributeKey);
@@ -112,7 +112,7 @@ public class StandardAttributesContainer
             }
 
             @Override
-            public void commit()
+            public void complete()
             {
                 for ( final AttributeKey attributeKey : deletingKeys )
                 {

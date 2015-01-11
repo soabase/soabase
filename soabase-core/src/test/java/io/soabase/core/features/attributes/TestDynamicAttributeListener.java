@@ -39,21 +39,21 @@ public class TestDynamicAttributeListener
         };
         container.getListenable().addListener(listener);
 
-        container.newUpdater().commit();    // first commit doesn't notify
+        container.newUpdater().complete();    // first commit doesn't notify
         Assert.assertEquals(attributeChangedLatch.getCount(), 1);
         Assert.assertEquals(attributeAddedLatch.getCount(), 1);
         Assert.assertEquals(attributeRemovedLatch.getCount(), 1);
 
-        container.newUpdater().put("a", "one", "a").commit();
+        container.newUpdater().resetAttribute("a", "one", "a").complete();
         Assert.assertTrue(attributeAddedLatch.await(1, TimeUnit.MILLISECONDS));
         Assert.assertEquals(attributeChangedLatch.getCount(), 1);
         Assert.assertEquals(attributeRemovedLatch.getCount(), 1);
 
-        container.newUpdater().put("a", "one", "b").commit();
+        container.newUpdater().resetAttribute("a", "one", "b").complete();
         Assert.assertTrue(attributeChangedLatch.await(1, TimeUnit.MILLISECONDS));
         Assert.assertEquals(attributeRemovedLatch.getCount(), 1);
 
-        container.newUpdater().commit();
+        container.newUpdater().complete();
         Assert.assertTrue(attributeRemovedLatch.await(1, TimeUnit.MILLISECONDS));
     }
 
@@ -96,20 +96,20 @@ public class TestDynamicAttributeListener
         container.getListenable().addListener(listener);
 
         container.newUpdater()
-            .put("a", "a", "a")
-            .put("a", "b", "a")
-            .put("b", "a", "b")
-            .put("b", "b", "b")
-            .commit();    // first commit doesn't notify
+            .resetAttribute("a", "a", "a")
+            .resetAttribute("a", "b", "a")
+            .resetAttribute("b", "a", "b")
+            .resetAttribute("b", "b", "b")
+            .complete();    // first commit doesn't notify
         Assert.assertEquals(listener.getEntries().size(), 0);
 
         container.newUpdater()
-            .put("a", "a", "new")
-            .put("a", "c", "first")
-            .put("b", "a", "one")
-            .put("b", "b", "two")
-            .put("b", "", "hey")
-            .commit();
+            .resetAttribute("a", "a", "new")
+            .resetAttribute("a", "c", "first")
+            .resetAttribute("b", "a", "one")
+            .resetAttribute("b", "b", "two")
+            .resetAttribute("b", "", "hey")
+            .complete();
 
         List<ListenerEntry> expected = Lists.newArrayList
         (
@@ -124,12 +124,12 @@ public class TestDynamicAttributeListener
         listener.clear();
 
         container.newUpdater()
-            .put("a", "a", "new")
-            .put("a", "c", "first")
-            .put("b", "a", "one")
-            .put("b", "b", "two")
-            .put("b", "", "hey")
-            .commit();
+            .resetAttribute("a", "a", "new")
+            .resetAttribute("a", "c", "first")
+            .resetAttribute("b", "a", "one")
+            .resetAttribute("b", "b", "two")
+            .resetAttribute("b", "", "hey")
+            .complete();
         Assert.assertEquals(listener.getEntries().size(), 0);
     }
 }

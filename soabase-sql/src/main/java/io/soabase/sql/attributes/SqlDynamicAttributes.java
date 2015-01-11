@@ -190,15 +190,15 @@ public class SqlDynamicAttributes implements WritableDynamicAttributes, Managed
 
     synchronized void update()
     {
-        StandardAttributesContainer.Updater updater = container.newUpdater();
+        StandardAttributesContainer.Resetter resetter = container.newUpdater();
         AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
         try
         {
             for ( AttributeEntity entity : mapper.selectAll() )
             {
-                updater.put(entity.getfKEY(), entity.getfSCOPE(), entity.getfVALUE());
+                resetter.resetAttribute(entity.getfKEY(), entity.getfSCOPE(), entity.getfVALUE());
             }
-            updater.commit();
+            resetter.complete();
         }
         catch ( Exception e )
         {

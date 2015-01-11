@@ -84,6 +84,18 @@ public class NullDynamicAttributesFactory implements DynamicAttributesFactory
         }
 
         @Override
+        public double getAttributeDouble(String key)
+        {
+            return container.getAttributeDouble(key, 0.0);
+        }
+
+        @Override
+        public double getAttributeDouble(String key, double defaultValue)
+        {
+            return container.getAttributeDouble(key, defaultValue);
+        }
+
+        @Override
         public void temporaryOverride(String key, boolean value)
         {
             container.temporaryOverride(key, value);
@@ -103,6 +115,12 @@ public class NullDynamicAttributesFactory implements DynamicAttributesFactory
 
         @Override
         public void temporaryOverride(String key, String value)
+        {
+            container.temporaryOverride(key, value);
+        }
+
+        @Override
+        public void temporaryOverride(String key, double value)
         {
             container.temporaryOverride(key, value);
         }

@@ -41,11 +41,17 @@ public interface DynamicAttributes
 
     public long getAttributeLong(String key, long defaultValue);
 
+    public double getAttributeDouble(String key);
+
+    public double getAttributeDouble(String key, double defaultValue);
+
     public void temporaryOverride(String key, boolean value);
 
     public void temporaryOverride(String key, int value);
 
     public void temporaryOverride(String key, long value);
+
+    public void temporaryOverride(String key, double value);
 
     public void temporaryOverride(String key, String value);
 

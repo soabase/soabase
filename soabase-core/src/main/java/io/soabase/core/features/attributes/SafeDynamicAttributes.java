@@ -76,6 +76,18 @@ class SafeDynamicAttributes implements DynamicAttributes
     }
 
     @Override
+    public double getAttributeDouble(String key)
+    {
+        return implementation.getAttributeDouble(key);
+    }
+
+    @Override
+    public double getAttributeDouble(String key, double defaultValue)
+    {
+        return implementation.getAttributeDouble(key, defaultValue);
+    }
+
+    @Override
     public void temporaryOverride(String key, boolean value)
     {
         implementation.temporaryOverride(key, value);
@@ -95,6 +107,12 @@ class SafeDynamicAttributes implements DynamicAttributes
 
     @Override
     public void temporaryOverride(String key, String value)
+    {
+        implementation.temporaryOverride(key, value);
+    }
+
+    @Override
+    public void temporaryOverride(String key, double value)
     {
         implementation.temporaryOverride(key, value);
     }

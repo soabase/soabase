@@ -182,6 +182,17 @@ public class StandardAttributesContainer
         return to(getValue(key), defaultValue).longValue();
     }
 
+    public double getAttributeDouble(String key, double defaultValue)
+    {
+        Number value = getOverrideNumber(key);
+        if ( value != null )
+        {
+            return value.doubleValue();
+        }
+
+        return to(getValue(key), defaultValue).doubleValue();
+    }
+
     public void temporaryOverride(String key, boolean value)
     {
         internalTemporaryOverride(key, value);
@@ -193,6 +204,11 @@ public class StandardAttributesContainer
     }
 
     public void temporaryOverride(String key, long value)
+    {
+        internalTemporaryOverride(key, value);
+    }
+
+    public void temporaryOverride(String key, double value)
     {
         internalTemporaryOverride(key, value);
     }
@@ -277,7 +293,7 @@ public class StandardAttributesContainer
         {
             value = System.getProperty(key, null);
         }
-        return to(value, null);
+        return (value != null) ? to(value, 0) : null;
     }
 
     private static Number to(Object value, Number defaultValue)
@@ -290,6 +306,14 @@ public class StandardAttributesContainer
         {
             return (Number)value;
         }
-        return Long.parseLong(String.valueOf(value));
+        try
+        {
+            return Long.parseLong(String.valueOf(value));
+        }
+        catch ( NumberFormatException e )
+        {
+            // ignore
+        }
+        return defaultValue;
     }
 }

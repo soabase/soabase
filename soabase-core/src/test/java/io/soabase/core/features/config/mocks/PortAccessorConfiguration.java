@@ -13,32 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.core.features.attributes;
+package io.soabase.core.features.config.mocks;
 
-public class DynamicAttributeListenerAdapter implements DynamicAttributeListener
+import io.dropwizard.Configuration;
+import io.soabase.core.SoaMainPortAccessor;
+
+public class PortAccessorConfiguration extends Configuration implements SoaMainPortAccessor<Configuration>
 {
     @Override
-    public void attributeChanged(String key, String scope)
+    public int getMainPort(Configuration configuration)
     {
+        return 1;
     }
 
     @Override
-    public void attributeAdded(String key, String scope)
+    public int getAdminPort(Configuration configuration)
     {
-    }
-
-    @Override
-    public void attributeRemoved(String key, String scope)
-    {
-    }
-
-    @Override
-    public void overrideAdded(String key)
-    {
-    }
-
-    @Override
-    public void overrideRemoved(String key)
-    {
+        return 2;
     }
 }

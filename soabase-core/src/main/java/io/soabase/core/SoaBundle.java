@@ -21,6 +21,7 @@ import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.dropwizard.Configuration;
@@ -46,11 +47,11 @@ import io.soabase.core.features.attributes.StandardAttributesContainer;
 import io.soabase.core.features.client.ClientFilter;
 import io.soabase.core.features.config.ComposedConfigurationAccessor;
 import io.soabase.core.features.config.SoaConfiguration;
-import io.soabase.core.features.discovery.HealthCheckIntegration;
-import io.soabase.core.features.discovery.SafeDiscovery;
 import io.soabase.core.features.discovery.Discovery;
 import io.soabase.core.features.discovery.DiscoveryHealth;
 import io.soabase.core.features.discovery.ExtendedDiscovery;
+import io.soabase.core.features.discovery.HealthCheckIntegration;
+import io.soabase.core.features.discovery.SafeDiscovery;
 import io.soabase.core.features.logging.LoggingReader;
 import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.core.rest.DynamicAttributeApis;
@@ -189,7 +190,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return discovery;
     }
 
-    private static class Ports
+    @VisibleForTesting
+    static class Ports
     {
         final int mainPort;
         final int adminPort;
@@ -201,7 +203,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         }
     }
 
-    private Ports getPorts(T configuration)
+    @VisibleForTesting
+    static <T extends Configuration> Ports getPorts(T configuration)
     {
         if ( SoaMainPortAccessor.class.isAssignableFrom(configuration.getClass()) )
         {
@@ -239,7 +242,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return new Ports(mainPort, adminPort);
     }
 
-    private int portFromConnectorFactories(List<ConnectorFactory> applicationConnectors)
+    private static int portFromConnectorFactories(List<ConnectorFactory> applicationConnectors)
     {
         if ( applicationConnectors.size() > 0 )
         {
@@ -248,7 +251,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return 0;
     }
 
-    private int portFromConnectorFactory(ConnectorFactory connectorFactory)
+    private static int portFromConnectorFactory(ConnectorFactory connectorFactory)
     {
         if ( (connectorFactory != null) && HttpConnectorFactory.class.isAssignableFrom(connectorFactory.getClass()) )
         {

@@ -19,6 +19,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.soabase.core.listening.Listenable;
@@ -48,6 +49,11 @@ public class StandardAttributesContainer
         return attributes;
     }
 
+    public StandardAttributesContainer()
+    {
+        this(Lists.<String>newArrayList());
+    }
+
     public StandardAttributesContainer(List<String> scopes)
     {
         scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");
@@ -59,7 +65,7 @@ public class StandardAttributesContainer
 
     public interface Updater
     {
-        public void put(String key, String scope, Object value);
+        public Updater put(String key, String scope, Object value);
 
         public void commit();
     }
@@ -67,11 +73,11 @@ public class StandardAttributesContainer
     public Updater newUpdater()
     {
         final Set<AttributeKey> deletingKeys = Sets.newHashSet(attributes.keySet());
-        final boolean notifyListeners = firstTime.compareAndSet(true, false);
+        final boolean notifyListeners = !firstTime.compareAndSet(true, false);
         return new Updater()
         {
             @Override
-            public void put(final String key, final String scope, Object value)
+            public Updater put(final String key, final String scope, Object value)
             {
                 AttributeKey attributeKey = new AttributeKey(key, scope);
                 deletingKeys.remove(attributeKey);
@@ -102,6 +108,7 @@ public class StandardAttributesContainer
                         listenable.forEach(notify);
                     }
                 }
+                return this;
             }
 
             @Override
@@ -177,27 +184,41 @@ public class StandardAttributesContainer
 
     public void temporaryOverride(String key, boolean value)
     {
-        overrides.put(key, value);
+        internalTemporaryOverride(key, value);
     }
 
     public void temporaryOverride(String key, int value)
     {
-        overrides.put(key, value);
+        internalTemporaryOverride(key, value);
     }
 
     public void temporaryOverride(String key, long value)
     {
-        overrides.put(key, value);
+        internalTemporaryOverride(key, value);
     }
 
     public void temporaryOverride(String key, String value)
     {
-        overrides.put(key, value);
+        internalTemporaryOverride(key, value);
     }
 
-    public boolean removeOverride(String key)
+    public boolean removeOverride(final String key)
     {
-        return overrides.remove(key) != null;
+        boolean hadOverride = (overrides.remove(key) != null);
+        if ( hadOverride )
+        {
+            Function<DynamicAttributeListener, Void> notify = new Function<DynamicAttributeListener, Void>()
+            {
+                @Override
+                public Void apply(DynamicAttributeListener listener)
+                {
+                    listener.overrideRemoved(key);
+                    return null;
+                }
+            };
+            listenable.forEach(notify);
+        }
+        return hadOverride;
     }
 
     public Collection<String> getKeys()
@@ -218,6 +239,21 @@ public class StandardAttributesContainer
     public Listenable<DynamicAttributeListener> getListenable()
     {
         return listenable;
+    }
+
+    private void internalTemporaryOverride(final String key, Object value)
+    {
+        overrides.put(key, value);
+        Function<DynamicAttributeListener, Void> notify = new Function<DynamicAttributeListener, Void>()
+        {
+            @Override
+            public Void apply(DynamicAttributeListener listener)
+            {
+                listener.overrideAdded(key);
+                return null;
+            }
+        };
+        listenable.forEach(notify);
     }
 
     private Object getValue(String key)

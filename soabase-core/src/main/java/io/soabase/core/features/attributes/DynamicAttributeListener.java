@@ -43,4 +43,18 @@ public interface DynamicAttributeListener
      * @param scope scope
      */
     public void attributeRemoved(String key, String scope);
+
+    /**
+     * The given key has been overridden changed
+     *
+     * @param key key
+     */
+    public void overrideAdded(String key);
+
+    /**
+     * The override for the given key has been removed
+     *
+     * @param key key
+     */
+    public void overrideRemoved(String key);
 }

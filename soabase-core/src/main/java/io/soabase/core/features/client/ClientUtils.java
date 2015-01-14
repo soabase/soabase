@@ -37,7 +37,16 @@ public class ClientUtils
 
     public static String serviceNameToHost(String serviceName)
     {
-        return HOST_SUBSTITUTION_TOKEN + serviceName;
+        String host = HOST_SUBSTITUTION_TOKEN + serviceName;
+        try
+        {
+            new URI("http://" + host);
+        }
+        catch ( URISyntaxException e )
+        {
+            throw new RuntimeException("Invalid service name: " + serviceName, e);
+        }
+        return host;
     }
 
     public static DiscoveryInstance hostToInstance(Discovery discovery, String host)
@@ -55,7 +64,7 @@ public class ClientUtils
         return null;
     }
 
-    public static URI filterUri(URI uri, DiscoveryInstance instance)
+    public static URI applyToUri(URI uri, DiscoveryInstance instance)
     {
         if ( instance != null )
         {
@@ -70,7 +79,7 @@ public class ClientUtils
                 throw new RuntimeException(e);
             }
         }
-        return null;
+        return uri;
     }
 
     private ClientUtils()

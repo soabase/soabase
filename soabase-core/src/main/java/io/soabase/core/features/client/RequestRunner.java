@@ -40,8 +40,7 @@ public class RequestRunner<T>
         RequestId.checkSetHeaders(request, headerSetter);
         DiscoveryInstance instance = getDiscoveryInstance();
         retryContext.setInstance(instance);
-        URI filteredUri = ClientUtils.filterUri(retryContext.getOriginalUri(), instance);
-        return (filteredUri != null) ? filteredUri : retryContext.getOriginalUri();
+        return ClientUtils.applyToUri(retryContext.getOriginalUri(), instance);
     }
 
     public boolean shouldContinue()

@@ -36,6 +36,7 @@
         <maven-shade-plugin-version>2.3</maven-shade-plugin-version>
         <maven-release-plugin-version>2.5.1</maven-release-plugin-version>
         <maven-gpg-plugin-version>1.6</maven-gpg-plugin-version>
+        <maven-install-plugin-version>2.5.2</maven-install-plugin-version>
 
         <dropwizard-version>0.8.0-rc2</dropwizard-version>
         <curator-version>2.7.1</curator-version>
@@ -384,17 +385,28 @@
 
             <plugin>
                 <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin-version}</version>
                 <configuration>
                     <passphrase>${gpg.passphrase}</passphrase>
-                    <useAgent>${gpg.useagent}</useAgent>
+                    <useAgent>true</useAgent>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>gpg</id>
                         <goals>
                             <goal>sign</goal>
                         </goals>
+                        <phase>verify</phase>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>${maven-install-plugin-version}</version>
+                <configuration>
+                    <createChecksum>true</createChecksum>
+                </configuration>
             </plugin>
         </plugins>
     </build>

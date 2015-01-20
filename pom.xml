@@ -32,6 +32,7 @@
         <doxia-module-apt-version>1.6</doxia-module-apt-version>
         <maven-project-info-reports-plugin-version>2.7</maven-project-info-reports-plugin-version>
         <maven-shade-plugin-version>2.3</maven-shade-plugin-version>
+        <maven-release-plugin-version>1.4.1</maven-release-plugin-version>
 
         <dropwizard-version>0.8.0-rc2</dropwizard-version>
         <curator-version>2.7.1</curator-version>
@@ -266,6 +267,15 @@
                         </filters>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>${maven-release-plugin-version}</version>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <tagNameFormat>${project.artifactId}-${project.version}</tagNameFormat>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -355,6 +365,10 @@
 
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

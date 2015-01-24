@@ -5,14 +5,15 @@ Examples
 * Building the examples
 
     The Soabase examples are built using Apache Maven. Download the example POM into a new directory and then build
-    it.
+    it. When building, you must pass the version of Soabase as a command line argument.
 
 +-------------------------------+
 mkdir soabase
 cd soabase
 wget https://raw.githubusercontent.com/soabase/soabase/master/soabase-example/src/main/resources/pom.xml
-mvn clean package
+mvn -Dsoabase-version=VERSION clean package
 +-------------------------------+
+(replace VERSION with the current Soabase version)
 
 * The Examples
 

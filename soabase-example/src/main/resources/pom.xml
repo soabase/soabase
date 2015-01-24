@@ -9,7 +9,7 @@
         <dependency>
             <groupId>io.soabase</groupId>
             <artifactId>soabase-example</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${soabase-version}</version>
         </dependency>
     </dependencies>
 

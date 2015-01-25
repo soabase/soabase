@@ -60,6 +60,8 @@ import io.soabase.core.rest.SoaApis;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.management.AttributeList;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -85,6 +87,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private static final boolean hasAdminKey;
 
     static
@@ -362,7 +366,10 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             }
         }
 
-        // TODO log if no main files or archives
+        if ( (mainFiles.size() == 0) && (archiveDirectories.size() == 0) )
+        {
+            log.warn("No log files found in config");
+        }
 
         return new LoggingReader(mainFiles, archiveDirectories);
     }

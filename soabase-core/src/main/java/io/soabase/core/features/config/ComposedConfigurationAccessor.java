@@ -20,6 +20,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 
 /**
@@ -30,6 +32,7 @@ public class ComposedConfigurationAccessor
 {
     private final LoadingCache<Class<?>, Field> fieldCache;
     private final Object configuration;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * @param configuration The application configuration object
@@ -60,10 +63,11 @@ public class ComposedConfigurationAccessor
                     }
                     configurationClass = configurationClass.getSuperclass();
                 }
-                // TODO logging
                 if ( foundField == null )
                 {
-                    throw new Exception("Could not find a field of the type: " + clazz);
+                    String message = "Could not find a field of the type: " + clazz;
+                    log.warn(message);
+                    throw new Exception(message);
                 }
                 return foundField;
             }
@@ -107,7 +111,7 @@ public class ComposedConfigurationAccessor
         }
         catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could not access field for " + clazz, e);
             throw new RuntimeException(e);
         }
     }

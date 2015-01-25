@@ -18,6 +18,8 @@ package io.soabase.core.rest;
 import com.google.common.collect.Lists;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.discovery.DiscoveryInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -32,6 +34,7 @@ import java.util.List;
 public class DiscoveryApis
 {
     private final SoaFeatures features;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     public DiscoveryApis(SoaFeatures features)
@@ -44,11 +47,10 @@ public class DiscoveryApis
     @Path("single/{name}")
     public Response getInstance(@PathParam("name") String serviceName)
     {
-        // TODO logging
-
         DiscoveryInstance instance = features.getDiscovery().getInstance(serviceName);
         if ( instance == null )
         {
+            log.warn("Instance not found for: " + serviceName);
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 

@@ -138,7 +138,6 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     @Override
     public void setForcedState(String serviceName, String instanceId, ForcedState forcedState)
     {
-        // TODO logging
         try
         {
             ServiceInstance<Payload> foundInstance = discovery.queryForInstance(serviceName, instanceId);
@@ -208,7 +207,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         }
         catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could query all instances for service: " + serviceName, e);
             throw new RuntimeException(e);
         }
     }
@@ -345,7 +344,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
             }
             catch ( Exception e )
             {
-                // TODO logging
+                log.error("Could not update registration for local instance: " + localUs, e);
                 throw new RuntimeException(e);
             }
         }

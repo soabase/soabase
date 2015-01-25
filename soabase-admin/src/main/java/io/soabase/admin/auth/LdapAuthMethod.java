@@ -15,6 +15,8 @@
  */
 package io.soabase.admin.auth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -30,6 +32,7 @@ public class LdapAuthMethod extends SimpleAuthMethod
     public static final String EMAIL_REPLACEMENT = "$EMAIL$";
     public static final String DOMAIN_REPLACEMENT = "$DOMAIN$";
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final String authenticationType;
     private final String query;
     private final URI ldapUri;
@@ -68,8 +71,7 @@ public class LdapAuthMethod extends SimpleAuthMethod
         }
         catch ( NamingException e )
         {
-            // TODO logging
-            e.printStackTrace();
+            log.error("Error processing ldap", e);
         }
         finally
         {

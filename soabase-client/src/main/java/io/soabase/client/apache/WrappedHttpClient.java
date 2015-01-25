@@ -30,6 +30,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
@@ -38,6 +40,7 @@ import java.net.URISyntaxException;
 @SuppressWarnings("deprecation")
 public class WrappedHttpClient implements HttpClient
 {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final HttpClient implementation;
     private final RetryComponents retryComponents;
     private final RequestId.HeaderSetter<HttpRequest> headerSetter = new RequestId.HeaderSetter<HttpRequest>()
@@ -117,7 +120,7 @@ public class WrappedHttpClient implements HttpClient
         }
         catch ( URISyntaxException e )
         {
-            // TODO logging
+            log.error("Bad URI: " + request.getRequestLine().getUri());
             throw new IOException(e);
         }
 
@@ -190,7 +193,7 @@ public class WrappedHttpClient implements HttpClient
             } catch (final Exception t2) {
                 // Log this exception. The original exception is more
                 // important and will be thrown to the caller.
-                // TODO this.log.warn("Error consuming content after an exception.", t2);
+                log.warn("Error consuming content after an exception.", t2);
             }
             if (t instanceof RuntimeException) {
                 throw (RuntimeException) t;

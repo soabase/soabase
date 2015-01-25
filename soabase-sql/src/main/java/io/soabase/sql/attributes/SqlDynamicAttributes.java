@@ -22,6 +22,8 @@ import io.soabase.core.features.attributes.WritableDynamicAttributes;
 import io.soabase.core.features.attributes.StandardAttributesContainer;
 import io.soabase.core.listening.Listenable;
 import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,7 @@ public class SqlDynamicAttributes implements WritableDynamicAttributes, Managed
 {
     private final StandardAttributesContainer container;
     private final SqlSession session;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public SqlDynamicAttributes(SqlSession session, List<String> scopes)
     {
@@ -202,7 +205,7 @@ public class SqlDynamicAttributes implements WritableDynamicAttributes, Managed
         }
         catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could not set new attributes", e);
         }
     }
 }

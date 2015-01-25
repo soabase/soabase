@@ -18,12 +18,16 @@ package io.soabase.core.features.client;
 import com.google.common.base.Preconditions;
 import io.soabase.core.features.discovery.Discovery;
 import io.soabase.core.features.discovery.DiscoveryInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class ClientUtils
 {
     public static final String HOST_SUBSTITUTION_TOKEN = "0.";
+
+    private static final Logger log = LoggerFactory.getLogger(ClientUtils.class);
 
     public static String hostToServiceName(String host)
     {
@@ -75,7 +79,7 @@ public class ClientUtils
             }
             catch ( URISyntaxException e )
             {
-                // TODO logging
+                log.error("Could not parse uri", e);
                 throw new RuntimeException(e);
             }
         }

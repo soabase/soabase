@@ -20,6 +20,8 @@ import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.attributes.AttributeKey;
 import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.attributes.WritableDynamicAttributes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -36,6 +38,7 @@ import java.util.Map;
 @Path("/soa/attributes")
 public class AttributesResource
 {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final SoaFeatures features;
 
     @Inject
@@ -83,7 +86,8 @@ public class AttributesResource
             return (WritableDynamicAttributes)attributes;
         }
 
-        // TODO logging
-        throw new WebApplicationException("Attributes instance is not writable");
+        String message = "Attributes instance is not writable";
+        log.error(message);
+        throw new WebApplicationException(message);
     }
 }

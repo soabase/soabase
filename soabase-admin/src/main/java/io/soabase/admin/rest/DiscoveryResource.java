@@ -22,6 +22,8 @@ import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.Discovery;
 import io.soabase.core.features.discovery.DiscoveryInstance;
 import io.soabase.core.features.discovery.ExtendedDiscovery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -39,6 +41,7 @@ import java.util.List;
 @Path("/soa/discovery")
 public class DiscoveryResource
 {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final SoaFeatures features;
 
     @Inject
@@ -60,7 +63,7 @@ public class DiscoveryResource
         }
         catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could not retrieve service names", e);
             names = Sets.newHashSet();
         }
         List<String> services = Lists.newArrayList(names);
@@ -97,7 +100,8 @@ public class DiscoveryResource
             return (ExtendedDiscovery)discovery;
         }
 
-        // TODO logging
-        throw new WebApplicationException("Discovery instance is not extended");
+        String message = "Discovery instance is not extended";
+        log.error(message);
+        throw new WebApplicationException(message);
     }
 }

@@ -30,6 +30,8 @@ import io.soabase.admin.auth.AuthSpec;
 import io.soabase.admin.components.ComponentManager;
 import io.soabase.admin.components.MetricComponent;
 import io.soabase.admin.components.TabComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,6 +52,7 @@ public class IndexServlet extends HttpServlet
 
     private static final String FORCE = "/force";
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final ComponentManager componentManager;
     private final AuthSpec authSpec;
     private final List<IndexMapping> mappings;
@@ -149,7 +152,7 @@ public class IndexServlet extends HttpServlet
             }
             catch ( IOException e )
             {
-                // TODO logging
+                log.error("Could not load resource: " + mapping.getFile(), e);
                 throw new RuntimeException(e);
             }
         }

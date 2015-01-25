@@ -41,6 +41,8 @@ import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.ServiceInstanceBuilder;
 import org.apache.curator.x.discovery.ServiceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
@@ -50,6 +52,7 @@ import java.util.concurrent.atomic.AtomicReference;
 // TODO
 public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payload>> implements ExtendedDiscovery, Managed, RemovalListener<String, ServiceProvider<Payload>>
 {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final ServiceDiscovery<Payload> discovery;
     private final LoadingCache<String, ServiceProvider<Payload>> providers;
     private final AtomicReference<ServiceInstance<Payload>> us = new AtomicReference<>();
@@ -92,7 +95,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         }
         catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could not build discovery instance", e);
             throw new RuntimeException(e);
         }
     }
@@ -113,7 +116,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         }
         catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could not query for names", e);
             throw new RuntimeException(e);
         }
     }
@@ -150,7 +153,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         }
         catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could not update service: " + (serviceName + ":" + instanceId), e);
             throw new RuntimeException(e);
         }
     }
@@ -230,7 +233,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         }
         catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could not get service: " + serviceName, e);
             throw new RuntimeException(e);
         }
     }
@@ -248,7 +251,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         }
         catch ( Exception e )
         {
-            // TODO logging
+            log.error("Could not service instance: " + serviceName, e);
             throw new RuntimeException(e);
         }
     }
@@ -304,7 +307,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
             }
             catch ( Exception e )
             {
-                // TODO logging
+                log.error("Could not find service: " + (serviceName + ":" + instanceToFind.getId()), e);
                 throw new RuntimeException(e);
             }
         }

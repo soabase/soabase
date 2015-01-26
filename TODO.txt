@@ -23,7 +23,6 @@
 - Admin console
     * Get more accurate CPU/disk load
     * Have a way to specify metrics with wildcards
-    * Include auth in all logs
 * Tests
 * javadoc/doc
 * TO-DOs

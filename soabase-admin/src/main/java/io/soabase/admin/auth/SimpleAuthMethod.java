@@ -17,12 +17,15 @@ package io.soabase.admin.auth;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
 public class SimpleAuthMethod implements AuthMethod
 {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final List<User> validUsers;
 
     public static class User
@@ -127,6 +130,8 @@ public class SimpleAuthMethod implements AuthMethod
 
     protected void internalSetLogin(HttpServletRequest request, String name)
     {
+        log.info("Logged in as " + name);
+
         HttpSession session = request.getSession(true);
         session.setAttribute(SimpleAuthMethod.class.getName(), name);
     }

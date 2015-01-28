@@ -22,7 +22,6 @@
     * Named features (SoaFeatures)
 - Admin console
     * Get more accurate CPU/disk load
-    - Have a way to specify metrics with wildcards - needs doc
 * Tests
 * javadoc/doc
 * TO-DOs

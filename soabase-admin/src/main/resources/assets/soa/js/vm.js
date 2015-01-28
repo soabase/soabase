@@ -7,61 +7,116 @@ var vmPort = null;
 var vmAdminPort = null;
 var vmRate = 1000;
 
+function vmMakePrefixSuffixPredicate(prefix, suffix) {
+    var minLength = prefix.length + suffix.length;
+    return function(obj, name) {
+        if ( name.length > minLength ) {
+            if ( name.substring(0, prefix.length) === prefix ) {
+                if ( name.substring(name.length - suffix.length, name.length) === suffix ) {
+                    return {
+                        label: name.substring(prefix.length, name.length - suffix.length),
+                        value: obj.value
+                    };
+                }
+            }
+        }
+        return null;
+    }
+}
+
+function vmMetricList(obj, stack, resultTab, pred) {
+    for (var property in obj) {
+        if (obj.hasOwnProperty(property)) {
+            var val = pred(obj[property], stack + property);
+            if ( val ) {
+                resultTab.push(val);
+            }
+            if (typeof obj[property] == "object") {
+                vmMetricList(obj[property], stack + property + '.', resultTab, pred);
+            }
+        }
+    }
+}
+
 function vmUpdate1Metric(metric, data) {
     var c3Data = [];
-    var i;
 
-    for ( i in metric.metrics ) {
-        var spec = metric.metrics[i];
-        var thisValue = null;
+    function applyToMetric(label, value) {
+        var tab = metric.data[label];
+        if ( !tab ) {
+            tab = [];
+            metric.data[label] = tab;
+        }
+
+        if ( tab.length != vmMaxMetricPoints ) {
+            tab = [];
+            for ( var p = 0; p < vmMaxMetricPoints; ++p ) {
+                tab.push(value);
+            }
+            metric.data[label] = tab;
+        }
+
+        tab.push(value);
+        if ( tab.length > vmMaxMetricPoints ) {
+            tab.shift();
+        }
+
+        return tab;
+    }
+
+    data.metricList = function(pred) {
+        var resultTab = [];
+        vmMetricList(data, '', resultTab, pred);
+        return resultTab;
+    };
+    for ( var m in metric.metrics ) {
+        var spec = metric.metrics[m];
+        var valueTab = null;
         try {
-            thisValue = eval('data.' + spec.path);
+            var thisValue = eval('data.' + spec.path);
+            if ( Array.isArray(thisValue) ) {
+                valueTab = thisValue;
+            } else {
+                valueTab = [
+                    {
+                        label: spec.label,
+                        value: thisValue
+                    }
+                ];
+            }
         }
         catch ( e ) {
-            thisValue = null;
+            valueTab = null;
         }
-        if ( (thisValue != undefined) && (thisValue != null) ) {
-            var tab = metric.data[spec.label];
-            if ( !tab ) {
-                tab = [];
-                metric.data[spec.label] = tab;
-            }
+        if ( (valueTab != undefined) && (valueTab != null) ) {
+            for ( var v in valueTab ) {
+                var tab = applyToMetric(valueTab[v].label, valueTab[v].value);
+                var thisC3Data = [valueTab[v].label];
+                for ( var i = 0; i < tab.length; ++i ) {
+                    switch ( metric.type ) {
+                        case 'DELTA':
+                        {
+                            if ( i > 0 ) {
+                                thisC3Data.push(tab[i] - tab[i - 1]);
+                            }
+                            break;
+                        }
 
-            if ( tab.length != vmMaxMetricPoints ) {
-                tab = [];
-                for ( i = 0; i < vmMaxMetricPoints; ++i ) {
-                    tab.push(thisValue);
-                }
-                metric.data[spec.label] = tab;
-            }
+                        case 'PERCENT':
+                        {
+                            thisC3Data.push(Math.round(100 * tab[i]));
+                            break;
+                        }
 
-            tab.push(thisValue);
-            if ( tab.length > vmMaxMetricPoints ) {
-                tab.shift();
-            }
-
-            var thisC3Data = [spec.label];
-            for ( i = 0; i < tab.length; ++i ) {
-                switch ( metric.type ) {
-                case 'DELTA': {
-                    if ( i > 0 ) {
-                        thisC3Data.push(tab[i] - tab[i - 1]);
+                        default:
+                        {
+                            thisC3Data.push(tab[i]);
+                            break;
+                        }
                     }
-                    break;
                 }
-
-                case 'PERCENT': {
-                    thisC3Data.push(Math.round(100 * tab[i]));
-                    break;
-                }
-
-                default: {
-                    thisC3Data.push(tab[i]);
-                    break;
-                }
-                }
+                c3Data.push(thisC3Data);
             }
-            c3Data.push(thisC3Data);
         }
     }
 

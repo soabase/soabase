@@ -17,7 +17,6 @@ package io.soabase.admin.components;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import java.util.List;
 import java.util.UUID;
@@ -35,31 +34,19 @@ public class StandardComponents
 
     public static MetricComponent newGcMetric()
     {
-        // TODO - get all collectors
         List<Metric> metrics = Lists.newArrayList
         (
-            new Metric("MarkSweep", "gauges['jvm.gc.PS-MarkSweep.count'].value"),
-            new Metric("MarkSweep", "gauges['jvm.gc.MarkSweepCompact.count'].value"),
-            new Metric("MarkSweep", "gauges['jvm.gc.PS-ConcurrentMarkSweep.count'].value"),
-            new Metric("MarkSweep", "gauges['jvm.gc.PSYoungGen.count'].value"),
-            new Metric("MarkSweep", "gauges['jvm.gc.PSOldGen.count'].value"),
-            new Metric("Scavenge", "gauges['jvm.gc.PS-Scavenge.count'].value")
+            new Metric("GC Counts", "metricList(vmMakePrefixSuffixPredicate('gauges.jvm.gc.', '.count'))")
         );
-        return new MetricComponent("soa-gc", MetricType.DELTA, "GC", "# of GCs", metrics);
+        return new MetricComponent("soa-gc", MetricType.DELTA, "GC Counts", "# of GCs", metrics);
     }
 
     public static MetricComponent newGcTimesMetric()
     {
-        // TODO - get all collectors
         List<Metric> metrics = Lists.newArrayList
-            (
-                new Metric("MarkSweep", "gauges['jvm.gc.PS-MarkSweep.time'].value"),
-                new Metric("MarkSweep", "gauges['jvm.gc.MarkSweepCompact.time'].value"),
-                new Metric("MarkSweep", "gauges['jvm.gc.ConcurrentMarkSweep.time'].value"),
-                new Metric("MarkSweep", "gauges['jvm.gc.PSYoungGen.time'].value"),
-                new Metric("MarkSweep", "gauges['jvm.gc.PSOldGen.time'].value"),
-                new Metric("Scavenge", "gauges['jvm.gc.PS-Scavenge.time'].value")
-            );
+        (
+            new Metric("GC Times", "metricList(vmMakePrefixSuffixPredicate('gauges.jvm.gc.', '.time'))")
+        );
         return new MetricComponent("soa-gc-times", MetricType.DELTA, "GC Times", "Time", metrics);
     }
 

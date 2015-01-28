@@ -15,9 +15,11 @@
  */
 package io.soabase.core.features.attributes;
 
+import com.google.common.collect.Maps;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import java.util.Arrays;
+import java.util.Map;
 
 public class TestStandardAttributesContainer
 {
@@ -27,7 +29,10 @@ public class TestStandardAttributesContainer
         StandardAttributesContainer container = new StandardAttributesContainer();
         Assert.assertEquals(container.getAll().size(), 0);
 
-        container.newUpdater().resetAttribute("one", "", 1.2).complete();
+        Map<AttributeKey, Object> newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("one", ""), 1.2);
+        container.reset(newAttributes);
+
         Assert.assertEquals(container.getAttribute("one", ""), "1.2");
         Assert.assertEquals(container.getAttributeInt("one", 0), 1);
         Assert.assertEquals(container.getAttributeLong("one", 0), 1L);
@@ -40,33 +45,33 @@ public class TestStandardAttributesContainer
     {
         StandardAttributesContainer container = new StandardAttributesContainer(Arrays.asList("a", "b"));
 
-        container.newUpdater()
-            .resetAttribute("one", "", 1)
-            .resetAttribute("one", "a", 2)
-            .resetAttribute("one", "b", 3)
-            .complete();
+        Map<AttributeKey, Object> newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("one", ""), 1);
+        newAttributes.put(new AttributeKey("one", "a"), 2);
+        newAttributes.put(new AttributeKey("one", "b"), 3);
+        container.reset(newAttributes);
         Assert.assertEquals(container.getAttributeInt("one", 0), 2);    // first matching scope wins
 
-        container.newUpdater()
-            .resetAttribute("one", "", 1)
-            .resetAttribute("one", "b", 3)
-            .complete();
+        newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("one", ""), 1);
+        newAttributes.put(new AttributeKey("one", "b"), 3);
+        container.reset(newAttributes);
         Assert.assertEquals(container.getAttributeInt("one", 0), 3);
 
-        container.newUpdater()
-            .resetAttribute("one", "", 1)
-            .complete();
+        newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("one", ""), 1);
+        container.reset(newAttributes);
         Assert.assertEquals(container.getAttributeInt("one", 0), 1);
 
         container.temporaryOverride("one", "over");
         Assert.assertEquals(container.getAttribute("one", ""), "over");
         Assert.assertEquals(container.getAttributeInt("one", 0), 0);
 
-        container.newUpdater()
-            .resetAttribute("two", "", 1)
-            .resetAttribute("two", "y", 2)
-            .resetAttribute("two", "z", 3)
-            .complete();
+        newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("two", ""), 1);
+        newAttributes.put(new AttributeKey("two", "y"), 2);
+        newAttributes.put(new AttributeKey("two", "z"), 3);
+        container.reset(newAttributes);
         Assert.assertEquals(container.getAttributeInt("two", 0), 1);    // other scopes don't match
     }
 }

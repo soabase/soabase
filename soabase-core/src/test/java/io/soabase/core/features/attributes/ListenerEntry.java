@@ -67,4 +67,14 @@ class ListenerEntry
         result = 31 * result + scope.hashCode();
         return result;
     }
+
+    @Override
+    public String toString()
+    {
+        return "ListenerEntry{" +
+            "event='" + event + '\'' +
+            ", key='" + key + '\'' +
+            ", scope='" + scope + '\'' +
+            '}';
+    }
 }

@@ -63,76 +63,62 @@ public class StandardAttributesContainer
         this.scopes = builder.build();
     }
 
-    public interface Resetter
-    {
-        public Resetter resetAttribute(String key, String scope, Object value);
-
-        public void complete();
-    }
-
-    public Resetter newUpdater()
+    public void reset(Map<AttributeKey, Object> newAttributes)
     {
         final Set<AttributeKey> deletingKeys = Sets.newHashSet(attributes.keySet());
         final boolean notifyListeners = !firstTime.compareAndSet(true, false);
-        return new Resetter()
+
+        for ( Map.Entry<AttributeKey, Object> entry : newAttributes.entrySet() )
         {
-            @Override
-            public Resetter resetAttribute(final String key, final String scope, Object value)
+            final AttributeKey attributeKey = entry.getKey();
+            Object value = entry.getValue();
+            deletingKeys.remove(attributeKey);
+
+            final boolean isNew = !attributes.containsKey(attributeKey);
+            if ( isNew || !Objects.equal(value, attributes.get(attributeKey)) )
             {
-                AttributeKey attributeKey = new AttributeKey(key, scope);
-                deletingKeys.remove(attributeKey);
+                attributes.put(attributeKey, value);
 
-                final boolean isNew = !attributes.containsKey(attributeKey);
-                if ( isNew || !Objects.equal(value, attributes.get(attributeKey)) )
+                Function<DynamicAttributeListener, Void> notify = new Function<DynamicAttributeListener, Void>()
                 {
-                    attributes.put(attributeKey, value);
-
-                    Function<DynamicAttributeListener, Void> notify = new Function<DynamicAttributeListener, Void>()
+                    @Override
+                    public Void apply(DynamicAttributeListener listener)
                     {
-                        @Override
-                        public Void apply(DynamicAttributeListener listener)
+                        if ( isNew )
                         {
-                            if ( isNew )
-                            {
-                                listener.attributeAdded(key, scope);
-                            }
-                            else
-                            {
-                                listener.attributeChanged(key, scope);
-                            }
-                            return null;
+                            listener.attributeAdded(attributeKey.getKey(), attributeKey.getScope());
                         }
-                    };
-                    if ( notifyListeners )
-                    {
-                        listenable.forEach(notify);
-                    }
-                }
-                return this;
-            }
-
-            @Override
-            public void complete()
-            {
-                for ( final AttributeKey attributeKey : deletingKeys )
-                {
-                    attributes.remove(attributeKey);
-                    if ( notifyListeners )
-                    {
-                        Function<DynamicAttributeListener, Void> notify = new Function<DynamicAttributeListener, Void>()
+                        else
                         {
-                            @Override
-                            public Void apply(DynamicAttributeListener listener)
-                            {
-                                listener.attributeRemoved(attributeKey.getKey(), attributeKey.getScope());
-                                return null;
-                            }
-                        };
-                        listenable.forEach(notify);
+                            listener.attributeChanged(attributeKey.getKey(), attributeKey.getScope());
+                        }
+                        return null;
                     }
+                };
+                if ( notifyListeners )
+                {
+                    listenable.forEach(notify);
                 }
             }
-        };
+        }
+
+        for ( final AttributeKey attributeKey : deletingKeys )
+        {
+            attributes.remove(attributeKey);
+            if ( notifyListeners )
+            {
+                Function<DynamicAttributeListener, Void> notify = new Function<DynamicAttributeListener, Void>()
+                {
+                    @Override
+                    public Void apply(DynamicAttributeListener listener)
+                    {
+                        listener.attributeRemoved(attributeKey.getKey(), attributeKey.getScope());
+                        return null;
+                    }
+                };
+                listenable.forEach(notify);
+            }
+        }
     }
 
     public String getAttribute(String key, String defaultValue)

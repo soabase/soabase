@@ -16,9 +16,13 @@
 package io.soabase.core.features.attributes;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -54,21 +58,26 @@ public class TestDynamicAttributeListener
         };
         container.getListenable().addListener(listener);
 
-        container.newUpdater().complete();    // first commit doesn't notify
+        container.reset(container.getAll());    // first commit doesn't notify
         Assert.assertEquals(attributeChangedLatch.getCount(), 1);
         Assert.assertEquals(attributeAddedLatch.getCount(), 1);
         Assert.assertEquals(attributeRemovedLatch.getCount(), 1);
 
-        container.newUpdater().resetAttribute("a", "one", "a").complete();
+        Map<AttributeKey, Object> newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("a", "one"), "a");
+        container.reset(newAttributes);
         Assert.assertTrue(attributeAddedLatch.await(1, TimeUnit.MILLISECONDS));
         Assert.assertEquals(attributeChangedLatch.getCount(), 1);
         Assert.assertEquals(attributeRemovedLatch.getCount(), 1);
 
-        container.newUpdater().resetAttribute("a", "one", "b").complete();
+        newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("a", "one"), "b");
+        container.reset(newAttributes);
         Assert.assertTrue(attributeChangedLatch.await(1, TimeUnit.MILLISECONDS));
         Assert.assertEquals(attributeRemovedLatch.getCount(), 1);
 
-        container.newUpdater().complete();
+        newAttributes = Maps.newHashMap();
+        container.reset(newAttributes);
         Assert.assertTrue(attributeRemovedLatch.await(1, TimeUnit.MILLISECONDS));
     }
 
@@ -110,41 +119,40 @@ public class TestDynamicAttributeListener
         RecordingListener listener = new RecordingListener();
         container.getListenable().addListener(listener);
 
-        container.newUpdater()
-            .resetAttribute("a", "a", "a")
-            .resetAttribute("a", "b", "a")
-            .resetAttribute("b", "a", "b")
-            .resetAttribute("b", "b", "b")
-            .complete();    // first commit doesn't notify
-        Assert.assertEquals(listener.getEntries().size(), 0);
+        Map<AttributeKey, Object> newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("a", "a"), "a");
+        newAttributes.put(new AttributeKey("a", "b"), "a");
+        newAttributes.put(new AttributeKey("b", "a"), "b");
+        newAttributes.put(new AttributeKey("b", "b"), "b");
+        container.reset(newAttributes);    // first commit doesn't notify
 
-        container.newUpdater()
-            .resetAttribute("a", "a", "new")
-            .resetAttribute("a", "c", "first")
-            .resetAttribute("b", "a", "one")
-            .resetAttribute("b", "b", "two")
-            .resetAttribute("b", "", "hey")
-            .complete();
+        newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("a", "a"), "new");
+        newAttributes.put(new AttributeKey("a", "c"), "first");
+        newAttributes.put(new AttributeKey("b", "a"), "one");
+        newAttributes.put(new AttributeKey("b", "b"), "two");
+        newAttributes.put(new AttributeKey("b", ""), "hey");
+        container.reset(newAttributes);
 
-        List<ListenerEntry> expected = Lists.newArrayList
-        (
-            new ListenerEntry("attributeChanged", "a", "a"),
-            new ListenerEntry("attributeAdded", "a", "c"),
-            new ListenerEntry("attributeChanged", "b", "a"),
-            new ListenerEntry("attributeChanged", "b", "b"),
-            new ListenerEntry("attributeAdded", "b", ""),
-            new ListenerEntry("attributeRemoved", "a", "b")
-        );
-        Assert.assertEquals(listener.getEntries(), expected);
+        Set<ListenerEntry> expected = Sets.newHashSet
+            (
+                new ListenerEntry("attributeChanged", "a", "a"),
+                new ListenerEntry("attributeAdded", "a", "c"),
+                new ListenerEntry("attributeChanged", "b", "a"),
+                new ListenerEntry("attributeChanged", "b", "b"),
+                new ListenerEntry("attributeAdded", "b", ""),
+                new ListenerEntry("attributeRemoved", "a", "b")
+            );
+        Assert.assertEquals(Sets.newHashSet(listener.getEntries()), expected);
         listener.clear();
 
-        container.newUpdater()
-            .resetAttribute("a", "a", "new")
-            .resetAttribute("a", "c", "first")
-            .resetAttribute("b", "a", "one")
-            .resetAttribute("b", "b", "two")
-            .resetAttribute("b", "", "hey")
-            .complete();
+        newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("a", "a"), "new");
+        newAttributes.put(new AttributeKey("a", "c"), "first");
+        newAttributes.put(new AttributeKey("b", "a"), "one");
+        newAttributes.put(new AttributeKey("b", "b"), "two");
+        newAttributes.put(new AttributeKey("b", ""), "hey");
+        container.reset(newAttributes);
         Assert.assertEquals(listener.getEntries().size(), 0);
     }
 }

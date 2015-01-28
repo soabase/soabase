@@ -15,6 +15,7 @@
  */
 package io.soabase.sql.attributes;
 
+import com.google.common.collect.Maps;
 import io.dropwizard.lifecycle.Managed;
 import io.soabase.core.features.attributes.AttributeKey;
 import io.soabase.core.features.attributes.DynamicAttributeListener;
@@ -193,15 +194,15 @@ public class SqlDynamicAttributes implements WritableDynamicAttributes, Managed
 
     synchronized void update()
     {
-        StandardAttributesContainer.Resetter resetter = container.newUpdater();
+        Map<AttributeKey, Object> newAttributes = Maps.newHashMap();
         AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
         try
         {
             for ( AttributeEntity entity : mapper.selectAll() )
             {
-                resetter.resetAttribute(entity.getfKEY(), entity.getfSCOPE(), entity.getfVALUE());
+                newAttributes.put(new AttributeKey(entity.getfKEY(), entity.getfSCOPE()), entity.getfVALUE());
             }
-            resetter.complete();
+            container.reset(newAttributes);
         }
         catch ( Exception e )
         {

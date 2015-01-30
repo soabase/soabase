@@ -51,6 +51,7 @@ public class AttributesResource
     @Consumes(MediaType.APPLICATION_JSON)
     public Response delete(Attribute attribute)
     {
+        // TODO logging
         WritableDynamicAttributes attributes = getAttributes();
         attributes.remove(new AttributeKey(attribute.getKey(), attribute.getScope()));
         return Response.ok().build();
@@ -60,6 +61,7 @@ public class AttributesResource
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUpdate(Attribute attribute)
     {
+        // TODO logging
         WritableDynamicAttributes attributes = getAttributes();
         attributes.put(new AttributeKey(attribute.getKey(), attribute.getScope()), attribute.getValue());
         return Response.ok().build();

@@ -34,9 +34,9 @@ public interface AttributeEntityMapper
     @Insert("INSERT INTO SoaAttributes (fKEY, fSCOPE, fVALUE, fTIMESTAMP) VALUES (#{fKEY}, #{fSCOPE}, #{fVALUE}, #{fTIMESTAMP})")
     public int insert(AttributeEntity attribute);
 
-    @Update("UPDATE SoaAttributes SET fVALUE = #{fVALUE} WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE}")  // TODO fTIMESTAMP
+    @Update("UPDATE SoaAttributes SET fVALUE = #{fVALUE} WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE}")
     public int update(AttributeEntity attribute);
 
-    @Delete("DELETE FROM SoaAttributes WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE}")  // TODO fTIMESTAMP
+    @Delete("DELETE FROM SoaAttributes WHERE fKEY = #{fKEY} AND fSCOPE = #{fSCOPE}")
     public int delete(AttributeEntity attribute);
 }

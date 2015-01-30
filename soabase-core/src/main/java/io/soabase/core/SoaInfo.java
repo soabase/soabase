@@ -15,9 +15,13 @@
  */
 package io.soabase.core;
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class SoaInfo
 {
@@ -73,5 +77,13 @@ public class SoaInfo
     public boolean isRegisterInDiscovery()
     {
         return registerInDiscovery;
+    }
+
+    public static DateFormat newUtcFormatter()
+    {
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        ISO8601DateFormat df = new ISO8601DateFormat();
+        df.setTimeZone(tz);
+        return df;
     }
 }

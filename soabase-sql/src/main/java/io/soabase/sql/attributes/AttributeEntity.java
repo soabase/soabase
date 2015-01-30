@@ -16,9 +16,10 @@
 package io.soabase.sql.attributes;
 
 import com.google.common.base.Preconditions;
+import io.soabase.core.SoaInfo;
 import io.soabase.core.features.attributes.StandardAttributesContainer;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 public class AttributeEntity implements Serializable
@@ -44,6 +45,7 @@ public class AttributeEntity implements Serializable
         this.fSCOPE = Preconditions.checkNotNull(fSCOPE, "fSCOPE cannot be null");
         this.fVALUE = fVALUE;
         fTIMESTAMP = UUID.randomUUID().toString();
+        fTIMESTAMP = SoaInfo.newUtcFormatter().format(new Date());
     }
 
     public String getfKEY()

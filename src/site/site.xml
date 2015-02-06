@@ -55,6 +55,7 @@
             <item name="Admin APIs" href="admin.html"/>
             <item name="Admin Console" href="console.html"/>
             <item name="Config Utils" href="config.html"/>
+            <item name="Guice Integration" href="guice.html"/>
         </menu>
 
         <menu name="Details">

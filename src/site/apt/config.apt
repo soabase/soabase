@@ -1,6 +1,6 @@
 Soabase Configuration Utilities
 
-    Soabase Configuration contains two utilities:
+    Soabase Configuration contains these utilities:
 
 ==========================
 
@@ -19,3 +19,11 @@ Soabase Configuration Utilities
     A simple way of allowing shared bundles, etc. to access their custom configuration objects.
 
     Click here {{{./genconfig.html}for details on the ComposedConfigurationAccessor}}.
+
+==========================
+
+    <<{{{./guice.html}Guice Bundle}}>>
+
+    A bundle for adding Guice support to Jersey 2.0 Resources.
+
+    Click here {{{./quice.html}for details on the Guice Bundle}}.

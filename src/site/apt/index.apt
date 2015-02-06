@@ -59,6 +59,8 @@ Soabase
 
         * A simple way of allowing shared bundles, etc. to access their custom configuration objects
 
+        * Bundle for adding Guice support to Jersey 2.0 Resources
+
 * Usage
 
     It is assumed that you are familiar with Dropwizard, bundles, etc. See the {{{./usage.html}Getting Started}} page for details.

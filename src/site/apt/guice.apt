@@ -1,0 +1,15 @@
+Guice Bundle
+
+    The Guice Bundle integrates the {{{https://hk2.java.net/guice-bridge/}Guice/HK2 Bridge}} so that
+    objects bound via Guice are available to your Jersey 2.0 resources.
+
+* Usage
+
+    Add the <<<GuiceBundle>>> to your application. It's constructor takes a Provider that returns
+    the Guice Injector to use. This is required by the Guice/HK2 Bridge. Any objects that
+    are part of the Injector will be available to your Jersey resources.
+
++----------------------------------------------+
+Provider<Injector> injectorProvider = ...
+bootstrap.addBundle(new GuiceBundle(injectorProvider));
++----------------------------------------------+

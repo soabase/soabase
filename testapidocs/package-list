@@ -1,2 +1,7 @@
+io.soabase.core
+io.soabase.core.features.attributes
+io.soabase.core.features.client
 io.soabase.core.features.config
 io.soabase.core.features.config.mocks
+io.soabase.guice
+io.soabase.guice.mocks

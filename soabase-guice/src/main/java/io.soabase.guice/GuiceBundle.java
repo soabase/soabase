@@ -27,10 +27,16 @@ import javax.inject.Provider;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 
+/**
+ * Bundle for adding Guice support to Jersey 2.0 Resources
+ */
 public class GuiceBundle implements Bundle
 {
     private final Provider<Injector> injectorProvider;
 
+    /**
+     * @param injectorProvider a provider for the Guice injector to use
+     */
     public GuiceBundle(Provider<Injector> injectorProvider)
     {
         this.injectorProvider = injectorProvider;

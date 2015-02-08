@@ -18,8 +18,8 @@ Guice Integration
 * GuiceBundle Usage
 
     Add the <<<GuiceBundle>>> to your application. Its constructor takes a Provider that returns
-    the Guice Injector to use. This is required by the Guice/HK2 Bridge. Any objects that
-    are part of the Injector will be available to your Jersey resources.
+    the Guice Injector to use. Any objects that are part of the Injector will be available to your Jersey resources.
+    Additionally, any bound Servlets, Filters or Jersey Providers will be registered via Dropwizard.
 
 +----------------------------------------------+
 Provider<Injector> injectorProvider = ...

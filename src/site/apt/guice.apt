@@ -1,9 +1,21 @@
-Guice Bundle
+Guice Integration
 
-    The Guice Bundle integrates the {{{https://hk2.java.net/guice-bridge/}Guice/HK2 Bridge}} so that
+    NOTE: The Guice Integration does not have dependencies on other parts of Soabase and, so, can be used
+    independently if needed.
+
+    The Guice Integration includes:
+
+    * GuiceBundle
+
+    The GuiceBundle integrates the {{{https://hk2.java.net/guice-bridge/}Guice/HK2 Bridge}} so that
     objects bound via Guice are available to your Jersey 2.0 resources.
 
-* Usage
+    * JerseyGuiceModule
+
+    The JerseyGuiceModule adds most of the functionality of Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}.
+    All registrations are forwarded to the appropriate Dropwizard/Jersey/Jetty methods.
+
+* GuiceBundle Usage
 
     Add the <<<GuiceBundle>>> to your application. Its constructor takes a Provider that returns
     the Guice Injector to use. This is required by the Guice/HK2 Bridge. Any objects that
@@ -13,3 +25,10 @@ Guice Bundle
 Provider<Injector> injectorProvider = ...
 bootstrap.addBundle(new GuiceBundle(injectorProvider));
 +----------------------------------------------+
+
+* JerseyGuiceModule Usage
+
+    The JerseyGuiceModule is used exactly as Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}.
+    Add the module to your injector and override the <<<configureServlets()>>> method. Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}
+    documentation applies to JerseyGuiceModule - the APIs are the same. However, <<<@RequestScoped>>>, <<<@SessionScoped>>>, <<<@RequestParameters>>>,
+    and regular expression matching are not supported.

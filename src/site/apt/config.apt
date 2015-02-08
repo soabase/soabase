@@ -22,8 +22,9 @@ Soabase Configuration Utilities
 
 ==========================
 
-    <<{{{./guice.html}Guice Bundle}}>>
+    <<{{{./guice.html}Guice Integration}}>>
 
-    A bundle for adding Guice support to Jersey 2.0 Resources.
+    A bundle for adding Guice support to Jersey 2.0 Resources. Also includes a Guice module
+    that supports most of the features of Guice's ServletModule.
 
-    Click here {{{./quice.html}for details on the Guice Bundle}}.
+    Click here {{{./quice.html}for details on the Guice Integration}}.

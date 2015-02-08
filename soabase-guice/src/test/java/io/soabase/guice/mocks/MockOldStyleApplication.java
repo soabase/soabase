@@ -24,16 +24,14 @@ import io.soabase.guice.GuiceBundle;
 import io.soabase.guice.InjectorProvider;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import javax.inject.Provider;
 import java.util.concurrent.CountDownLatch;
 
-public class MockApplication extends Application<Configuration>
+public class MockOldStyleApplication extends Application<Configuration>
 {
     private final Injector injector;
     private final CountDownLatch startedLatch = new CountDownLatch(1);
 
-    public MockApplication(Injector injector)
+    public MockOldStyleApplication(Injector injector)
     {
         this.injector = injector;
     }
@@ -47,16 +45,6 @@ public class MockApplication extends Application<Configuration>
     @Override
     public void run(Configuration configuration, Environment environment) throws Exception
     {
-        AbstractBinder abstractBinder = new AbstractBinder()
-        {
-            @Override
-            protected void configure()
-            {
-                bind(new MockHK2Injected()).to(MockHK2Injected.class);
-            }
-        };
-        environment.jersey().register(abstractBinder);
-        environment.jersey().register(MockResource.class);
         LifeCycle.Listener listener = new AbstractLifeCycle.AbstractLifeCycleListener()
         {
             @Override

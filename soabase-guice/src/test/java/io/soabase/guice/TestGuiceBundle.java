@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.soabase.guice;
 
 import com.google.common.io.CharStreams;
@@ -21,7 +22,12 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.soabase.guice.mocks.MockApplication;
+import io.soabase.guice.mocks.MockFilter;
 import io.soabase.guice.mocks.MockGuiceInjected;
+import io.soabase.guice.mocks.MockHK2Injected;
+import io.soabase.guice.mocks.MockOldStyleApplication;
+import io.soabase.guice.mocks.MockResource;
+import io.soabase.guice.mocks.MockServlet;
 import org.eclipse.jetty.util.thread.ShutdownThread;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -65,6 +71,54 @@ public class TestGuiceBundle
             URI uri = new URI("http://localhost:8080/test");
             String str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
             Assert.assertEquals(str, "guice - hk2");
+        }
+        finally
+        {
+            future.cancel(true);
+            ShutdownThread.getInstance().run();
+        }
+    }
+
+    @Test
+    public void testJerseyServletModule() throws Exception
+    {
+        Module module = new JerseyGuiceModule()
+        {
+            @Override
+            protected void configureServlets()
+            {
+                bind(MockResource.class);
+                bind(MockHK2Injected.class).asEagerSingleton();
+                bind(MockGuiceInjected.class).asEagerSingleton();
+
+                filter("/*").through(MockFilter.class);
+                serve("/mock/test").with(MockServlet.class);
+            }
+        };
+
+        Injector injector = Guice.createInjector(module);
+        final MockOldStyleApplication mockApplication = new MockOldStyleApplication(injector);
+        Callable callable = new Callable()
+        {
+            @Override
+            public Object call() throws Exception
+            {
+                String[] args = {"server"};
+                mockApplication.run(args);
+                return null;
+            }
+        };
+        Future future = Executors.newSingleThreadExecutor().submit(callable);
+        try
+        {
+            Assert.assertTrue(mockApplication.getStartedLatch().await(5000, TimeUnit.SECONDS));
+            URI uri = new URI("http://localhost:8080/test");
+            String str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
+            Assert.assertEquals(str, "success - guice - hk2");
+
+            uri = new URI("http://localhost:8080/mock/test");
+            str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
+            Assert.assertEquals(str, "hello");
         }
         finally
         {

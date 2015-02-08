@@ -18,6 +18,9 @@ package io.soabase.guice.mocks;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 
 @Path("/test")
 public class MockResource
@@ -33,8 +36,13 @@ public class MockResource
     }
 
     @GET
-    public String get()
+    public String get(@QueryParam("test") String test)
     {
-        return guiceInjected.getValue() + " - " + hk2Injected.getValue();
+        String response = guiceInjected.getValue() + " - " + hk2Injected.getValue();
+        if ( test != null )
+        {
+            return test + " - " + response;
+        }
+        return response;
     }
 }

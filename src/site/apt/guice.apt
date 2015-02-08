@@ -28,6 +28,8 @@ bootstrap.addBundle(new GuiceBundle(injectorProvider));
 
 * JerseyGuiceModule Usage
 
+    Note: the JerseyGuiceModule requires the GuiceBundle.
+    
     The JerseyGuiceModule is used exactly as Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}.
     Add the module to your injector and override the <<<configureServlets()>>> method. Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}
     documentation applies to JerseyGuiceModule - the APIs are the same. However, <<<@RequestScoped>>>, <<<@SessionScoped>>>, <<<@RequestParameters>>>,

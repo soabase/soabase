@@ -23,7 +23,16 @@ import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 import java.util.List;
 
-// heavily copied from Guice Servlet
+/**
+ * <p>
+ *     Provides much of the functionality of the Guice ServletModule (https://github.com/google/guice/wiki/ServletModule).
+ *     All registrations are forwarded to the appropriate Dropwizard/Jersey/Jetty methods.
+ * </p>
+ *
+ * <p>
+ *     heavily copied from Guice Servlet
+ * </p>
+ */
 public class JerseyGuiceModule extends AbstractModule
 {
     private final List<FilterDefinition> filterDefinitions = Lists.newArrayList();

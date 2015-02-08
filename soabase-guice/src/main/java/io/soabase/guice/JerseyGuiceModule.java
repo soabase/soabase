@@ -1,17 +1,33 @@
+/**
+ * Copyright 2014 Jordan Zimmerman
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.soabase.guice;
 
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
+import com.google.inject.Key;
 import com.google.inject.internal.UniqueAnnotations;
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
 import java.util.List;
 
 // heavily copied from Guice Servlet
 public class JerseyGuiceModule extends AbstractModule
 {
     private final List<FilterDefinition> filterDefinitions = Lists.newArrayList();
-    private final List<FilterInstanceBindingEntry> filterInstanceEntries = Lists.newArrayList();
     private final List<ServletDefinition> servletDefinitions = Lists.newArrayList();
-    private final List<ServletInstanceBindingEntry> servletInstanceEntries = Lists.newArrayList();
 
     protected final FilterKeyBindingBuilder filter(String... urlPatterns)
     {
@@ -27,15 +43,6 @@ public class JerseyGuiceModule extends AbstractModule
     protected final void configure()
     {
         configureServlets();
-
-        for ( FilterInstanceBindingEntry entry : filterInstanceEntries )
-        {
-            bind(entry.key).toInstance(entry.filter);
-        }
-        for ( ServletInstanceBindingEntry entry : servletInstanceEntries )
-        {
-            bind(entry.key).toInstance(entry.servlet);
-        }
 
         for ( FilterDefinition filterDefinition : filterDefinitions )
         {
@@ -78,66 +85,6 @@ public class JerseyGuiceModule extends AbstractModule
      * your module. Mapping a servlet that is bound under any other scope is an error.
      * <p/>
      * <p/>
-     * <h4>Dispatch Order</h4>
-     * You are free to register as many servlets and filters as you like this way. They will
-     * be compared and dispatched in the order in which the filter methods are called:
-     * <p/>
-     * <pre>
-     *
-     *   Guice.createInjector(..., new ServletModule() {
-     *
-     *     {@literal @}Override
-     *     protected void configureServlets() {
-     *       filter("/*").through(MyFilter.class);
-     *       filter("*.css").through(MyCssFilter.class);
-     *       filter("*.jpg").through(new MyJpgFilter());
-     *       // etc..
-     *
-     *       serve("*.html").with(MyServlet.class);
-     *       serve("/my/*").with(MyServlet.class);
-     *       serve("*.jpg").with(new MyServlet());
-     *       // etc..
-     *      }
-     *    }
-     * </pre>
-     * This will traverse down the list of rules in lexical order. For example, a url
-     * "{@code /my/file.js}" (after it runs through the matching filters) will first
-     * be compared against the servlet mapping:
-     * <p/>
-     * <pre>
-     *       serve("*.html").with(MyServlet.class);
-     * </pre>
-     * And failing that, it will descend to the next servlet mapping:
-     * <p/>
-     * <pre>
-     *       serve("/my/*").with(MyServlet.class);
-     * </pre>
-     * <p/>
-     * Since this rule matches, Guice Servlet will dispatch to {@code MyServlet}. These
-     * two mapping rules can also be written in more compact form using varargs syntax:
-     * <p/>
-     * <pre>
-     *       serve(<b>"*.html", "/my/*"</b>).with(MyServlet.class);
-     * </pre>
-     * <p/>
-     * This way you can map several URI patterns to the same servlet. A similar syntax is
-     * also available for filter mappings.
-     * <p/>
-     * <p/>
-     * <h4>Regular Expressions</h4>
-     * You can also map servlets (or filters) to URIs using regular expressions:
-     * <pre>
-     *    <b>serveRegex("(.)*ajax(.)*").with(MyAjaxServlet.class)</b>
-     * </pre>
-     * <p/>
-     * This will map any URI containing the text "ajax" in it to {@code MyAjaxServlet}. Such as:
-     * <ul>
-     * <li>http://www.google.com/ajax.html</li>
-     * <li>http://www.google.com/content/ajax/index</li>
-     * <li>http://www.google.com/it/is_totally_ajaxian</li>
-     * </ul>
-     * <p/>
-     * <p/>
      * <h3>Initialization Parameters</h3>
      * <p/>
      * Servlets (and filters) allow you to pass in init params
@@ -176,43 +123,6 @@ public class JerseyGuiceModule extends AbstractModule
      * </pre>
      * <p/>
      * See {@link com.google.inject.Binder} for more information on binding syntax.
-     * <p/>
-     * <p/>
-     * <h3>Multiple Modules</h3>
-     * <p/>
-     * It is sometimes useful to capture servlet and filter mappings from multiple different
-     * modules. This is essential if you want to package and offer drop-in Guice plugins that
-     * provide servlet functionality.
-     * <p/>
-     * <p/>
-     * Guice Servlet allows you to register several instances of {@code ServletModule} to your
-     * injector. The order in which these modules are installed determines the dispatch order
-     * of filters and the precedence order of servlets. For example, if you had two servlet modules,
-     * {@code RpcModule} and {@code WebServiceModule} and they each contained a filter that mapped
-     * to the same URI pattern, {@code "/*"}:
-     * <p/>
-     * <p/>
-     * In {@code RpcModule}:
-     * <pre>
-     *     filter("/*").through(RpcFilter.class);
-     * </pre>
-     * <p/>
-     * In {@code WebServiceModule}:
-     * <pre>
-     *     filter("/*").through(WebServiceFilter.class);
-     * </pre>
-     * <p/>
-     * Then the order in which these filters are dispatched is determined by the order in which
-     * the modules are installed:
-     * <p/>
-     * <pre>
-     *   <b>install(new WebServiceModule());</b>
-     *   install(new RpcModule());
-     * </pre>
-     * <p/>
-     * In the case shown above {@code WebServiceFilter} will run first.
-     *
-     * @since 2.0
      */
     protected void configureServlets()
     {
@@ -223,9 +133,9 @@ public class JerseyGuiceModule extends AbstractModule
         filterDefinitions.add(filterDefinition);
     }
 
-    void add(FilterInstanceBindingEntry bindingEntry)
+    void add(Key<Filter> key, Filter filter)
     {
-        filterInstanceEntries.add(bindingEntry);
+        bind(key).toInstance(filter);
     }
 
     void add(ServletDefinition servletDefinition)
@@ -233,8 +143,8 @@ public class JerseyGuiceModule extends AbstractModule
         servletDefinitions.add(servletDefinition);
     }
 
-    void add(ServletInstanceBindingEntry bindingEntry)
+    void add(Key<HttpServlet> key, HttpServlet servlet)
     {
-        servletInstanceEntries.add(bindingEntry);
+        bind(key).toInstance(servlet);
     }
 }

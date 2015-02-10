@@ -111,6 +111,10 @@ public class GuiceBundle implements Bundle
                     {
                         registerServlet(injector, environment, injector.getBinding(key));
                     }
+                    else if ( InternalFilter.class.equals(c) )
+                    {
+                        context.register(injector.getBinding(key));
+                    }
                 }
             }
             injector = injector.getParent();

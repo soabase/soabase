@@ -18,10 +18,23 @@ package io.soabase.guice;
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
+import com.google.inject.Provides;
 import com.google.inject.internal.UniqueAnnotations;
+import org.glassfish.jersey.message.MessageBodyWorkers;
+import org.glassfish.jersey.server.ContainerRequest;
 import javax.servlet.Filter;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -37,6 +50,12 @@ public class JerseyGuiceModule extends AbstractModule
 {
     private final List<FilterDefinition> filterDefinitions = Lists.newArrayList();
     private final List<ServletDefinition> servletDefinitions = Lists.newArrayList();
+    private final InternalFilter filter;
+
+    public JerseyGuiceModule()
+    {
+        filter = new InternalFilter();
+    }
 
     protected final FilterKeyBindingBuilder filter(String... urlPatterns)
     {
@@ -51,6 +70,12 @@ public class JerseyGuiceModule extends AbstractModule
     @Override
     protected final void configure()
     {
+        bind(InternalFilter.class).toInstance(filter);
+        filter("/*").through(filter);
+
+        bindScope(RequestScoped.class, ServletScopes.REQUEST);
+        bindScope(SessionScoped.class, ServletScopes.SESSION);
+
         configureServlets();
 
         for ( FilterDefinition filterDefinition : filterDefinitions )
@@ -155,5 +180,90 @@ public class JerseyGuiceModule extends AbstractModule
     void add(Key<HttpServlet> key, HttpServlet servlet)
     {
         bind(key).toInstance(servlet);
+    }
+
+    @Provides
+    @RequestScoped
+    public HttpServletRequest provideHttpServletRequest()
+    {
+        return filter.getServletRequest();
+    }
+
+    @Provides
+    @RequestScoped
+    public HttpServletResponse provideHttpServletResponse()
+    {
+        return filter.getServletResponse();
+    }
+
+    @Provides
+    @RequestScoped
+    public ServletContext provideServletContext()
+    {
+        HttpServletRequest request = filter.getServletRequest();
+        return (request != null) ? request.getServletContext() : null;
+    }
+
+    @Provides
+    @RequestScoped
+    public HttpSession provideHttpSession()
+    {
+        HttpServletRequest request = filter.getServletRequest();
+        return (request != null) ? request.getSession() : null;
+    }
+
+    @Provides
+    @RequestParameters
+    @RequestScoped
+    public Map<String, String[]> provideParameterMap()
+    {
+        HttpServletRequest request = filter.getServletRequest();
+        return (request != null) ? request.getParameterMap() : null;
+    }
+
+    @Provides
+    @RequestScoped
+    public ContainerRequestContext providesContainerRequestContext()
+    {
+        return filter.getContainerRequestContext();
+    }
+
+    @Provides
+    @RequestScoped
+    public Request providesRequest()
+    {
+        return filter.getContainerRequestContext().getRequest();
+    }
+
+    @Provides
+    @RequestScoped
+    public UriInfo providesUriInfo()
+    {
+        ContainerRequestContext context = filter.getContainerRequestContext();
+        return (context != null) ? context.getUriInfo() : null;
+    }
+
+    @Provides
+    @RequestScoped
+    public HttpHeaders providesHttpHeaders()
+    {
+        ContainerRequestContext context = filter.getContainerRequestContext();
+        return (context != null) ? (ContainerRequest)context.getRequest() : null;
+    }
+
+    @Provides
+    @RequestScoped
+    public MessageBodyWorkers providesMessageBodyWorkers()
+    {
+        ContainerRequestContext context = filter.getContainerRequestContext();
+        return (context != null) ? ((ContainerRequest)context.getRequest()).getWorkers() : null;
+    }
+
+    @Provides
+    @RequestScoped
+    public SecurityContext providesSecurityContext()
+    {
+        ContainerRequestContext context = filter.getContainerRequestContext();
+        return (context != null) ? context.getSecurityContext() : null;
     }
 }

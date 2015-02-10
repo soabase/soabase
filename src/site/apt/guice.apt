@@ -12,8 +12,49 @@ Guice Integration
 
     * JerseyGuiceModule
 
-    The JerseyGuiceModule adds most of the functionality of Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}.
+    The JerseyGuiceModule adds most of the functionality of Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}} and {{{https://jersey.java.net/apidocs/1.8/contribs/jersey-guice/com/sun/jersey/guice/JerseyServletModule.html}JerseyServletModule}}.
     All registrations are forwarded to the appropriate Dropwizard/Jersey/Jetty methods.
+
+* Features
+
+    The following features from Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}} and the
+    {{{https://jersey.java.net/apidocs/1.8/contribs/jersey-guice/com/sun/jersey/guice/JerseyServletModule.html}JerseyServletModule}} are supported/emulated:
+
+    * <<<filter()>>> for specifying Servlet Filters
+
+    * <<<serve()>>> for specifying Servlets
+
+    * All Guice bindings in the specified Injector are available in your Jersey 2.0 resources
+
+    * <<<@RequestScoped>>> and <<<@SessionScoped>>>
+
+    * Injected Jersey Providers
+
+    * Injected Jersey root resources
+
+    * Request scoped bindings for...
+
+        * <<<HttpServletRequest>>>
+
+        * <<<HttpServletResponse>>>
+
+        * <<<ServletContext>>>
+
+        * <<<HttpSession>>>
+
+        * Request parameter map as <<<Map<String, String[]>>>>
+
+        * <<<ContainerRequestContext>>>
+
+        * <<<Request>>>
+
+        * <<<UriInfo>>>
+
+        * <<<HttpHeaders>>>
+
+        * <<<MessageBodyWorkers>>>
+
+        * <<<SecurityContext>>>
 
 * GuiceBundle Usage
 
@@ -30,7 +71,6 @@ bootstrap.addBundle(new GuiceBundle(injectorProvider));
 
     Note: the JerseyGuiceModule requires the GuiceBundle.
 
-    The JerseyGuiceModule is used exactly as Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}.
+    The JerseyGuiceModule is used exactly as Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}/{{{https://jersey.java.net/apidocs/1.8/contribs/jersey-guice/com/sun/jersey/guice/JerseyServletModule.html}JerseyServletModule}}.
     Add the module to your injector and override the <<<configureServlets()>>> method. Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}
-    documentation applies to JerseyGuiceModule - the APIs are the same. However, <<<@RequestScoped>>>, <<<@SessionScoped>>>, <<<@RequestParameters>>>,
-    and regular expression matching are not supported.
+    documentation applies to JerseyGuiceModule.

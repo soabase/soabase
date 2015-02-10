@@ -21,6 +21,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import io.soabase.guice.mocks.JerseyGuiceInjected;
+import io.soabase.guice.mocks.JerseyGuiceResource;
 import io.soabase.guice.mocks.MockApplication;
 import io.soabase.guice.mocks.MockFilter;
 import io.soabase.guice.mocks.MockGuiceInjected;
@@ -93,6 +95,8 @@ public class TestGuiceBundle
 
                 filter("/*").through(MockFilter.class);
                 serve("/mock/test").with(MockServlet.class);
+
+                bind(JerseyGuiceResource.class);
             }
         };
 
@@ -119,6 +123,10 @@ public class TestGuiceBundle
             uri = new URI("http://localhost:8080/mock/test");
             str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
             Assert.assertEquals(str, "hello");
+
+            uri = new URI("http://localhost:8080/jg");
+            str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
+            Assert.assertEquals(str, "jg");
         }
         finally
         {

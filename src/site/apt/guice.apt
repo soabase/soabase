@@ -32,7 +32,7 @@ Guice Integration
 
     * Injected Jersey root resources
 
-    * Request scoped bindings for...
+    * Request-scoped bindings for...
 
         * <<<HttpServletRequest>>>
 
@@ -42,7 +42,7 @@ Guice Integration
 
         * <<<HttpSession>>>
 
-        * Request parameter map as <<<Map<String, String[]>>>>
+        * Request parameter map as <<<Map\<String, String[]\>>>>
 
         * <<<ContainerRequestContext>>>
 
@@ -56,11 +56,19 @@ Guice Integration
 
         * <<<SecurityContext>>>
 
+* Artifact
+
+    The Guice Integration is available from Maven Central. Use any dependency tool (e.g. Maven or Gradle) to add the artifact to your application's project:
+
++------------------------------------+
+io.soabase:soabase-guice
++------------------------------------+
+
 * GuiceBundle Usage
 
     Add the <<<GuiceBundle>>> to your application. Its constructor takes a Provider that returns
     the Guice Injector to use. Any objects that are part of the Injector will be available to your Jersey resources.
-    Additionally, any bound Servlets, Filters or Jersey Providers will be registered via Dropwizard.
+    Additionally, any bound Jersey Providers will be registered via Dropwizard.
 
 +----------------------------------------------+
 Provider<Injector> injectorProvider = ...

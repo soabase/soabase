@@ -25,8 +25,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.PreMatching;
 import java.io.IOException;
 
+@PreMatching
 class InternalFilter implements Filter, ContainerRequestFilter
 {
     private volatile HttpServletRequest servletRequest;

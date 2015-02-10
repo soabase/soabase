@@ -15,27 +15,23 @@
  */
 package io.soabase.guice.mocks;
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
+import io.soabase.guice.RequestScoped;
+import javax.ws.rs.core.UriInfo;
 
-public class MockContainer
+@RequestScoped
+public class JerseyGuiceInjected
 {
-    private final MockGuiceInjected guiceInjected;
-    private final MockHK2Injected hk2Injected;
+    private final UriInfo uriInfo;
 
     @Inject
-    public MockContainer(MockGuiceInjected guiceInjected, MockHK2Injected hk2Injected)
+    public JerseyGuiceInjected(UriInfo uriInfo)
     {
-        this.guiceInjected = guiceInjected;
-        this.hk2Injected = hk2Injected;
+        this.uriInfo = uriInfo;
     }
 
-    public MockGuiceInjected getGuiceInjected()
+    public String getPath()
     {
-        return guiceInjected;
-    }
-
-    public MockHK2Injected getHk2Injected()
-    {
-        return hk2Injected;
+        return uriInfo.getPath();
     }
 }

@@ -113,7 +113,7 @@ public class GuiceBundle implements Bundle
                     }
                     else if ( InternalFilter.class.equals(c) )
                     {
-                        context.register(injector.getBinding(key));
+                        context.register(injector.getBinding(key).getProvider().get());
                     }
                 }
             }

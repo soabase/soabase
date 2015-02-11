@@ -95,12 +95,12 @@ public class GuiceBundle implements Bundle
                     Class<?> c = (Class)type;
                     if ( isProviderClass(c) )
                     {
-                        log.info("Registering {0} as a provider class", c.getName());
+                        log.info(String.format("Registering %s as a provider class", c.getName()));
                         context.register(c);
                     }
                     else if ( isRootResourceClass(c) )
                     {
-                        log.info("Registering {0} as a root resource class", c.getName());
+                        log.info(String.format("Registering %s as a root resource class", c.getName()));
                         context.register(c);
                     }
                     else if ( FilterDefinition.class.equals(c) )
@@ -113,6 +113,7 @@ public class GuiceBundle implements Bundle
                     }
                     else if ( InternalFilter.class.equals(c) )
                     {
+                        log.debug("Registering internal filter");
                         context.register(injector.getBinding(key).getProvider().get());
                     }
                 }
@@ -124,6 +125,7 @@ public class GuiceBundle implements Bundle
     private void registerServlet(Injector injector, Environment environment, Binding<?> binding)
     {
         ServletDefinition servletDefinition = (ServletDefinition)binding.getProvider().get();
+        log.info("Registering servlet: " + servletDefinition);
         HttpServlet servletInstance = servletDefinition.getServletInstance();
         if ( servletInstance == null )
         {
@@ -137,6 +139,7 @@ public class GuiceBundle implements Bundle
     private void registerFilter(Injector injector, Environment environment, Binding<?> binding)
     {
         FilterDefinition filterDefinition = (FilterDefinition)binding.getProvider().get();
+        log.info("Registering filter: " + filterDefinition);
         Filter filterInstance = filterDefinition.getFilterInstance();
         if ( filterInstance == null )
         {

@@ -64,7 +64,7 @@ Guice Integration
 io.soabase:soabase-guice
 +------------------------------------+
 
-* GuiceBundle Usage
+* Usage
 
     Add the <<<GuiceBundle>>> to your application. Its constructor takes a Provider that returns
     the Guice Injector to use. Any objects that are part of the Injector will be available to your Jersey resources.
@@ -75,10 +75,6 @@ Provider<Injector> injectorProvider = ...
 bootstrap.addBundle(new GuiceBundle(injectorProvider));
 +----------------------------------------------+
 
-* JerseyGuiceModule Usage
-
-    Note: the JerseyGuiceModule requires the GuiceBundle.
-
-    The JerseyGuiceModule is used exactly as Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}/{{{https://jersey.java.net/apidocs/1.8/contribs/jersey-guice/com/sun/jersey/guice/JerseyServletModule.html}JerseyServletModule}}.
+    The <<<JerseyGuiceModule>>> is used exactly as Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}/{{{https://jersey.java.net/apidocs/1.8/contribs/jersey-guice/com/sun/jersey/guice/JerseyServletModule.html}JerseyServletModule}}.
     Add the module to your injector and override the <<<configureServlets()>>> method. Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}
     documentation applies to JerseyGuiceModule.

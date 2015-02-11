@@ -60,4 +60,15 @@ class FilterDefinition
     {
         return initParams;
     }
+
+    @Override
+    public String toString()
+    {
+        return "FilterDefinition{" +
+            "uriPatterns=" + uriPatterns +
+            ", filterKey=" + filterKey +
+            ", filterInstance=" + filterInstance +
+            ", initParams=" + initParams +
+            '}';
+    }
 }

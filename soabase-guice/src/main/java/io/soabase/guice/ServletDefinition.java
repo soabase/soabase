@@ -58,4 +58,15 @@ class ServletDefinition
     {
         return servletInstance;
     }
+
+    @Override
+    public String toString()
+    {
+        return "ServletDefinition{" +
+            "patterns=" + patterns +
+            ", servletKey=" + servletKey +
+            ", initParams=" + initParams +
+            ", servletInstance=" + servletInstance +
+            '}';
+    }
 }

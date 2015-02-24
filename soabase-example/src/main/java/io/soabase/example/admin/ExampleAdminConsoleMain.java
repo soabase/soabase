@@ -44,7 +44,7 @@ public class ExampleAdminConsoleMain
             .build();
 
         List<Metric> metrics = Lists.newArrayList(new Metric("random", "gauges['goodbye-random'].value"));
-        MetricComponent customMetric = new MetricComponent("custom-metric", MetricType.STANDARD, "Custom", "Value", metrics);
+        MetricComponent customMetric = new MetricComponent("custom-metric", MetricType.STANDARD, "Custom", "Value", metrics, "goodbye");    // custom metric only for "Goodbye" app
         AdminConsoleApp<ExampleAdminConfiguration> app = AdminConsoleAppBuilder.<ExampleAdminConfiguration>builder()
             .withAppName("Example")
             .withCompanyName("My Company")

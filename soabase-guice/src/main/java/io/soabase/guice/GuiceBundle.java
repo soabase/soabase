@@ -16,6 +16,7 @@
 
 package io.soabase.guice;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Binding;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -35,10 +36,19 @@ import javax.servlet.FilterRegistration;
 import javax.servlet.ServletRegistration;
 import javax.servlet.http.HttpServlet;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Map;
 
 /**
  * Bundle for adding Guice support to Jersey 2.0 Resources
@@ -47,6 +57,18 @@ public class GuiceBundle implements Bundle
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Provider<Injector> injectorProvider;
+
+    @SuppressWarnings("unchecked")
+    private static final Collection<Class<?>> componentClasses = ImmutableSet.of
+    (
+        ContainerRequestFilter.class,
+        ContainerResponseFilter.class,
+        ClientResponseFilter.class,
+        ClientRequestFilter.class,
+        DynamicFeature.class,
+        ReaderInterceptor.class,
+        WriterInterceptor.class
+    );
 
     /**
      * @param injectorProvider a provider for the Guice injector to use
@@ -103,6 +125,11 @@ public class GuiceBundle implements Bundle
                         log.info(String.format("Registering %s as a root resource class", c.getName()));
                         context.register(c);
                     }
+                    else if ( componentClasses.contains(c) )
+                    {
+                        log.info(String.format("Registering %s", c.getName()));
+                        context.register(c);
+                    }
                     else if ( FilterDefinition.class.equals(c) )
                     {
                         registerFilter(injector, environment, injector.getBinding(key));
@@ -116,9 +143,34 @@ public class GuiceBundle implements Bundle
                         log.debug("Registering internal filter");
                         context.register(injector.getBinding(key).getProvider().get());
                     }
+                    else if ( InternalCommonConfig.class.equals(c) )
+                    {
+                        applyInternalCommonConfig(context, (InternalCommonConfig)injector.getBinding(key).getProvider().get());
+                    }
                 }
             }
             injector = injector.getParent();
+        }
+    }
+
+    private void applyInternalCommonConfig(FeatureContext context, InternalCommonConfig internalCommonConfig)
+    {
+        for ( Class<?> clazz : internalCommonConfig.getClasses() )
+        {
+            log.info(String.format("Registering %s as a component", clazz));
+            context.register(clazz);
+        }
+        for ( Object obj : internalCommonConfig.getInstances() )
+        {
+            log.info(String.format("Registering instance of %s as a component", obj.getClass()));
+            context.register(obj);
+        }
+        for ( Map.Entry<String, Object> entry : internalCommonConfig.getProperties().entrySet() )
+        {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            log.info(String.format("Registering property key: %s\tvalue: %s", key, value));
+            context.property(key, value);
         }
     }
 

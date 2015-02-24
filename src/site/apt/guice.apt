@@ -32,6 +32,22 @@ Guice Integration
 
     * Injected Jersey root resources
 
+    * Injected Jersey components:
+
+        * <<<ContainerRequestFilter>>>
+
+        * <<<ContainerResponseFilter>>>
+
+        * <<<ClientResponseFilter>>>
+
+        * <<<ClientRequestFilter>>>
+
+        * <<<DynamicFeature>>>
+
+        * <<<ReaderInterceptor>>>
+
+        * <<<WriterInterceptor>>>
+
     * Request-scoped bindings for...
 
         * <<<HttpServletRequest>>>
@@ -55,6 +71,14 @@ Guice Integration
         * <<<MessageBodyWorkers>>>
 
         * <<<SecurityContext>>>
+
+        * <<<ExtendedResourceContext>>>
+
+        * <<<ResourceContext>>>
+
+    * Additional features:
+
+        * <<<JerseyGuiceModule.configurable()>>> - Allows Jersey 2.0 style registrations
 
 * Artifact
 

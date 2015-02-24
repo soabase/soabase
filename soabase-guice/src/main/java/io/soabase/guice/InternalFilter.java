@@ -15,6 +15,8 @@
  */
 package io.soabase.guice;
 
+import org.glassfish.jersey.server.ExtendedResourceContext;
+import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Context;
 import java.io.IOException;
 
 @PreMatching
@@ -35,6 +38,9 @@ class InternalFilter implements Filter, ContainerRequestFilter
     private volatile HttpServletResponse servletResponse;
     private volatile ContainerRequestContext containerRequestContext;
     private static final ThreadLocal<InternalFilter> threadLocal = new ThreadLocal<>();
+
+    @Context
+    private volatile ExtendedResourceContext resourceContext;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException
@@ -76,6 +82,11 @@ class InternalFilter implements Filter, ContainerRequestFilter
     static InternalFilter get()
     {
         return threadLocal.get();
+    }
+
+    ExtendedResourceContext getResourceContext()
+    {
+        return resourceContext;
     }
 
     ContainerRequestContext getContainerRequestContext()

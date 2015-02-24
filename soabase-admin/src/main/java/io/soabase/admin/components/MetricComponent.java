@@ -24,14 +24,21 @@ public class MetricComponent implements ComponentId
     private final MetricType type;
     private final String name;
     private final String label;
+    private final String targetedServiceName;
     private final List<Metric> metrics;
 
     public MetricComponent(String id, MetricType type, String name, String label, List<Metric> metrics)
+    {
+        this(id, type, name, label, metrics, null);
+    }
+
+    public MetricComponent(String id, MetricType type, String name, String label, List<Metric> metrics, String targetedServiceName)
     {
         this.id = id;
         this.type = type;
         this.name = name;
         this.label = label;
+        this.targetedServiceName = targetedServiceName;
         this.metrics = ImmutableList.copyOf(metrics);
     }
 
@@ -59,5 +66,10 @@ public class MetricComponent implements ComponentId
     public List<Metric> getMetrics()
     {
         return metrics;
+    }
+
+    public String getTargetedServiceName()
+    {
+        return targetedServiceName;
     }
 }

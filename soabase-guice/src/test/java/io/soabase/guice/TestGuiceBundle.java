@@ -21,7 +21,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import io.soabase.guice.mocks.JerseyGuiceInjected;
 import io.soabase.guice.mocks.JerseyGuiceResource;
 import io.soabase.guice.mocks.MockApplication;
 import io.soabase.guice.mocks.MockFilter;
@@ -100,8 +99,7 @@ public class TestGuiceBundle
             }
         };
 
-        Injector injector = Guice.createInjector(module);
-        final MockOldStyleApplication mockApplication = new MockOldStyleApplication(injector);
+        final MockOldStyleApplication mockApplication = new MockOldStyleApplication(module);
         Callable callable = new Callable()
         {
             @Override
@@ -115,7 +113,7 @@ public class TestGuiceBundle
         Future future = Executors.newSingleThreadExecutor().submit(callable);
         try
         {
-            Assert.assertTrue(mockApplication.getStartedLatch().await(5000, TimeUnit.SECONDS));
+            Assert.assertTrue(mockApplication.getStartedLatch().await(5, TimeUnit.SECONDS));
             URI uri = new URI("http://localhost:8080/test");
             String str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
             Assert.assertEquals(str, "success - guice - hk2");

@@ -99,6 +99,9 @@ Administration Console
 *----------------------*------------------------------------------------------*
 | metrics              | List of metrics to display in the graph (see below)  |
 *----------------------*------------------------------------------------------*
+| targetedServiceName  | Optional - if specified, the custom metric only      |
+|                      | displays for the specified service                   |
+*----------------------*------------------------------------------------------*
 | \                    | \                                                    |
 *----------------------*------------------------------------------------------*
 | <MetricType>         |                                                      |

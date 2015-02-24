@@ -56,8 +56,8 @@ function soaHandleTraceButton(localInstance) {
     window.open(url, '_blank');
 }
 
-function soaHandleDetailsButton(localInstance) {
-    var url = '/vm?host=' + localInstance.host + '&port=' + localInstance.port + '&adminPort=' + localInstance.adminPort;
+function soaHandleDetailsButton(serviceName, localInstance) {
+    var url = '/vm?host=' + localInstance.host + '&port=' + localInstance.port + '&adminPort=' + localInstance.adminPort + '&name=' + serviceName;
     window.open(url, '_blank');
 }
 
@@ -153,7 +153,7 @@ function soaUpdateInstancesForService(serviceName) {
                         soaHandleTraceButton(instance);
                     });
                     $('#soa-details-button-' + instance.id).click(function(){
-                        soaHandleDetailsButton(instance);
+                        soaHandleDetailsButton(serviceName, instance);
                     });
                 }
                 for ( var j in data ) {

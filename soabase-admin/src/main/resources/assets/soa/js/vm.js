@@ -5,6 +5,7 @@ var vmMaxMetricPoints = VM_DEFAULT_MAX_METRIC_POINTS;
 var vmHost = null;
 var vmPort = null;
 var vmAdminPort = null;
+var vmServiceName = null;
 var vmRate = 1000;
 
 function vmMakePrefixSuffixPredicate(prefix, suffix) {
@@ -259,8 +260,20 @@ function vmBuildMetrics() {
     }
 }
 
+function vmRemoveUntargetedMetrics() {
+    var newMetrics = [];
+    for ( i in vmMetrics ) {
+        var metric = vmMetrics[i];
+        if ( (metric.targetedServiceName == null) || (metric.targetedServiceName == vmServiceName) ) {
+            newMetrics.push(metric);
+        }
+    }
+    vmMetrics = newMetrics;
+}
+
 function vmInit() {
     $('#vm-host').text(vmHost + ':' + vmPort);
+    vmRemoveUntargetedMetrics();
     vmBuildMetrics();
     vmUpdate();
     vmUpdateInterval();
@@ -283,6 +296,7 @@ $(function () {
     vmHost = getParameterByName('host');
     vmPort = getParameterByName('port');
     vmAdminPort = getParameterByName('adminPort');
+    vmServiceName = getParameterByName('name');
     soaAutoLoadTemplates();
 
     if ( vmHost && vmAdminPort ) {

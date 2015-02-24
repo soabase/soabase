@@ -21,7 +21,9 @@ import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.internal.UniqueAnnotations;
 import org.glassfish.jersey.message.MessageBodyWorkers;
+import org.glassfish.jersey.model.internal.CommonConfig;
 import org.glassfish.jersey.server.ContainerRequest;
+import org.glassfish.jersey.server.ExtendedResourceContext;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
@@ -29,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
@@ -51,10 +55,16 @@ public class JerseyGuiceModule extends AbstractModule
     private final List<FilterDefinition> filterDefinitions = Lists.newArrayList();
     private final List<ServletDefinition> servletDefinitions = Lists.newArrayList();
     private final InternalFilter filter;
+    private final InternalCommonConfig commonConfig = new InternalCommonConfig();
 
     public JerseyGuiceModule()
     {
         filter = new InternalFilter();
+    }
+
+    protected Configurable<?> configurable()
+    {
+        return commonConfig;
     }
 
     protected final FilterKeyBindingBuilder filter(String... urlPatterns)
@@ -71,6 +81,7 @@ public class JerseyGuiceModule extends AbstractModule
     protected final void configure()
     {
         bind(InternalFilter.class).toInstance(filter);
+        bind(InternalCommonConfig.class).toInstance(commonConfig);
         filter("/*").through(filter);
 
         bindScope(RequestScoped.class, ServletScopes.REQUEST);
@@ -226,6 +237,20 @@ public class JerseyGuiceModule extends AbstractModule
     public ContainerRequestContext providesContainerRequestContext()
     {
         return filter.getContainerRequestContext();
+    }
+
+    @Provides
+    @RequestScoped
+    public ExtendedResourceContext providesExtendedResourceContext()
+    {
+        return filter.getResourceContext();
+    }
+
+    @Provides
+    @RequestScoped
+    public ResourceContext providesResourceContext()
+    {
+        return filter.getResourceContext();
     }
 
     @Provides

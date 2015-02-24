@@ -59,6 +59,7 @@ function soaInitAuth() {
             $.ajax({
                 type: "DELETE",
                 url: "/soa/auth",
+                url: "/soa/auth",
                 success: function() {
                     location.href = '/';
                 }

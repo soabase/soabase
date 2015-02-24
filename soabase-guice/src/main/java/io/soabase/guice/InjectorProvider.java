@@ -15,21 +15,36 @@
  */
 package io.soabase.guice;
 
+import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import javax.inject.Provider;
+import java.util.Arrays;
 
 public class InjectorProvider implements Provider<Injector>
 {
     private final Injector injector;
+    private final Module[] modules;
 
     public InjectorProvider(Injector injector)
     {
         this.injector = injector;
+        modules = null;
+    }
+
+    public InjectorProvider(Module... modules)
+    {
+        injector = null;
+        this.modules = Arrays.copyOf(modules, modules.length);
     }
 
     @Override
     public Injector get()
     {
+        if ( modules != null )
+        {
+            return Guice.createInjector(modules);
+        }
         return injector;
     }
 }

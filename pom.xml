@@ -39,13 +39,13 @@
         <maven-gpg-plugin-version>1.6</maven-gpg-plugin-version>
         <maven-install-plugin-version>2.5.2</maven-install-plugin-version>
 
-        <dropwizard-version>0.8.0-rc2</dropwizard-version>
+        <dropwizard-version>0.8.0</dropwizard-version>
         <curator-version>2.7.1</curator-version>
         <mybatis-version>3.2.8</mybatis-version>
         <hsqldb-version>2.3.2</hsqldb-version>
         <testng-version>6.8.13</testng-version>
         <mockito-version>1.10.19</mockito-version>
-        <guice-bridge-version>2.4.0-b06</guice-bridge-version>  <!-- must match Dropwizard's HK2 version -->
+        <guice-bridge-version>2.4.0-b09</guice-bridge-version>  <!-- must match Dropwizard's HK2 version -->
     </properties>
 
     <name>Soabase</name>

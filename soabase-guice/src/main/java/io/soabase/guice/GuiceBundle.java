@@ -16,25 +16,37 @@
 
 package io.soabase.guice;
 
+import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Binding;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import io.dropwizard.Bundle;
+import io.dropwizard.Configuration;
+import io.dropwizard.ConfiguredBundle;
+import io.dropwizard.configuration.ConfigurationFactory;
+import io.dropwizard.configuration.ConfigurationFactoryFactory;
+import io.dropwizard.jersey.DropwizardResourceConfig;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.ServiceLocatorProvider;
+import org.glassfish.jersey.server.monitoring.ApplicationEvent;
+import org.glassfish.jersey.server.monitoring.ApplicationEventListener;
+import org.glassfish.jersey.server.monitoring.RequestEvent;
+import org.glassfish.jersey.server.monitoring.RequestEventListener;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.inject.Provider;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletRegistration;
 import javax.servlet.http.HttpServlet;
+import javax.validation.Validator;
 import javax.ws.rs.Path;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
@@ -53,27 +65,35 @@ import java.util.Map;
 /**
  * Bundle for adding Guice support to Jersey 2.0 Resources
  */
-public class GuiceBundle implements Bundle
+public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final Provider<Injector> injectorProvider;
+    private final InjectorProvider injectorProvider;
+    private final DropwizardResourceConfig loggingConfig = new DropwizardResourceConfig()
+    {
+        @Override
+        public String getEndpointsInfo()
+        {
+            return "GuiceBundle - " + super.getEndpointsInfo();
+        }
+    };
 
     @SuppressWarnings("unchecked")
     private static final Collection<Class<?>> componentClasses = ImmutableSet.of
-    (
-        ContainerRequestFilter.class,
-        ContainerResponseFilter.class,
-        ClientResponseFilter.class,
-        ClientRequestFilter.class,
-        DynamicFeature.class,
-        ReaderInterceptor.class,
-        WriterInterceptor.class
-    );
+        (
+            ContainerRequestFilter.class,
+            ContainerResponseFilter.class,
+            ClientResponseFilter.class,
+            ClientRequestFilter.class,
+            DynamicFeature.class,
+            ReaderInterceptor.class,
+            WriterInterceptor.class
+        );
 
     /**
      * @param injectorProvider a provider for the Guice injector to use
      */
-    public GuiceBundle(Provider<Injector> injectorProvider)
+    public GuiceBundle(InjectorProvider injectorProvider)
     {
         this.injectorProvider = injectorProvider;
     }
@@ -81,11 +101,30 @@ public class GuiceBundle implements Bundle
     @Override
     public void initialize(Bootstrap<?> bootstrap)
     {
-        // NOP
+        final InjectableValues injectableValues = new InjectableValues()
+        {
+            @Override
+            public Object findInjectableValue(Object valueId, DeserializationContext ctxt, BeanProperty forProperty, Object beanInstance)
+            {
+                return null;
+            }
+        };
+        ConfigurationFactoryFactory factoryFactory = new ConfigurationFactoryFactory()
+        {
+            @Override
+            public ConfigurationFactory create(Class klass, Validator validator, ObjectMapper objectMapper, String propertyPrefix)
+            {
+                objectMapper.setInjectableValues(injectableValues);
+                //noinspection unchecked
+                return new ConfigurationFactory(klass, validator, objectMapper, propertyPrefix);
+            }
+        };
+        //noinspection unchecked
+        bootstrap.setConfigurationFactoryFactory(factoryFactory);
     }
 
     @Override
-    public void run(final Environment environment)
+    public void run(final T configuration, final Environment environment) throws Exception
     {
         Feature feature = new Feature()
         {
@@ -95,13 +134,32 @@ public class GuiceBundle implements Bundle
                 ServiceLocator serviceLocator = ServiceLocatorProvider.getServiceLocator(context);
                 GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
                 GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
-                Injector injector = injectorProvider.get();
+                Injector injector = injectorProvider.get(configuration, environment);
                 guiceBridge.bridgeGuiceInjector(injector);
                 registerBoundJerseyComponents(injector, context, environment);
                 return true;
             }
         };
         environment.jersey().register(feature);
+
+        ApplicationEventListener listener = new ApplicationEventListener()
+        {
+            @Override
+            public void onEvent(ApplicationEvent event)
+            {
+                if ( event.getType() == ApplicationEvent.Type.INITIALIZATION_APP_FINISHED )
+                {
+                    loggingConfig.logComponents();
+                }
+            }
+
+            @Override
+            public RequestEventListener onRequest(RequestEvent requestEvent)
+            {
+                return null;
+            }
+        };
+        environment.jersey().register(listener);
     }
 
     private void registerBoundJerseyComponents(Injector injector, FeatureContext context, Environment environment)
@@ -119,33 +177,40 @@ public class GuiceBundle implements Bundle
                     {
                         log.info(String.format("Registering %s as a provider class", c.getName()));
                         context.register(c);
+                        loggingConfig.register(c);
                     }
                     else if ( isRootResourceClass(c) )
                     {
                         log.info(String.format("Registering %s as a root resource class", c.getName()));
                         context.register(c);
+                        loggingConfig.register(c);
                     }
                     else if ( componentClasses.contains(c) )
                     {
                         log.info(String.format("Registering %s", c.getName()));
                         context.register(c);
+                        loggingConfig.register(c);
                     }
                     else if ( FilterDefinition.class.equals(c) )
                     {
                         registerFilter(injector, environment, injector.getBinding(key));
+                        loggingConfig.register(c);
                     }
                     else if ( ServletDefinition.class.equals(c) )
                     {
                         registerServlet(injector, environment, injector.getBinding(key));
+                        loggingConfig.register(c);
                     }
                     else if ( InternalFilter.class.equals(c) )
                     {
                         log.debug("Registering internal filter");
                         context.register(injector.getBinding(key).getProvider().get());
+                        loggingConfig.register(c);
                     }
                     else if ( InternalCommonConfig.class.equals(c) )
                     {
                         applyInternalCommonConfig(context, (InternalCommonConfig)injector.getBinding(key).getProvider().get());
+                        loggingConfig.register(c);
                     }
                 }
             }

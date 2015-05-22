@@ -146,8 +146,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         Ports ports = getPorts(configuration);
         final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
 
-        Discovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(environment, soaInfo)));
-        DynamicAttributes attributes = StandardAttributesContainer.wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(environment, scopes)), hasAdminKey);
+        Discovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(configuration, environment, soaInfo)));
+        DynamicAttributes attributes = StandardAttributesContainer.wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(configuration, environment, scopes)), hasAdminKey);
 
         final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, new ExecutorBuilder(environment.lifecycle()));
         final LoggingReader loggingReader = initLogging(configuration);
@@ -168,7 +168,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         checkCorsFilter(soaConfiguration, environment.servlets());
         initJerseyAdmin(soaConfiguration, features, ports, environment, binder);
 
-        startDiscoveryHealth(discovery, soaConfiguration, environment);
+        startDiscoveryHealth(discovery, soaConfiguration, configuration, environment);
 
         environment.jersey().register(binder);
 
@@ -265,9 +265,9 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return 0;
     }
 
-    private void startDiscoveryHealth(Discovery discovery, SoaConfiguration soaConfiguration, Environment environment)
+    private void startDiscoveryHealth(Discovery discovery, SoaConfiguration soaConfiguration, T configuration, Environment environment)
     {
-        DiscoveryHealth discoveryHealth = checkManaged(environment, soaConfiguration.getDiscoveryHealthFactory().build(soaConfiguration, environment));
+        DiscoveryHealth discoveryHealth = checkManaged(environment, soaConfiguration.getDiscoveryHealthFactory().build(configuration, environment));
         ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("DiscoveryHealthChecker-%d").build();
         service.scheduleAtFixedRate(new HealthCheckIntegration(environment.healthChecks(), discovery, discoveryHealth), soaConfiguration.getDiscoveryHealthCheckPeriodMs(), soaConfiguration.getDiscoveryHealthCheckPeriodMs(), TimeUnit.MILLISECONDS);
     }

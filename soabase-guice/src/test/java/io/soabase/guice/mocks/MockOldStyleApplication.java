@@ -21,7 +21,7 @@ import io.dropwizard.Configuration;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.guice.GuiceBundle;
-import io.soabase.guice.InjectorProvider;
+import io.soabase.guice.StandardInjectorProvider;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle;
 import java.util.concurrent.CountDownLatch;
@@ -39,7 +39,7 @@ public class MockOldStyleApplication extends Application<Configuration>
     @Override
     public void initialize(Bootstrap<Configuration> bootstrap)
     {
-        bootstrap.addBundle(new GuiceBundle(new InjectorProvider(module)));
+        bootstrap.addBundle(new GuiceBundle(new StandardInjectorProvider(module)));
     }
 
     @Override

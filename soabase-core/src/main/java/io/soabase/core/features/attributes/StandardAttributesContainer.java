@@ -27,6 +27,7 @@ import io.soabase.core.listening.ListenerContainer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -39,6 +40,7 @@ public class StandardAttributesContainer
     private final ListenerContainer<DynamicAttributeListener> listenable = new ListenerContainer<>();
     private final List<String> scopes;
     private final AtomicBoolean firstTime = new AtomicBoolean(true);
+    private final Properties defaultProperties;
 
     public static DynamicAttributes wrapAttributes(DynamicAttributes attributes, boolean hasAdminKey)
     {
@@ -51,11 +53,17 @@ public class StandardAttributesContainer
 
     public StandardAttributesContainer()
     {
-        this(Lists.<String>newArrayList());
+        this(System.getProperties(), Lists.<String>newArrayList());
     }
 
     public StandardAttributesContainer(List<String> scopes)
     {
+        this(System.getProperties(), scopes);
+    }
+
+    public StandardAttributesContainer(Properties defaultProperties, List<String> scopes)
+    {
+        this.defaultProperties = Preconditions.checkNotNull(defaultProperties, "defaultProperties cannot be null");
         scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");
         ImmutableList.Builder<String> builder = ImmutableList.builder();
         builder.addAll(scopes);
@@ -126,7 +134,7 @@ public class StandardAttributesContainer
         Object value = overrides.get(key);
         if ( value == null )
         {
-            value = System.getProperty(key, null);
+            value = defaultProperties.getProperty(key, null);
             if ( value == null )
             {
                 value = getValue(key);
@@ -277,7 +285,7 @@ public class StandardAttributesContainer
         Object value = overrides.get(key);
         if ( value == null )
         {
-            value = System.getProperty(key, null);
+            value = defaultProperties.getProperty(key, null);
         }
         return (value != null) ? to(value, 0) : null;
     }

@@ -17,6 +17,7 @@ package io.soabase.core.features.discovery;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.common.collect.ImmutableSet;
+import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaInfo;
 import java.util.Collection;
@@ -26,7 +27,7 @@ import java.util.Map;
 public class NullDiscoveryFactory implements DiscoveryFactory
 {
     @Override
-    public Discovery build(Environment environment, SoaInfo soaInfo)
+    public Discovery build(Configuration configuration, Environment environment, SoaInfo soaInfo)
     {
         return new Discovery()
         {

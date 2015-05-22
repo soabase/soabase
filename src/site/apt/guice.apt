@@ -90,13 +90,13 @@ io.soabase:soabase-guice
 
 * Usage
 
-    Add the <<<GuiceBundle>>> to your application. Its constructor takes a Provider that returns
+    Add the <<<GuiceBundle>>> to your application. Its constructor takes an InjectorProvider that returns
     the Guice Injector to use. Any objects that are part of the Injector will be available to your Jersey resources.
     Additionally, any bound Jersey Providers will be registered via Dropwizard.
 
 +----------------------------------------------+
 Provider<Injector> injectorProvider = ...
-bootstrap.addBundle(new GuiceBundle(injectorProvider));
+bootstrap.addBundle(new GuiceBundle\<>(injectorProvider));
 +----------------------------------------------+
 
     The <<<JerseyGuiceModule>>> is used exactly as Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}/{{{https://jersey.java.net/apidocs/1.8/contribs/jersey-guice/com/sun/jersey/guice/JerseyServletModule.html}JerseyServletModule}}.

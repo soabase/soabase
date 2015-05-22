@@ -41,14 +41,31 @@ public class ClientUtils
 
     public static String serviceNameToHost(String serviceName)
     {
+        return serviceNameToHost(serviceName, null);
+    }
+
+    public static String serviceNameToHost(String serviceName, String path)
+    {
         String host = HOST_SUBSTITUTION_TOKEN + serviceName;
         try
         {
+            if ( serviceName.contains("/") )
+            {
+                throw new URISyntaxException(serviceName, "Cannot contain /");
+            }
             new URI("http://" + host);
         }
         catch ( URISyntaxException e )
         {
             throw new RuntimeException("Invalid service name: " + serviceName, e);
+        }
+        if ( (path != null) && (path.length() > 0) )
+        {
+            if ( path.startsWith("/") )
+            {
+                path = path.substring(1);
+            }
+            return host + "/" + path;
         }
         return host;
     }

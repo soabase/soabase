@@ -16,13 +16,13 @@
 package io.soabase.core.features.discovery;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
-import io.soabase.core.features.config.SoaConfiguration;
 
 @JsonTypeName("default")
 public class DefaultDiscoveryHealthFactory implements DiscoveryHealthFactory
 {
-    public DiscoveryHealth build(SoaConfiguration configuration, Environment environment)
+    public DiscoveryHealth build(Configuration configuration, Environment environment)
     {
         return new DefaultDiscoveryHealth();
     }

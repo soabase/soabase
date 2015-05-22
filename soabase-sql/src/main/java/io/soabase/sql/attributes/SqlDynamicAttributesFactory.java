@@ -17,6 +17,7 @@ package io.soabase.sql.attributes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
@@ -24,9 +25,7 @@ import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.attributes.DynamicAttributesFactory;
 import org.apache.ibatis.session.SqlSession;
 import org.hibernate.validator.constraints.NotEmpty;
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +64,7 @@ public class SqlDynamicAttributesFactory implements DynamicAttributesFactory
     }
 
     @Override
-    public DynamicAttributes build(Environment environment, List<String> scopes)
+    public DynamicAttributes build(Configuration configuration, Environment environment, List<String> scopes)
     {
         SqlSession sqlSession = SoaBundle.getFeatures(environment).getNamedRequired(SqlSession.class, sessionName);
 

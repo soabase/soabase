@@ -16,11 +16,12 @@
 package io.soabase.core.features.discovery;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.features.config.SoaConfiguration;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = DefaultDiscoveryHealth.class)
 public interface DiscoveryHealthFactory
 {
-    public DiscoveryHealth build(SoaConfiguration configuration, Environment environment);
+    public DiscoveryHealth build(Configuration configuration, Environment environment);
 }

@@ -17,6 +17,7 @@ package io.soabase.zookeeper.discovery;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
@@ -61,7 +62,7 @@ public class ZooKeeperDiscoveryFactory implements DiscoveryFactory
     }
 
     @Override
-    public Discovery build(Environment environment, SoaInfo soaInfo)
+    public Discovery build(Configuration configuration, Environment environment, SoaInfo soaInfo)
     {
         CuratorFramework curatorFramework = SoaBundle.getFeatures(environment).getNamedRequired(CuratorFramework.class, SoaFeatures.DEFAULT_NAME);
         return new ZooKeeperDiscovery(curatorFramework, this, soaInfo);

@@ -95,10 +95,10 @@ io.soabase:soabase-guice
     Additionally, any bound Jersey Providers will be registered via Dropwizard.
 
 +----------------------------------------------+
-Provider<Injector> injectorProvider = ...
-bootstrap.addBundle(new GuiceBundle\<>(injectorProvider));
+InjectorProvider injectorProvider = ...
+bootstrap.addBundle(new GuiceBundle<>(injectorProvider));
 +----------------------------------------------+
 
-    The <<<JerseyGuiceModule>>> is used exactly as Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}/{{{https://jersey.java.net/apidocs/1.8/contribs/jersey-guice/com/sun/jersey/guice/JerseyServletModule.html}JerseyServletModule}}.
+    The <<<JerseyGuiceModule>>> is used exactly as Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}} and {{{https://jersey.java.net/apidocs/1.8/contribs/jersey-guice/com/sun/jersey/guice/JerseyServletModule.html}JerseyServletModule}}.
     Add the module to your injector and override the <<<configureServlets()>>> method. Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}
     documentation applies to JerseyGuiceModule.

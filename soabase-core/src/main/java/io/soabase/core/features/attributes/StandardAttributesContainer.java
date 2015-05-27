@@ -233,7 +233,18 @@ public class StandardAttributesContainer
 
     public Collection<String> getKeys()
     {
-        return overrides.keySet();
+        Set<String> keys = Sets.newHashSet();
+
+        for ( Object key : defaultProperties.keySet() )
+        {
+            keys.add(String.valueOf(key));
+        }
+        for ( AttributeKey key : attributes.keySet() )
+        {
+            keys.add(key.getKey());
+        }
+        keys.addAll(overrides.keySet());
+        return keys;
     }
 
     public boolean hasKey(AttributeKey key)

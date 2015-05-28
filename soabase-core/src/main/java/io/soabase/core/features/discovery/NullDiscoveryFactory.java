@@ -56,7 +56,7 @@ public class NullDiscoveryFactory implements DiscoveryFactory
             }
 
             @Override
-            public void noteSuccess(String serviceName, DiscoveryInstance instance)
+            public void noteSuccess(String serviceName, DiscoveryInstance instance, int statusCode)
             {
                 // NOP
             }

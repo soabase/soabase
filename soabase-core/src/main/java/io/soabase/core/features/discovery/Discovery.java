@@ -28,7 +28,7 @@ public interface Discovery
 
     public void noteError(String serviceName, DiscoveryInstance errorInstance, int statusCode, Throwable exception);
 
-    public void noteSuccess(String serviceName, DiscoveryInstance instance);
+    public void noteSuccess(String serviceName, DiscoveryInstance instance, int statusCode);
 
     public void setHealthyState(HealthyState healthyState);
 

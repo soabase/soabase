@@ -52,9 +52,9 @@ public class SafeDiscovery implements Discovery
     }
 
     @Override
-    public void noteSuccess(String serviceName, DiscoveryInstance instance)
+    public void noteSuccess(String serviceName, DiscoveryInstance instance, int statusCode)
     {
-        implementation.noteSuccess(serviceName, instance);
+        implementation.noteSuccess(serviceName, instance, statusCode);
     }
 
     @Override

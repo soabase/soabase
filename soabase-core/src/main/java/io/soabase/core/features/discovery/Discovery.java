@@ -26,7 +26,9 @@ public interface Discovery
 
     public Collection<DiscoveryInstance> getAllInstances(String serviceName);
 
-    public void noteError(String serviceName, DiscoveryInstance errorInstance);
+    public void noteError(String serviceName, DiscoveryInstance errorInstance, int statusCode, Throwable exception);
+
+    public void noteSuccess(String serviceName, DiscoveryInstance instance);
 
     public void setHealthyState(HealthyState healthyState);
 

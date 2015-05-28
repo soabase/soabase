@@ -256,13 +256,19 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     }
 
     @Override
-    public void noteError(String serviceName, final DiscoveryInstance errorInstance)
+    public void noteError(String serviceName, final DiscoveryInstance errorInstance, int statusCode, Throwable exception)
     {
         FoundInstance foundInstance = findInstanceFromProvider(serviceName, errorInstance);
         if ( foundInstance != null )
         {
             foundInstance.provider.noteError(foundInstance.instance);
         }
+    }
+
+    @Override
+    public void noteSuccess(String serviceName, DiscoveryInstance instance)
+    {
+        // NOP
     }
 
     @Override

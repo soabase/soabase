@@ -86,9 +86,18 @@ class RetryContext
             String serviceName = ClientUtils.hostToServiceName(originalHost);
             if ( (serviceName != null) && (instance != null) )
             {
-                components.getDiscovery().noteError(serviceName, instance);
+                components.getDiscovery().noteError(serviceName, instance, statusCode, exception);
             }
         }
+        else if ( exception == null )
+        {
+            String serviceName = ClientUtils.hostToServiceName(originalHost);
+            if ( (serviceName != null) && (instance != null) )
+            {
+                components.getDiscovery().noteSuccess(serviceName, instance);
+            }
+        }
+
         return shouldBeRetried;
     }
 

@@ -46,9 +46,15 @@ public class SafeDiscovery implements Discovery
     }
 
     @Override
-    public void noteError(String serviceName, DiscoveryInstance errorInstance)
+    public void noteError(String serviceName, DiscoveryInstance errorInstance, int statusCode, Throwable exception)
     {
-        implementation.noteError(serviceName, errorInstance);
+        implementation.noteError(serviceName, errorInstance, statusCode, exception);
+    }
+
+    @Override
+    public void noteSuccess(String serviceName, DiscoveryInstance instance)
+    {
+        implementation.noteSuccess(serviceName, instance);
     }
 
     @Override

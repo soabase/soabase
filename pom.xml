@@ -4,7 +4,7 @@
 
     <groupId>io.soabase</groupId>
     <artifactId>soabase</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -83,7 +83,7 @@
         <url>https://github.com/soabase/soabase</url>
         <connection>scm:git:https://github.com/soabase/soabase.git</connection>
         <developerConnection>scm:git:git@github.com:soabase/soabase.git</developerConnection>
-        <tag>soabase-0.4.0</tag>
+        <tag>soabase-0.2.0</tag>
     </scm>
 
     <issueManagement>

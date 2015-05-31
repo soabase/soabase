@@ -121,12 +121,19 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
      */
     public static SoaFeatures getFeatures(Environment environment)
     {
-        SoaFeatures features = (SoaFeatures)environment.getApplicationContext().getAttribute(SoaFeatures.class.getName());
+        SoaFeaturesImpl features = (SoaFeaturesImpl)environment.getApplicationContext().getAttribute(SoaFeatures.class.getName());
         if ( features == null )
         {
             features = new SoaFeaturesImpl();   // temp version so that named values can be set
             environment.getApplicationContext().setAttribute(SoaFeatures.class.getName(), features);
         }
+
+        if ( !features.hasDynamicAttributes() )
+        {
+            DynamicAttributes dynamicAttributes = (DynamicAttributes)environment.getApplicationContext().getAttribute(DynamicAttributes.class.getName());
+            features.setDynamicAttributes(dynamicAttributes);
+        }
+
         return features;
     }
 
@@ -146,8 +153,11 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         Ports ports = getPorts(configuration);
         final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
 
-        Discovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(configuration, environment, soaInfo)));
+        // attributes must be allocated first - Discovery et al might need them
         DynamicAttributes attributes = StandardAttributesContainer.wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(configuration, environment, scopes)), hasAdminKey);
+        environment.getApplicationContext().setAttribute(DynamicAttributes.class.getName(), attributes);
+
+        Discovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(configuration, environment, soaInfo)));
 
         final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, new ExecutorBuilder(environment.lifecycle()));
         final LoggingReader loggingReader = initLogging(configuration);

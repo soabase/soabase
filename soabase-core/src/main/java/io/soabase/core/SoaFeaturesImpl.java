@@ -29,7 +29,7 @@ class SoaFeaturesImpl implements SoaFeatures
 {
     private final ConcurrentMap<Class<?>, ConcurrentMap<String, Object>> named = Maps.newConcurrentMap();
     private final Discovery discovery;
-    private final DynamicAttributes dynamicAttributes;
+    private volatile DynamicAttributes dynamicAttributes;
     private final SoaInfo info;
     private final ExecutorBuilder executorBuilder;
 
@@ -51,6 +51,16 @@ class SoaFeaturesImpl implements SoaFeatures
     {
         ConcurrentMap<String, Object> map = named.get(clazz);
         return (map != null) ? map.keySet() : ImmutableSet.<String>of();
+    }
+
+    void setDynamicAttributes(DynamicAttributes dynamicAttributes)
+    {
+        this.dynamicAttributes = dynamicAttributes;
+    }
+
+    boolean hasDynamicAttributes()
+    {
+        return (dynamicAttributes != null);
     }
 
     void setNamed(SoaFeaturesImpl from)

@@ -22,7 +22,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
@@ -43,7 +42,6 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.DynamicAttributes;
-import io.soabase.core.features.attributes.StandardAttributesContainer;
 import io.soabase.core.features.client.ClientFilter;
 import io.soabase.core.features.config.ComposedConfigurationAccessor;
 import io.soabase.core.features.config.SoaConfiguration;
@@ -70,8 +68,6 @@ import javax.servlet.FilterRegistration;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -89,7 +85,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final boolean hasAdminKey;
+    static final boolean hasAdminKey;
 
     static
     {
@@ -110,6 +106,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     @Override
     public void initialize(Bootstrap<?> bootstrap)
     {
+        bootstrap.addBundle(new DynamicAttributesBundle());
     }
 
     /**
@@ -144,22 +141,15 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 
         environment.servlets().addFilter("SoaClientFilter", ClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-        updateInstanceName(soaConfiguration);
-        List<String> scopes = Lists.newArrayList();
-        scopes.add(soaConfiguration.getInstanceName());
-        scopes.add(soaConfiguration.getServiceName());
-        scopes.addAll(soaConfiguration.getScopes());
-
+        List<String> scopes = ((DynamicAttributesBundle.Scopes)environment.getApplicationContext().getAttribute(DynamicAttributesBundle.Scopes.class.getName())).getScopes();
         Ports ports = getPorts(configuration);
-        final SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
+        DynamicAttributes dynamicAttributes = (DynamicAttributes)environment.getApplicationContext().getAttribute(DynamicAttributes.class.getName());
 
-        // attributes must be allocated first - Discovery et al might need them
-        DynamicAttributes attributes = StandardAttributesContainer.wrapAttributes(checkManaged(environment, soaConfiguration.getAttributesFactory().build(configuration, environment, scopes)), hasAdminKey);
-        environment.getApplicationContext().setAttribute(DynamicAttributes.class.getName(), attributes);
+        SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
 
         Discovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(configuration, environment, soaInfo)));
 
-        final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, attributes, soaInfo, new ExecutorBuilder(environment.lifecycle()));
+        final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, dynamicAttributes, soaInfo, new ExecutorBuilder(environment.lifecycle()));
         final LoggingReader loggingReader = initLogging(configuration);
         AbstractBinder binder = new AbstractBinder()
         {
@@ -298,15 +288,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         }
     }
 
-    private void updateInstanceName(SoaConfiguration configuration) throws UnknownHostException
-    {
-        if ( configuration.getInstanceName() == null )
-        {
-            configuration.setInstanceName(InetAddress.getLocalHost().getHostName());
-        }
-    }
-
-    private static <T> T checkManaged(Environment environment, T obj)
+    static <T> T checkManaged(Environment environment, T obj)
     {
         if ( obj instanceof Managed )
         {

@@ -13,7 +13,9 @@ Getting Started with Soabase
 *------------------------------------*--------------------------------------------------------------------------------*
 | <<<io.soabase:soabase-client>>>    | The Jersey and Apache REST client additions to support Service Discovery.      |
 *------------------------------------*--------------------------------------------------------------------------------*
-| <<<io.soabase:soabase-sql>>>       | The JDBC integration with Soabase Dynamic Attributes.                          |
+| <<<io.soabase:soabase-sql>>>       | The MyBatis JDBC integration with Soabase Dynamic Attributes.                  |
+*------------------------------------*--------------------------------------------------------------------------------*
+| <<<io.soabase:soabase-jdbi>>>      | The JDBI integration with Soabase Dynamic Attributes.                          |
 *------------------------------------*--------------------------------------------------------------------------------*
 | <<<io.soabase:soabase-zookeeper>>> | The Apache ZooKeeper and Apache Curator integration for Service Discovery.     |
 *------------------------------------*--------------------------------------------------------------------------------*
@@ -55,7 +57,7 @@ Getting Started with Soabase
 +-------------------------------+
 bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider()); // not required, but useful
 bootstrap.addBundle(new CuratorBundle<>()); // adds Curator Service Discovery
-bootstrap.addBundle(new SqlBundle<>()); // adds JDBC attributes
+bootstrap.addBundle(new SqlBundle<>()); // adds MyBatis JDBC attributes
 bootstrap.addBundle(new SoaBundle<>()); // required for all Soabase applications
 +-------------------------------+
 

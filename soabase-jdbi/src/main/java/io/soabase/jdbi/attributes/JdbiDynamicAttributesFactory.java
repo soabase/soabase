@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.sql.attributes;
+
+package io.soabase.jdbi.attributes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -23,21 +24,21 @@ import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.attributes.DynamicAttributesFactory;
-import org.apache.ibatis.session.SqlSession;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.skife.jdbi.v2.DBI;
 import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@JsonTypeName("sql")
-public class SqlDynamicAttributesFactory implements DynamicAttributesFactory
+@JsonTypeName("jdbi")
+public class JdbiDynamicAttributesFactory implements DynamicAttributesFactory
 {
+    @NotEmpty
+    private String name = SoaFeatures.DEFAULT_NAME;
+
     @Min(0)
     private int refreshPeriodSeconds = 30;
-
-    @NotEmpty
-    private String sessionName = SoaFeatures.DEFAULT_NAME;
 
     @JsonProperty("refreshPeriodSeconds")
     public int getRefreshPeriodSeconds()
@@ -52,24 +53,24 @@ public class SqlDynamicAttributesFactory implements DynamicAttributesFactory
     }
 
     @JsonProperty("name")
-    public String getSessionName()
+    public String getName()
     {
-        return sessionName;
+        return name;
     }
 
     @JsonProperty("name")
-    public void setSessionName(String sessionName)
+    public void setName(String name)
     {
-        this.sessionName = sessionName;
+        this.name = name;
     }
 
     @Override
     public DynamicAttributes build(Configuration configuration, Environment environment, List<String> scopes)
     {
-        SqlSession sqlSession = SoaBundle.getFeatures(environment).getNamedRequired(SqlSession.class, sessionName);
+        DBI jdbi = SoaBundle.getFeatures(environment).getNamedRequired(DBI.class, name);
 
-        final SqlDynamicAttributes dynamicAttributes = new SqlDynamicAttributes(sqlSession, scopes);
-        ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("SqlDynamicAttributes-%d", true).build();
+        final JdbiDynamicAttributes dynamicAttributes = new JdbiDynamicAttributes(jdbi, scopes);
+        ScheduledExecutorService service = environment.lifecycle().scheduledExecutorService("JdbiDynamicAttributes-%d", true).build();
         Runnable command = new Runnable()
         {
             @Override

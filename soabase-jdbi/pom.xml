@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>soabase-sql</artifactId>
+    <artifactId>soabase-jdbi</artifactId>
 
     <dependencies>
         <dependency>
@@ -16,8 +16,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-jdbi</artifactId>
         </dependency>
 
         <dependency>

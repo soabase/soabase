@@ -68,7 +68,8 @@ Soabase Configuration
 * Dynamic Attributes
 
     The Dynamic Attributes implementation is specified by the "attributes" field. To use the default JDBC implementation
-    specify the config as "sql". E.g. assuming your SoaConfiguration field is named "soa":
+    specify the config as "sql". To Use the JDBI implementation specify the config as "jdbi". E.g. assuming your SoaConfiguration
+    field is named "soa":
 
 +-------------------------------+
 {
@@ -82,7 +83,9 @@ Soabase Configuration
 }
 +-------------------------------+
 
-    Your configuration class must have a field of type <<<SqlConfiguration>>>. It defines these configuration values:
+** MyBatis Configuration
+
+    If using MyBatis, your configuration class must have a field of type <<<SqlConfiguration>>>. It defines these configuration values:
 
 *---------------------*----------------------------------------------------------------------------------*------------------------------------------*
 | <<Field>>           | <<Description>>                                                                  | <<Default>>                              |
@@ -93,3 +96,26 @@ Soabase Configuration
 |                     | {{{http://mybatis.github.io/mybatis-3/}Mybatis}}. This is the URL for the        |                                          |
 |                     | Mybatis configuration file.                                                      |                                          |
 *---------------------*----------------------------------------------------------------------------------*------------------------------------------*
+
+    Additionally, you can specify options for the <<<SqlDynamicAttributesFactory>>> in the attributes section of your configuration:
+
+*-----------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| <<Field>>             | <<Description>>                                                                  | <<Default>>                              |
+*-----------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| name                  | The SoaFeatures name that your MyBatis session is registered as.                 | "Default"                                |
+*-----------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| refreshPeriodSeconds  | The number of seconds between polls of the database for changes.                 | 30                                       |
+*-----------------------*----------------------------------------------------------------------------------*------------------------------------------*
+
+** JDBI Configuration
+
+    If using JDBI, you can specify options for the <<<JdbiDynamicAttributesFactory>>> in the attributes section of your configuration:
+
+*-----------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| <<Field>>             | <<Description>>                                                                  | <<Default>>                              |
+*-----------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| name                  | The SoaFeatures name that your DBI instance is registered as.                    | "Default"                                |
+*-----------------------*----------------------------------------------------------------------------------*------------------------------------------*
+| refreshPeriodSeconds  | The number of seconds between polls of the database for changes.                 | 30                                       |
+*-----------------------*----------------------------------------------------------------------------------*------------------------------------------*
+

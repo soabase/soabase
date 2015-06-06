@@ -7,32 +7,7 @@ Dynamic Attributes
 * Usage
 
     Dynamic Attribute support is enabled via configuration. See the {{{./soaconfig.html#Dynamic_Attributes}Dynamic Attributes Configuration}}
-    section for details.
-
-    To use the default JDBC implementation, add a <<<SqlConfiguration>>> field to
-    your application's Configuration object and set the "attributes.type" value in your Soa configuration
-    to "sql". If needed, you can access the Mybatis <<<SqlSession>>> instance from <<<SoaFeatures>>>.
-
-    To use the JDBI implementation, create a DBI instance via the normal {{{http://www.dropwizard.io/manual/jdbi.html}Dropwizard
-    method}}, register the instance in SoaFeatures by calling
-    <<<SoaBundle.getFeatures(environment).putNamed(instance, DBI.class, SoaFeatures.DEFAULT_NAME);>>> and setting the "attributes.type"
-    value in your Soa configuration to "jdbi".
-
-    Configuration example:
-
-+------------------------------------------------+
-{
-    "soa": {
-        "attributes": {
-            "type": TYPE,
-            OTHER-SETTINGS
-        }
-    }
-}
-
-TYPE would be "sql", "jdbi" or your custom implementation's name
-
-+------------------------------------------------+
+    section for details. SoaBase comes with implementations for MyBatis and JDBI.
 
 * Mybatis
 
@@ -102,29 +77,6 @@ mapper.update(...);
 mapper.delete(...);
 +----------------------------+
 
-    <<Configuration>>
-
-    SqlConfiguration has the following properties. You must include SqlConfiguration in addition
-    to SqlDynamicAttributesFactory:
-
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-| <<NAME>>             | <<DEFAULT>>                    | <<DESCRIPTION>>                                                         |
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-| mybatisConfigUrl     | none - required                | URL to the MyBatis configuration file.                                  |
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-| name                 | <<<SoaFeatures.DEFAULT_NAME>>> | SoaFeatures name to use for registering the MyBatis session.            |
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-
-    The SqlDynamicAttributesFactory (type name "sql") has the following properties:
-
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-| <<NAME>>             | <<DEFAULT>>                    | <<DESCRIPTION>>                                                         |
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-| name                 | <<<SoaFeatures.DEFAULT_NAME>>> | The SoaFeatures name that your MyBatis session is registered as.        |
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-| refreshPeriodSeconds | 30                             | The number of seconds that the database is polled for changes.          |
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-
 * JDBI
 
     You can use a {{{http://www.dropwizard.io/manual/jdbi.html}JDBI}} connection for Dynamic Attributes as well. Create
@@ -141,18 +93,6 @@ SoaBundle.getFeatures(environment).putNamed(instance, DBI.class, SoaFeatures.DEF
 AttributeEntityDao dao = dbiInstance.onDemand(AttributeEntityDao.class);
 dao.createTable();
 +----------------------------+
-
-    <<Configuration>>
-
-    The JdbiDynamicAttributesFactory (type name "jdbi") has the following properties:
-
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-| <<NAME>>             | <<DEFAULT>>                    | <<DESCRIPTION>>                                                         |
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-| name                 | <<<SoaFeatures.DEFAULT_NAME>>> | The SoaFeatures name that your DBI instance is registered as.           |
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
-| refreshPeriodSeconds | 30                             | The number of seconds that the database is polled for changes.          |
-*----------------------*--------------------------------*-------------------------------------------------------------------------*
 
 * API
 

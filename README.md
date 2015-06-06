@@ -26,7 +26,7 @@ Features
  * Integrates with Service Discovery for retries, etc.
  * Supports plugging in any desired implementation
 * Distribued, scoped attributes
- * Built in support for JDBC datasources via [Mybatis](http://mybatis.github.io/mybatis-3/)
+ * Built in support for JDBC datasources via [Mybatis](http://mybatis.github.io/mybatis-3/) or JDBI
  * Supports plugging in any desired implementation
 * Jersey-based Admin APIs
  * Add Jersey resources to the Admin port

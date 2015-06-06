@@ -32,7 +32,7 @@ Soabase
 
     * {{{./attributes.html}Distributed, Scoped Dynamic Attributes}}
 
-        * Built in support for JDBC datasources via {{{http://mybatis.github.io/mybatis-3/}Mybatis}}
+        * Built in support for JDBC datasources via {{{http://mybatis.github.io/mybatis-3/}Mybatis}} or JDBI
 
         * Supports plugging in any desired implementation
 

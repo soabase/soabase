@@ -7,8 +7,16 @@ Dynamic Attributes
 * Usage
 
     Dynamic Attribute support is enabled via configuration. See the {{{./soaconfig.html#Dynamic_Attributes}Dynamic Attributes Configuration}}
-    section for details. To use the default JDBC implementation, add a <<<SqlConfiguration>>> field to
-    your application's Configuration object. If needed, you can access the Mybatis <<<SqlSession>>> instance from <<<SoaFeatures>>>.
+    section for details.
+
+    To use the default JDBC implementation, add a <<<SqlConfiguration>>> field to
+    your application's Configuration object and set the "attributes.type" value in your Soa configuration
+    to "sql". If needed, you can access the Mybatis <<<SqlSession>>> instance from <<<SoaFeatures>>>.
+
+    To use the JDBI implementation, create a DBI instance via the normal {{{http://www.dropwizard.io/manual/jdbi.html}Dropwizard
+    method}}, register the instance in SoaFeatures by calling
+    <<<SoaBundle.getFeatures(environment).putNamed(instance, DBI.class, SoaFeatures.DEFAULT_NAME);>> and setting the "attributes.type"
+    value in your Soa configuration to "jdbi".
 
 * Mybatis
 
@@ -76,6 +84,15 @@ AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
 mapper.insert(...);
 mapper.update(...);
 mapper.delete(...);
++----------------------------+
+
+* JDBI
+
+    You can use a {{{http://www.dropwizard.io/manual/jdbi.html}JDBI}} connection for Dynamic Attributes as well. Create
+    the DBI instance in the normal manner and then register it by calling:
+
++----------------------------+
+SoaBundle.getFeatures(environment).putNamed(instance, DBI.class, SoaFeatures.DEFAULT_NAME);
 +----------------------------+
 
 * API

@@ -23,6 +23,7 @@ import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.discovery.Discovery;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 class SoaFeaturesImpl implements SoaFeatures
@@ -44,6 +45,13 @@ class SoaFeaturesImpl implements SoaFeatures
         this.dynamicAttributes = dynamicAttributes;
         this.info = info;
         this.executorBuilder = executorBuilder;
+    }
+
+    @Override
+    public Collection<Class<?>> getClasses()
+    {
+        Set<Class<?>> classes = named.keySet();
+        return ImmutableSet.copyOf(classes);
     }
 
     @Override

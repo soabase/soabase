@@ -10,6 +10,16 @@
     <artifactId>soabase-guice</artifactId>
 
     <dependencies>
+        <!--
+            SoaBase is not require for the guice component. However,
+            if it's available, additional features are added.
+        -->
+        <dependency>
+            <groupId>io.soabase</groupId>
+            <artifactId>soabase-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>

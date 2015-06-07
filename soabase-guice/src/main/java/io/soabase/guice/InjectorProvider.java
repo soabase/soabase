@@ -16,10 +16,19 @@
 package io.soabase.guice;
 
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
 
 public interface InjectorProvider
 {
-    Injector get(Configuration configuration, Environment environment);
+    /**
+     * Return the Guice injector
+     *
+     * @param configuration Dropwizard configuration
+     * @param environment Dropwizard environment
+     * @param additionalModule This module must be installed in the injector
+     * @return Guice injector
+     */
+    Injector get(Configuration configuration, Environment environment, Module additionalModule);
 }

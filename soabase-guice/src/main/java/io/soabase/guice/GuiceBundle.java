@@ -21,9 +21,11 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
+import com.google.inject.AbstractModule;
 import com.google.inject.Binding;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.Module;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.configuration.ConfigurationFactory;
@@ -134,7 +136,29 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
                 ServiceLocator serviceLocator = ServiceLocatorProvider.getServiceLocator(context);
                 GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
                 GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
-                Injector injector = injectorProvider.get(configuration, environment);
+                AbstractModule additionalModule = new AbstractModule()
+                {
+                    @Override
+                    protected void configure()
+                    {
+                        try
+                        {
+                            // make sure there are no compile-time references to Soa by using reflection
+                            Class.forName("io.soabase.core.SoaFeatures");
+                            Module soaIntegrationModule = (Module)Class.forName("io.soabase.guice.SoaIntegrationModule").newInstance();
+                            install(soaIntegrationModule);
+                        }
+                        catch ( ClassNotFoundException ignore )
+                        {
+                            // Soa has not been included - ignore
+                        }
+                        catch ( Exception e )
+                        {
+                            log.error("Could not instantiate SoaIntegrationModule", e);
+                        }
+                    }
+                };
+                Injector injector = injectorProvider.get(configuration, environment, additionalModule);
                 guiceBridge.bridgeGuiceInjector(injector);
                 registerBoundJerseyComponents(injector, context, environment);
                 return true;

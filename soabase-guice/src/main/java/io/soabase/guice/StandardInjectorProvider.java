@@ -20,7 +20,6 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
-import javax.inject.Provider;
 import java.util.Arrays;
 
 public class StandardInjectorProvider implements InjectorProvider
@@ -41,8 +40,9 @@ public class StandardInjectorProvider implements InjectorProvider
     }
 
     @Override
-    public Injector get(Configuration configuration, Environment environment)
+    public Injector get(Configuration configuration, Environment environment, Module additionalModule)
     {
+        // TODO
         if ( modules != null )
         {
             return Guice.createInjector(modules);

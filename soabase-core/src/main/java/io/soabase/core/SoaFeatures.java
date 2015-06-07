@@ -36,6 +36,13 @@ public interface SoaFeatures
     public static final String ADMIN_NAME = "soa-admin";
 
     /**
+     * Return all the registered classes
+     *
+     * @return set of registered classes
+     */
+    public Collection<Class<?>> getClasses();
+
+    /**
      * Return the stored named object
      *
      * @param clazz object's class

@@ -38,7 +38,7 @@ public class TestJdbiDynamicAttributes
         DBIFactory factory = new DBIFactory();
         Environment environment = new Environment("test", new ObjectMapper(), null, new MetricRegistry(), ClassLoader.getSystemClassLoader());
         DataSourceFactory dataSourceFactory = new DataSourceFactory();
-        dataSourceFactory.setUrl("jdbc:hsqldb:mem:soa");
+        dataSourceFactory.setUrl("jdbc:hsqldb:mem:soa-jdbi;shutdown=true");
         dataSourceFactory.setDriverClass("org.hsqldb.jdbc.JDBCDriver");
         dataSourceFactory.setLogValidationErrors(true);
         dataSourceFactory.setUser("SA");

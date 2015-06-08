@@ -15,38 +15,34 @@
  */
 package io.soabase.guice;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class StandardInjectorProvider implements InjectorProvider
 {
-    private final Injector injector;
     private final Module[] modules;
-
-    public StandardInjectorProvider(Injector injector)
-    {
-        this.injector = injector;
-        modules = null;
-    }
 
     public StandardInjectorProvider(Module... modules)
     {
-        injector = null;
-        this.modules = Arrays.copyOf(modules, modules.length);
+        this.modules = (modules != null) ? Arrays.copyOf(modules, modules.length) : new Module[0];
     }
 
     @Override
     public Injector get(Configuration configuration, Environment environment, Module additionalModule)
     {
-        // TODO
-        if ( modules != null )
+        List<Module> localModules = Lists.newArrayList();
+        Collections.addAll(localModules, modules);
+        if ( additionalModule != null )
         {
-            return Guice.createInjector(modules);
+            localModules.add(additionalModule);
         }
-        return injector;
+        return Guice.createInjector(localModules);
     }
 }

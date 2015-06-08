@@ -145,12 +145,14 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
                         {
                             // make sure there are no compile-time references to Soa by using reflection
                             Class.forName("io.soabase.core.SoaFeatures");
-                            Module soaIntegrationModule = (Module)Class.forName("io.soabase.guice.SoaIntegrationModule").newInstance();
+                            log.info("Installing SoaIntegrationModule");
+                            Module soaIntegrationModule = (Module)Class.forName("io.soabase.guice.SoaIntegrationModule").getConstructor(Environment.class).newInstance(environment);
                             install(soaIntegrationModule);
                         }
                         catch ( ClassNotFoundException ignore )
                         {
                             // Soa has not been included - ignore
+                            log.info("SoaFeatures not available");
                         }
                         catch ( Exception e )
                         {

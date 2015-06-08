@@ -15,7 +15,7 @@
  */
 package io.soabase.guice.mocks;
 
-import com.google.inject.Injector;
+import com.google.inject.Module;
 import io.dropwizard.Application;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Bootstrap;
@@ -29,18 +29,18 @@ import java.util.concurrent.CountDownLatch;
 
 public class MockApplication extends Application<Configuration>
 {
-    private final Injector injector;
     private final CountDownLatch startedLatch = new CountDownLatch(1);
+    private final Module module;
 
-    public MockApplication(Injector injector)
+    public MockApplication(Module module)
     {
-        this.injector = injector;
+        this.module = module;
     }
 
     @Override
     public void initialize(Bootstrap<Configuration> bootstrap)
     {
-        bootstrap.addBundle(new GuiceBundle(new StandardInjectorProvider(injector)));
+        bootstrap.addBundle(new GuiceBundle<>(new StandardInjectorProvider(module)));
     }
 
     @Override

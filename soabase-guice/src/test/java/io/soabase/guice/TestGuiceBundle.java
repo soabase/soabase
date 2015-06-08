@@ -52,8 +52,7 @@ public class TestGuiceBundle
                 bind(MockGuiceInjected.class).asEagerSingleton();
             }
         };
-        Injector injector = Guice.createInjector(module);
-        final MockApplication mockApplication = new MockApplication(injector);
+        final MockApplication mockApplication = new MockApplication(module);
 
         Callable callable = new Callable()
         {

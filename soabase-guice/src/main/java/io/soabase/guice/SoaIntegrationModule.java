@@ -25,11 +25,11 @@ import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.discovery.Discovery;
 
-class SoaIntegrationModule extends AbstractModule
+public class SoaIntegrationModule extends AbstractModule
 {
     private final Environment environment;
 
-    SoaIntegrationModule(Environment environment)
+    public SoaIntegrationModule(Environment environment)
     {
         this.environment = environment;
     }
@@ -39,10 +39,22 @@ class SoaIntegrationModule extends AbstractModule
     {
         SoaFeatures features = SoaBundle.getFeatures(environment);
         bind(SoaFeatures.class).toInstance(features);
-        bind(Discovery.class).toInstance(features.getDiscovery());
-        bind(DynamicAttributes.class).toInstance(features.getAttributes());
-        bind(SoaInfo.class).toInstance(features.getSoaInfo());
-        bind(ExecutorBuilder.class).toInstance(features.getExecutorBuilder());
+        if ( features.getDiscovery() != null )
+        {
+            bind(Discovery.class).toInstance(features.getDiscovery());
+        }
+        if ( features.getAttributes() != null )
+        {
+            bind(DynamicAttributes.class).toInstance(features.getAttributes());
+        }
+        if ( features.getSoaInfo() != null )
+        {
+            bind(SoaInfo.class).toInstance(features.getSoaInfo());
+        }
+        if ( features.getExecutorBuilder() != null )
+        {
+            bind(ExecutorBuilder.class).toInstance(features.getExecutorBuilder());
+        }
 
         for ( Class<?> clazz : features.getClasses() )
         {

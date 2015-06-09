@@ -17,5 +17,6 @@ io.soabase.core.listening
 io.soabase.core.rest
 io.soabase.core.rest.entities
 io.soabase.guice
+io.soabase.jdbi.attributes
 io.soabase.sql.attributes
 io.soabase.zookeeper.discovery

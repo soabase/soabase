@@ -5,3 +5,6 @@ io.soabase.core.features.config
 io.soabase.core.features.config.mocks
 io.soabase.guice
 io.soabase.guice.mocks
+io.soabase.jdbi.attributes
+io.soabase.sql.attributes
+io.soabase.sql.mocks

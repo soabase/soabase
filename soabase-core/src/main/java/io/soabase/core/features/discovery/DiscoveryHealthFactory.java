@@ -20,7 +20,7 @@ import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.features.config.SoaConfiguration;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = DefaultDiscoveryHealth.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = DefaultDiscoveryHealthFactory.class)
 public interface DiscoveryHealthFactory
 {
     public DiscoveryHealth build(Configuration configuration, Environment environment);

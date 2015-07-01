@@ -134,10 +134,10 @@ public class StandardAttributesContainer
         Object value = overrides.get(key);
         if ( value == null )
         {
-            value = defaultProperties.getProperty(key, null);
+            value = getValue(key);
             if ( value == null )
             {
-                value = getValue(key);
+                value = defaultProperties.getProperty(key, null);
             }
         }
         return (value != null) ? value.toString() : defaultValue;

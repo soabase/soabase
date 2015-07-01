@@ -19,7 +19,9 @@ import com.google.common.collect.Maps;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 public class TestStandardAttributesContainer
 {
@@ -73,5 +75,31 @@ public class TestStandardAttributesContainer
         newAttributes.put(new AttributeKey("two", "z"), 3);
         container.reset(newAttributes);
         Assert.assertEquals(container.getAttributeInt("two", 0), 1);    // other scopes don't match
+    }
+
+    @Test
+    public void testOverrideOrder()
+    {
+        Properties defaultProperties = new Properties();
+        defaultProperties.setProperty("one", "1");
+        defaultProperties.setProperty("two", "2");
+        StandardAttributesContainer container = new StandardAttributesContainer(defaultProperties, Collections.<String>emptyList());
+
+        Assert.assertEquals(container.getAttribute("one", null), "1");
+        Assert.assertEquals(container.getAttribute("two", null), "2");
+        Assert.assertEquals(container.getAttribute("three", null), null);
+
+        container.temporaryOverride("two", "too");
+        Assert.assertEquals(container.getAttribute("one", null), "1");
+        Assert.assertEquals(container.getAttribute("two", null), "too");
+        Assert.assertEquals(container.getAttribute("three", null), null);
+        container.removeOverride("two");
+
+        Map<AttributeKey, Object> newAttributes = Maps.newHashMap();
+        newAttributes.put(new AttributeKey("two", ""), "new");
+        container.reset(newAttributes);
+        Assert.assertEquals(container.getAttribute("one", null), "1");
+        Assert.assertEquals(container.getAttribute("two", null), "new");
+        Assert.assertEquals(container.getAttribute("three", null), null);
     }
 }

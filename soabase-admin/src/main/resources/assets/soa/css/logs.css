@@ -1,7 +1,7 @@
-.list-group-item {
+#soa-logs-body-collapse .list-group-item {
     cursor: pointer;
 }
 
-.list-group-item:hover {
+#soa-logs-body-collapse .list-group-item:hover {
     text-decoration: underline !important;
 }

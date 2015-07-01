@@ -25,11 +25,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="/assets/soa/css/soa.css">
-    <link rel="stylesheet" href="/assets/soa/css/c3.min.css">
     <link rel="stylesheet" href="/assets/soa/css/logs.css">
-
-    <script type="text/javascript">
-    </script>
 </head>
 
 <body>
@@ -37,14 +33,63 @@
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">$SOA_NAME$ - Log Files</a>
+            <a class="navbar-brand" href="#">$SOA_NAME$ - Logs - <span id="logs-host"></span></a>
         </div>
     </div>
 </nav>
 
 <div class="container soa-top-margin">
-    <h3>Log Files for <span id="logs-host"></span></h3>
-    <div class="list-group" id="logs-list">
+    <h4> &nbsp;
+        <span class="pull-right">
+            <span id="soa-attributes-refresh" class="soa-icon-button glyphicon glyphicon-refresh" aria-hidden="true"></span>
+        </span>
+    </h4>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading list-group-item">
+            <span id="soa-logs-body-toggle" class="soa-icon-button glyphicon glyphicon-collapse-down panel-title" aria-hidden="true"></span>
+            <span class="panel-title">Log Files</span>
+        </div>
+        <div class="collapse in" id="soa-logs-body-collapse">
+            <div class="soa-indented panel-body">
+                <div class="list-group" id="logs-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading list-group-item">
+            <span id="soa-log-levels-body-toggle" class="soa-icon-button glyphicon glyphicon-collapse-down panel-title" aria-hidden="true"></span>
+            <span class="panel-title">Log Levels</span>
+        </div>
+        <div class="collapse in" id="soa-log-levels-body-collapse">
+            <div class="panel-body">
+                <div class="pull-right">
+                    <p>
+                        <button id="soa-log-submit-levels-button" type="button" class="btn btn-default">Submit Changes</button>
+                    </p>
+                </div>
+
+                <table class="table table-condensed table-striped table-bordered">
+                    <tbody id="soa-log-level-rows">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="pull-right small">
+        <em id="soa-logs-last-updated"></em>
+    </div>
+
+    <div>
+        <p>&nbsp;</p>
+    </div>
+</div>
+
+<div id="soa-progress-container" class="soa-hidden">
+    <div class="progress soa-progress">
+        <div class="soa-progress-bar progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
 </div>
 
@@ -53,6 +98,27 @@
         <p class="text-muted">&copy; 2014-$SOA_COPYRIGHT$ - All rights reserved $SOA_FOOTER_MESSAGE$</p>
     </div>
 </footer>
+
+<div id="soa-log-file-template" class="soa-template">
+    <a href="$URL$" target="_blank" class="list-group-item">$NAME$</a>
+</div>
+
+<div id="soa-no-log-files-template" class="soa-template">
+    <div class="well well-sm">
+        No log files found.
+    </div>
+</div>
+
+<div id="soa-log-level-row-template" class="soa-template">
+    <xtr>
+        <xtd id="soa-log-level-name-$INDEX$">$NAME$</xtd>
+        <xtd>
+            <select id="soa-log-level-$INDEX$" size="1">
+                $OPTIONS$
+            </select>
+        </xtd>
+    </xtr>
+</div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>

@@ -52,17 +52,7 @@
     text-wrap: none;
 }
 
-.soa-service-indented {
-    margin-left: 8px;
-    margin-right: 8px;
-}
-
 .soa-expand {
     margin-left: 16px;
     cursor: pointer;
-}
-
-.soa-services-icon-button {
-    cursor: pointer;
-    font-weight: normal !important;
 }

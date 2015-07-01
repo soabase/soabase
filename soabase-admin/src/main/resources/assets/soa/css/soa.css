@@ -68,3 +68,18 @@ body {
 #soa-login button {
     margin-left: 3px;
 }
+
+.soa-icon-button {
+    cursor: pointer;
+    font-weight: normal !important;
+}
+
+.soa-indented {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.soa-icon-button {
+    cursor: pointer;
+    font-weight: normal !important;
+}

@@ -98,7 +98,7 @@ function logsSubmitLevels() {
         },
         error: function(jqXHR, textStatus, errorThrown) {
             logsSubmitResetUi();
-            bootbox.alert('Operation failed: ' + errorThrown);
+            bootbox.alert('Operation failed: ' + textStatus + ' - ' + errorThrown);
         }
     });
 }

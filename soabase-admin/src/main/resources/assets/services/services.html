@@ -1,10 +1,72 @@
-<h3>Services</h3>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div id="soa-services-main-title">
+            <span class="panel-title">Services</span>
+        </div>
+        <div id="soa-services-detail-title" class="soa-hidden">
+            <div class="row">
+                <div class="col-md-8">
+                    <span class="panel-title"><a href="javascript:soaServicesCloseDetails()">Services</a> / <span id="soa-services-detail-name"></span></span>
+                </div>
+                <div class="col-md-4 text-right">
+                    <span id="soa-services-detail-qty" class="badge"></span>
+                    &nbsp;&nbsp;
+                    <button id="soa-services-detail-service-close" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div id="soa-services-list-container">
+            <div id="soa-services-list" class="soa-hidden list-group"></div>
+            <div id="soa-services-list-click-message" class="text-right small">
+                <em>Click a service name for details</em>
+            </div>
+            <div id="soa-no-services" class="soa-hidden">
+                <em>No Services Found</em>
+            </div>
+        </div>
 
-<div id="soa-services">
-    <em id="soa-no-services" class="soa-hidden">No Services Found</em>
+        <div id="soa-services-detail-service-container" class="soa-hidden">
+            <div id="soa-services-detail-instances" class="list-group"></div>
+        </div>
+    </div>
 </div>
 <div class="pull-right small">
     <em id="soa-services-last-updated"></em>
+</div>
+
+<div id="soa-services-loading-template" class="soa-template">
+    <span class="list-group-item"><em>Loading...</em></span>
+</div>
+
+<div id="soa-services-no-instances" class="soa-template">
+    <span class="list-group-item">No Instances Found</span>
+</div>
+
+<div id="soa-services-row-template" class="soa-template">
+    <a href="javascript:soaServicesDetails('$SERVICE_NAME$')" class="list-group-item"><span class="glyphicon glyphicon-plus"></span> $SERVICE_NAME$</a>
+</div>
+
+<div id="soa-services-instance-template" class="soa-template">
+    <div class="list-group-item">
+        <div class="row">
+            <div class="col-md-3 soa-service-instance-cell">
+                <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data h4">$INSTANCE_DATA$</span>
+            </div>
+
+            <div class="col-md-4 soa-service-instance-cell">
+                $INSTANCE_DETAILS$
+            </div>
+
+            <div class="text-right col-md-5 soa-service-instance-cell">
+                <button id="soa-logs-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> Logs</button>
+                <button id="soa-trace-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span> Stack Trace</button>
+                <button id="soa-force-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span> Force...</button>
+                <button id="soa-details-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Details</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="soa-template" id="soa-force-dialog-content">
@@ -38,45 +100,9 @@
     <div class="soa-stoplight-red-on"></div>
 </div>
 
-<div class="soa-template" id="soa-service-instance-template">
-    <div class="list-group-item row">
-        <div class="col-md-3 soa-service-instance-cell">
-            <span class="soa-instance-stoplight">$STOPLIGHT$</span> <span class="soa-instance-data h4">$INSTANCE_DATA$</span>
-        </div>
-
-        <div class="col-md-4 soa-service-instance-cell">
-            $INSTANCE_DETAILS$
-        </div>
-
-        <div class="text-right col-md-5 soa-service-instance-cell">
-            <button id="soa-logs-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> Logs</button>
-            <button id="soa-trace-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span> Stack Trace</button>
-            <button id="soa-force-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span> Force...</button>
-            <button id="soa-details-button-$ID$" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Details</button>
-        </div>
-    </div>
-</div>
-
-<div class="soa-template" id="soa-service-template">
-    <div class="panel panel-primary">
-        <div class="panel-heading list-group-item">
-            <span id="soa-service-body-toggle-$SERVICE_NAME$" class="soa-icon-button glyphicon glyphicon-collapse-down panel-title" aria-hidden="true"></span>
-            <span class="panel-title">$SERVICE_NAME$</span>
-            <span id="soa-service-expand-$SERVICE_NAME$" class="soa-expand glyphicon glyphicon-resize-full pull-right"></span>
-            <span id="soa-service-instance-qty-$SERVICE_NAME$" class="badge pull-right"></span>
-        </div>
-        <div class="collapse in" id="soa-service-body-collapse-$SERVICE_NAME$">
-            <div id="soa-service-body-$SERVICE_NAME$" class="panel-body soa-indented">
-                <ul id="soa-service-instances-$SERVICE_NAME$" class="list-group"></ul>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="soa-template" id="soa-service-healthy">
     <span class="glyphicon glyphicon-heart soa-service-healthy" aria-hidden="true"></span> Healthy
 </div>
-
 
 <div class="soa-template" id="soa-service-unhealthy">
     <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> Unhealthy

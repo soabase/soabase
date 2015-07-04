@@ -1,8 +1,4 @@
-var SOA_SERVICE_ID_PREFIX = 'soa-service-';
-
-function soaToName(instance) {
-    return instance.host + ':' + instance.port
-}
+var soaActiveServiceName = null;
 
 function soaHandleForceButton(serviceName, localInstance) {
     var template = soaGetTemplate('soa-force-dialog-content');
@@ -38,7 +34,7 @@ function soaForceDialogSubmit(serviceName, instanceId, forceValue) {
         data: JSON.stringify(forceValue),
         success: function() {
             soaHideInfiniteProgressBar();
-            soaUpdateInstances();
+            soaServicesUpdateDetails(serviceName);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             soaHideInfiniteProgressBar();
@@ -46,6 +42,7 @@ function soaForceDialogSubmit(serviceName, instanceId, forceValue) {
         }
     });
 }
+
 function soaHandleLogButton(localInstance) {
     var url = '/logs?host=' + localInstance.host + '&port=' + localInstance.port + '&adminPort=' + localInstance.adminPort;
     window.open(url, '_blank');
@@ -61,180 +58,147 @@ function soaHandleDetailsButton(serviceName, localInstance) {
     window.open(url, '_blank');
 }
 
-function soaServicesBuildContainer(serviceName) {
-    $('#soa-no-services').hide();
-
-    var id = SOA_SERVICE_ID_PREFIX + serviceName;
-
-    var div = document.createElement('div');
-    $(div).attr('id', id).appendTo('#soa-services');
-
-    var content = soaGetTemplate('soa-service-template', {
-        '$SERVICE_NAME$': serviceName
-    });
-    $('#' + id).html(content);
-
-    $('#soa-service-body-toggle-' + serviceName).click(function(){
-        $('#soa-service-body-toggle-' + serviceName).toggleClass('glyphicon-expand glyphicon-collapse-down');
-        $('#soa-service-body-collapse-' + serviceName).collapse('toggle');
-        return true;
-    });
-
-    if ( getParameterByName("service") === serviceName ) {
-        $('#soa-service-expand-' + serviceName).toggleClass('glyphicon-resize-full glyphicon-resize-small');
-    }
-
-    $('#soa-service-expand-' + serviceName).click(function(){
-        var focusedService = getParameterByName("service");
-        var url = focusedService ? "/" : ("/?service=" + serviceName);
-        if ( location.hash ) {
-            url = url + location.hash;
-        }
-        location.href = url;
-        return true;
-    });
+function soaToName(instance) {
+    return instance.host + ':' + instance.port
 }
 
-function soaUpdateInstancesForService(serviceName) {
+function soaServicesDetailsDisplay(data) {
+    var stoplightGreen = soaGetTemplate('soa-stoplight-set-green');
+    var stoplightRed = soaGetTemplate('soa-stoplight-set-red');
+    var healthy = soaGetTemplate('soa-service-healthy');
+    var unHealthy = soaGetTemplate('soa-service-unhealthy');
+    var forced = soaGetTemplate('soa-service-forced');
+
+    function trim(s) {
+        var max = 20;
+        if ( s.length >= max ) {
+            return s.substring(0, max / 2) + '&hellip;' + s.substring(s.length - (max / 2));
+        }
+        return s;
+    }
+
+    if ( data.length > 0 ) {
+        var instances = "";
+        for ( var i in data ) {
+            var instance = data[i];
+            var isDiscoverable;
+            if ( instance.forcedState != 'CLEARED' ) {
+                isDiscoverable = (instance.forcedState === 'REGISTER');
+            } else {
+                isDiscoverable = (instance.healthyState === 'HEALTHY');
+            }
+            var stopLight = isDiscoverable ? stoplightGreen : stoplightRed;
+            var details = (instance.healthyState === 'HEALTHY') ? healthy : unHealthy;
+            if ( instance.forcedState != 'CLEARED' ) {
+                details = details + forced.replace('$VALUE$', instance.forcedState.toLowerCase());
+            }
+            var thisInstance = soaGetTemplate('soa-services-instance-template', {
+                '$STOPLIGHT$': stopLight,
+                '$INSTANCE_DATA$': trim(soaToName(instance)),
+                '$INSTANCE_DETAILS$': details,
+                '$ID$': instance.id
+            });
+            instances = instances + thisInstance;
+        }
+
+        $('#soa-services-detail-qty').text(data.length);
+        $('#soa-services-detail-instances').html(instances);
+
+        function setHandlers(instance) {
+            $('#soa-force-button-' + instance.id).click(function(){
+                soaHandleForceButton(soaActiveServiceName, instance);
+            });
+            $('#soa-logs-button-' + instance.id).click(function(){
+                soaHandleLogButton(instance);
+            });
+            $('#soa-trace-button-' + instance.id).click(function(){
+                soaHandleTraceButton(instance);
+            });
+            $('#soa-details-button-' + instance.id).click(function(){
+                soaHandleDetailsButton(soaActiveServiceName, instance);
+            });
+        }
+        for ( var j in data ) {
+            setHandlers(data[j]);
+        }
+    } else {
+        $('#soa-services-detail-instances').html(soaGetTemplate('soa-services-no-instances'));
+    }
+}
+
+function soaServicesCloseDetails() {
+    soaActiveServiceName = null;
+
+    $('#soa-services-list-container').show();
+    $('#soa-services-detail-service-container').hide();
+    $('#soa-services-main-title').show();
+    $('#soa-services-detail-title').hide();
+}
+
+function soaServicesDetails(serviceName) {
+    soaActiveServiceName = serviceName;
+
+    $('#soa-services-detail-instances').html(soaGetTemplate('soa-services-loading-template'));
+    $('#soa-services-detail-qty').text('');
+
+    $('#soa-services-list-container').hide();
+    $('#soa-services-detail-service-container').show();
+    $('#soa-services-detail-name').text(serviceName);
+    $('#soa-services-main-title').hide();
+    $('#soa-services-detail-title').show();
+
+    soaServicesUpdateDetails(serviceName);
+}
+
+ function soaServicesUpdateDetails(serviceName) {
     $.ajax({
         type: 'GET',
         url: '/soa/discovery/all/' + serviceName,
         success: function(data){
-            var stoplightGreen = soaGetTemplate('soa-stoplight-set-green');
-            var stoplightRed = soaGetTemplate('soa-stoplight-set-red');
-            var healthy = soaGetTemplate('soa-service-healthy');
-            var unHealthy = soaGetTemplate('soa-service-unhealthy');
-            var forced = soaGetTemplate('soa-service-forced');
-
-            function trim(s) {
-                var max = 20;
-                if ( s.length >= max ) {
-                    return s.substring(0, max / 2) + '&hellip;' + s.substring(s.length - (max / 2));
-                }
-                return s;
-            }
-
-            var id = SOA_SERVICE_ID_PREFIX + serviceName;
-            if ( data.length > 0 ) {
-                var instances = "";
-                for ( var i in data ) {
-                    var instance = data[i];
-                    var isDiscoverable;
-                    if ( instance.forcedState != 'CLEARED' ) {
-                        isDiscoverable = (instance.forcedState === 'REGISTER');
-                    } else {
-                        isDiscoverable = (instance.healthyState === 'HEALTHY');
-                    }
-                    var stopLight = isDiscoverable ? stoplightGreen : stoplightRed;
-                    var details = (instance.healthyState === 'HEALTHY') ? healthy : unHealthy;
-                    if ( instance.forcedState != 'CLEARED' ) {
-                        details = details + forced.replace('$VALUE$', instance.forcedState.toLowerCase());
-                    }
-                    var thisInstance = soaGetTemplate('soa-service-instance-template', {
-                        '$STOPLIGHT$': stopLight,
-                        '$INSTANCE_DATA$': trim(soaToName(instance)),
-                        '$INSTANCE_DETAILS$': details,
-                        '$ID$': instance.id
-                    });
-                    instances = instances + thisInstance;
-                }
-
-                $('#soa-service-instance-qty-' + serviceName).text(data.length);
-                $('#soa-service-instances-' + serviceName).html(instances);
-
-                function setHandlers(instance) {
-                    $('#soa-force-button-' + instance.id).click(function(){
-                        soaHandleForceButton(serviceName, instance);
-                    });
-                    $('#soa-logs-button-' + instance.id).click(function(){
-                        soaHandleLogButton(instance);
-                    });
-                    $('#soa-trace-button-' + instance.id).click(function(){
-                        soaHandleTraceButton(instance);
-                    });
-                    $('#soa-details-button-' + instance.id).click(function(){
-                        soaHandleDetailsButton(serviceName, instance);
-                    });
-                }
-                for ( var j in data ) {
-                    setHandlers(data[j]);
-                }
-
-                $('#soa-services-last-updated').text('Last updated ' + (new Date()).toLocaleString());
-            } else {
-                soaRemoveInstance(id);
-            }
+            soaServicesDetailsDisplay(data);
         },
-        error: function() {
-            var id = SOA_SERVICE_ID_PREFIX + serviceName;
-            soaRemoveInstance(id);
+        error: function(jqXHR, textStatus, errorThrown) {
+            soaHideInfiniteProgressBar();
+            bootbox.alert('Operation failed: ' + errorThrown);
         }
     });
 }
 
-var soaServices = [];
-
-function soaRemoveInstance(id) {
-    $('#' + id).remove();
-
-    var serviceCount = 0;
-    for ( var k in soaServices ) {
-        var serviceName = soaServices[k];
-        if ( soaServiceDivExists(serviceName) ) {
-            ++serviceCount;
-        }
-    }
-    if ( serviceCount == 0 ) {
-        soaSetNoInstances();
-    }
-}
-
-function soaServiceDivExists(serviceName) {
-    var id = SOA_SERVICE_ID_PREFIX + serviceName;
-    return $('#' + id).length > 0;
-}
-
-function soaSetNoInstances() {
-    $('#soa-no-services').show();
-}
-
-function soaUpdateInstances() {
+function soaUpdateServices() {
     $.getJSON('/soa/discovery/services', function(data){
-        var id = SOA_SERVICE_ID_PREFIX + serviceName;
-        var serviceName;
-        var i;
-
-        var focusedService = getParameterByName("service");
-        if ( focusedService ) {
-            data = (data.indexOf(focusedService) >= 0) ? [focusedService] : [];
-        }
-
-        // remove services that don't exist anymore
-        for ( i in soaServices ) {
-            serviceName = soaServices[i];
-            if ( !data[serviceName] && soaServiceDivExists(serviceName) ) {
-                $('#' + id).remove();
-            }
-        }
-
+        var content = "";
         for (i in data) {
-            serviceName = data[i];
-            if ( !soaServiceDivExists(serviceName) ) {
-                soaServicesBuildContainer(serviceName);
-            }
-            soaUpdateInstancesForService(serviceName);
+            var serviceName = data[i];
+            var thisRow = soaGetTemplate('soa-services-row-template', {
+                '$SERVICE_NAME$': serviceName
+            });
+            content = content + thisRow;
         }
+        $('#soa-services-list').html(content);
 
         if ( data.length == 0 ) {
-            soaSetNoInstances();
+            $('#soa-services-list').hide();
+            $('#soa-services-list-click-message').hide();
+            $('#soa-no-services').show();
+        } else {
+            $('#soa-services-list').show();
+            $('#soa-services-list-click-message').show();
+            $('#soa-no-services').hide();
         }
 
-        soaServices = data;
+        if ( soaActiveServiceName ) {
+            soaServicesUpdateDetails(soaActiveServiceName);
+        }
+
+        $('#soa-services-last-updated').text('Last updated ' + (new Date()).toLocaleString());
     });
 }
 
 $(function() {
-    var ourTab = $('#soa-tab-');
-    soaUpdateInstances();
-    setInterval(soaUpdateInstances, 12345);
+    $('#soa-services-detail-service-close').click(function(){
+        soaServicesCloseDetails();
+    });
+
+    soaUpdateServices();
+    setInterval(soaUpdateServices, 4987);
 });

@@ -64,7 +64,8 @@ public class ZooKeeperDiscoveryFactory implements DiscoveryFactory
     @Override
     public Discovery build(Configuration configuration, Environment environment, SoaInfo soaInfo)
     {
-        CuratorFramework curatorFramework = SoaBundle.getFeatures(environment).getNamedRequired(CuratorFramework.class, SoaFeatures.DEFAULT_NAME);
-        return new ZooKeeperDiscovery(curatorFramework, this, soaInfo);
+        SoaFeatures features = SoaBundle.getFeatures(environment);
+        CuratorFramework curatorFramework = features.getNamedRequired(CuratorFramework.class, SoaFeatures.DEFAULT_NAME);
+        return new ZooKeeperDiscovery(curatorFramework, this, soaInfo, features.getDeploymentGroupManager());
     }
 }

@@ -16,10 +16,13 @@
 package io.soabase.zookeeper.discovery;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 public class Payload
@@ -28,6 +31,8 @@ public class Payload
     private Map<String, String> metaData;
     private ForcedState forcedState;
     private HealthyState healthyState;
+
+    public static final String META_DATA_KEY_DEPLOYMENT_GROUP = "soabase-deployment-group";
 
     public Payload()
     {
@@ -56,6 +61,19 @@ public class Payload
     public Map<String, String> getMetaData()
     {
         return metaData;
+    }
+
+    public Collection<String> getDeploymentGroups()
+    {
+        if ( metaData != null )
+        {
+            String value = metaData.get(META_DATA_KEY_DEPLOYMENT_GROUP);
+            if ( value != null )
+            {
+                return Splitter.on(',').trimResults().omitEmptyStrings().splitToList(value);
+            }
+        }
+        return Collections.emptySet();
     }
 
     public void setMetaData(Map<String, String> metaData)

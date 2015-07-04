@@ -19,6 +19,7 @@ import com.google.common.base.Preconditions;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
 import io.soabase.core.features.discovery.DiscoveryInstance;
+import java.util.Collection;
 import java.util.Map;
 
 public class DiscoveryInstanceImpl implements DiscoveryInstance
@@ -84,6 +85,12 @@ public class DiscoveryInstanceImpl implements DiscoveryInstance
     public ForcedState getForcedState()
     {
         return payload.getForcedState();
+    }
+
+    @Override
+    public Collection<String> getDeploymentGroups()
+    {
+        return null;
     }
 
     @Override

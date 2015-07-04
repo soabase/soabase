@@ -24,6 +24,7 @@ import io.soabase.core.SoaInfo;
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.discovery.Discovery;
+import io.soabase.core.features.discovery.deployment.DeploymentGroupManager;
 
 public class SoaIntegrationModule extends AbstractModule
 {
@@ -54,6 +55,10 @@ public class SoaIntegrationModule extends AbstractModule
         if ( features.getExecutorBuilder() != null )
         {
             bind(ExecutorBuilder.class).toInstance(features.getExecutorBuilder());
+        }
+        if ( features.getDeploymentGroupManager() != null )
+        {
+            bind(DeploymentGroupManager.class).toInstance(features.getDeploymentGroupManager());
         }
 
         for ( Class<?> clazz : features.getClasses() )

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.soabase.zookeeper.discovery;
 
 import com.google.common.base.Function;
@@ -29,10 +30,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.dropwizard.lifecycle.Managed;
 import io.soabase.core.SoaInfo;
-import io.soabase.core.features.discovery.ForcedState;
-import io.soabase.core.features.discovery.HealthyState;
 import io.soabase.core.features.discovery.DiscoveryInstance;
 import io.soabase.core.features.discovery.ExtendedDiscovery;
+import io.soabase.core.features.discovery.ForcedState;
+import io.soabase.core.features.discovery.HealthyState;
+import io.soabase.core.features.discovery.deployment.DeploymentGroupManager;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.x.discovery.InstanceFilter;
@@ -58,6 +60,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     private final AtomicReference<ServiceInstance<Payload>> us = new AtomicReference<>();
     private final String bindAddress;
     private final SoaInfo soaInfo;
+    private final DeploymentGroupManager deploymentGroupManager;
 
     private static class FoundInstance
     {
@@ -71,9 +74,10 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         }
     }
 
-    public ZooKeeperDiscovery(CuratorFramework curator, ZooKeeperDiscoveryFactory factory, SoaInfo soaInfo)
+    public ZooKeeperDiscovery(CuratorFramework curator, ZooKeeperDiscoveryFactory factory, SoaInfo soaInfo, DeploymentGroupManager deploymentGroupManager)
     {
         this.soaInfo = soaInfo;
+        this.deploymentGroupManager = deploymentGroupManager;
         bindAddress = factory.getBindAddress();
         providers = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)  // TODO config
@@ -304,7 +308,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
                             @Override
                             public boolean apply(ServiceInstance<Payload> instance)
                             {
-                                return instanceToFind.getId().equals(instance.getId());
+                                return deploymentGroupManager.isAnyGroupEnabled(instance.getPayload().getDeploymentGroups()) && instanceToFind.getId().equals(instance.getId());
                             }
                         },
                         null

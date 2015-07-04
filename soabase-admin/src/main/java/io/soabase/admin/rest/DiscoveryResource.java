@@ -16,12 +16,13 @@
 package io.soabase.admin.rest;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.soabase.core.SoaFeatures;
-import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.Discovery;
 import io.soabase.core.features.discovery.DiscoveryInstance;
 import io.soabase.core.features.discovery.ExtendedDiscovery;
+import io.soabase.core.features.discovery.ForcedState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
@@ -32,11 +33,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Path("/soa/discovery")
 public class DiscoveryResource
@@ -48,6 +51,29 @@ public class DiscoveryResource
     public DiscoveryResource(SoaFeatures features)
     {
         this.features = features;
+    }
+
+    @GET
+    @Path("deploymentGroups")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDeploymentGroups()
+    {
+        Map<String, Boolean> groupStates = Maps.newTreeMap();
+        for ( String group : features.getDeploymentGroupManager().getKnownGroups() )
+        {
+            groupStates.put(group, features.getDeploymentGroupManager().isGroupEnabled(group));
+        }
+        GenericEntity<Map<String, Boolean>> entity = new GenericEntity<Map<String, Boolean>>(groupStates){};
+        return Response.ok(entity).build();
+    }
+
+    @PUT
+    @Path("deploymentGroup/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response ableGroup(@PathParam("name") String groupName, boolean enable)
+    {
+        features.getDeploymentGroupManager().ableGroup(groupName, enable);
+        return Response.ok().build();
     }
 
     @GET

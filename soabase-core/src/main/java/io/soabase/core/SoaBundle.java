@@ -50,6 +50,7 @@ import io.soabase.core.features.discovery.DiscoveryHealth;
 import io.soabase.core.features.discovery.ExtendedDiscovery;
 import io.soabase.core.features.discovery.HealthCheckIntegration;
 import io.soabase.core.features.discovery.SafeDiscovery;
+import io.soabase.core.features.discovery.deployment.DeploymentGroupManager;
 import io.soabase.core.features.logging.LoggingReader;
 import io.soabase.core.rest.DiscoveryApis;
 import io.soabase.core.rest.DynamicAttributeApis;
@@ -149,7 +150,9 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 
         Discovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(configuration, environment, soaInfo)));
 
-        final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, dynamicAttributes, soaInfo, new ExecutorBuilder(environment.lifecycle()));
+        DeploymentGroupManager deploymentGroupManager = checkManaged(environment, soaConfiguration.getDeploymentGroupFactory().build(configuration, environment));
+
+        final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, dynamicAttributes, soaInfo, new ExecutorBuilder(environment.lifecycle()), deploymentGroupManager);
         final LoggingReader loggingReader = initLogging(configuration);
         AbstractBinder binder = new AbstractBinder()
         {

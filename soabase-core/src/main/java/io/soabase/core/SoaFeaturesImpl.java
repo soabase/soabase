@@ -21,6 +21,7 @@ import com.google.common.collect.Maps;
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.discovery.Discovery;
+import io.soabase.core.features.discovery.deployment.DeploymentGroupManager;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -33,18 +34,20 @@ class SoaFeaturesImpl implements SoaFeatures
     private volatile DynamicAttributes dynamicAttributes;
     private final SoaInfo info;
     private final ExecutorBuilder executorBuilder;
+    private final DeploymentGroupManager deploymentGroupManager;
 
     public SoaFeaturesImpl()
     {
-        this(null, null, null, null);
+        this(null, null, null, null, null);
     }
 
-    SoaFeaturesImpl(Discovery discovery, DynamicAttributes dynamicAttributes, SoaInfo info, ExecutorBuilder executorBuilder)
+    SoaFeaturesImpl(Discovery discovery, DynamicAttributes dynamicAttributes, SoaInfo info, ExecutorBuilder executorBuilder, DeploymentGroupManager deploymentGroupManager)
     {
         this.discovery = discovery;
         this.dynamicAttributes = dynamicAttributes;
         this.info = info;
         this.executorBuilder = executorBuilder;
+        this.deploymentGroupManager = deploymentGroupManager;
     }
 
     @Override
@@ -75,6 +78,12 @@ class SoaFeaturesImpl implements SoaFeatures
     {
         this.named.clear();
         this.named.putAll(from.named);
+    }
+
+    @Override
+    public DeploymentGroupManager getDeploymentGroupManager()
+    {
+        return deploymentGroupManager;
     }
 
     @Override

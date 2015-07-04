@@ -18,6 +18,7 @@ package io.soabase.core;
 import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.discovery.Discovery;
+import io.soabase.core.features.discovery.deployment.DeploymentGroupManager;
 import java.util.Collection;
 
 /**
@@ -98,6 +99,13 @@ public interface SoaFeatures
      * @return info
      */
     public SoaInfo getSoaInfo();
+
+    /**
+     * Return the deployment group manager
+     *
+     * @return deployment group manager
+     */
+    public DeploymentGroupManager getDeploymentGroupManager();
 
     /**
      * Access to the Dropwizard executor builders from the Dropwizard environment

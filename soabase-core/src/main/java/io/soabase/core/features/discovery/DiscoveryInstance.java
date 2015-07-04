@@ -13,25 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.soabase.core.features.discovery;
 
+import java.util.Collection;
 import java.util.Map;
 
 public interface DiscoveryInstance extends Comparable<DiscoveryInstance>
 {
-    public String getId();
+    String getId();
 
-    public String getHost();
+    String getHost();
 
-    public int getPort();
+    int getPort();
 
-    public boolean isForceSsl();
+    boolean isForceSsl();
 
-    public int getAdminPort();
+    int getAdminPort();
 
-    public HealthyState getHealthyState();
+    HealthyState getHealthyState();
 
-    public Map<String, String> getMetaData();
+    Map<String, String> getMetaData();
 
-    public ForcedState getForcedState();
+    ForcedState getForcedState();
+
+    Collection<String> getDeploymentGroups();
 }

@@ -24,6 +24,8 @@ import io.soabase.core.features.discovery.DefaultDiscoveryHealthFactory;
 import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.DiscoveryFactory;
 import io.soabase.core.features.discovery.DiscoveryHealthFactory;
+import io.soabase.core.features.discovery.deployment.DefaultDeploymentGroupFactory;
+import io.soabase.core.features.discovery.deployment.DeploymentGroupFactory;
 import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -41,6 +43,9 @@ public class SoaConfiguration
 
     @NotNull
     private DynamicAttributesFactory attributesFactory = new NullDynamicAttributesFactory();
+
+    @NotNull
+    private DeploymentGroupFactory deploymentGroupFactory = new DefaultDeploymentGroupFactory();
 
     @NotEmpty
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Service Names can only contain letters and numbers")
@@ -195,5 +200,17 @@ public class SoaConfiguration
     public void setRegisterInDiscovery(boolean registerInDiscovery)
     {
         this.registerInDiscovery = registerInDiscovery;
+    }
+
+    @JsonProperty("deployment")
+    public DeploymentGroupFactory getDeploymentGroupFactory()
+    {
+        return deploymentGroupFactory;
+    }
+
+    @JsonProperty("deployment")
+    public void setDeploymentGroupFactory(DeploymentGroupFactory deploymentGroupFactory)
+    {
+        this.deploymentGroupFactory = deploymentGroupFactory;
     }
 }

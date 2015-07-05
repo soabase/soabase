@@ -1,6 +1,7 @@
 package io.soabase.core.features.discovery.deployment;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import io.soabase.core.features.attributes.AttributeKey;
 import io.soabase.core.features.attributes.DynamicAttributes;
@@ -13,45 +14,62 @@ import java.util.Set;
 public class DefaultDeploymentGroupManager implements DeploymentGroupManager
 {
     private final DynamicAttributes dynamicAttributes;
+    private final Collection<String> instanceDeploymentGroups;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public static final String KEY_PREFIX = "_soabase_deployment_group_";
+    public static final String KEY_PREFIX = "_soabase_deployment_group";
+    public static final String SEPARATOR = "_";
 
-    public DefaultDeploymentGroupManager(DynamicAttributes dynamicAttributes)
+    public DefaultDeploymentGroupManager(DynamicAttributes dynamicAttributes, Collection<String> instanceDeploymentGroups)
     {
-        this.dynamicAttributes = dynamicAttributes;
+        this.dynamicAttributes = Preconditions.checkNotNull(dynamicAttributes, "dynamicAttributes cannot be null");
+        instanceDeploymentGroups = Preconditions.checkNotNull(instanceDeploymentGroups, "instanceDeploymentGroups cannot be null");
+        this.instanceDeploymentGroups = ImmutableSet.copyOf(instanceDeploymentGroups);
     }
 
     @Override
-    public Collection<String> getKnownGroups()
+    public Collection<String> getInstanceGroups()
     {
+        return instanceDeploymentGroups;
+    }
+
+    @Override
+    public Collection<String> getKnownGroups(String serviceName)
+    {
+        serviceName = Preconditions.checkNotNull(serviceName, "serviceName cannot be null");
+        String prefix = makeKeyPrefix(serviceName);
+
         Set<String> groups = Sets.newTreeSet();
         for ( String key : dynamicAttributes.getKeys() )
         {
-            if ( key.startsWith(KEY_PREFIX) )
+            if ( key.startsWith(prefix) )
             {
-                groups.add(key.substring(KEY_PREFIX.length()));
+                groups.add(key.substring(prefix.length()));
             }
         }
         return groups;
     }
 
     @Override
-    public void ableGroup(String groupName, boolean enable)
+    public void ableGroup(String serviceName, String groupName, boolean enable)
     {
+        serviceName = Preconditions.checkNotNull(serviceName, "serviceName cannot be null");
         Preconditions.checkNotNull(groupName, "groupName cannot be null");
 
         if ( dynamicAttributes instanceof WritableDynamicAttributes )
         {
-            ((WritableDynamicAttributes)dynamicAttributes).put(new AttributeKey(makeKey(groupName), ""), Boolean.toString(enable));
+            ((WritableDynamicAttributes)dynamicAttributes).put(new AttributeKey(makeKey(serviceName, groupName), ""), Boolean.toString(enable));
         }
 
         throw new UnsupportedOperationException("Dynamic attributes instance is not writable");
     }
 
     @Override
-    public boolean isAnyGroupEnabled(Collection<String> groups)
+    public boolean isAnyGroupEnabled(String serviceName, Collection<String> groups)
     {
+        serviceName = Preconditions.checkNotNull(serviceName, "serviceName cannot be null");
+        groups = Preconditions.checkNotNull(groups, "groups cannot be null");
+
         if ( groups.size() == 0 )
         {
             return true;    // special case - no groups means the default group
@@ -59,7 +77,7 @@ public class DefaultDeploymentGroupManager implements DeploymentGroupManager
 
         for ( String groupName : groups )
         {
-            if ( isGroupEnabled(groupName) )
+            if ( isGroupEnabled(serviceName, groupName) )
             {
                 return true;
             }
@@ -68,14 +86,15 @@ public class DefaultDeploymentGroupManager implements DeploymentGroupManager
     }
 
     @Override
-    public boolean isGroupEnabled(String groupName)
+    public boolean isGroupEnabled(String serviceName, String groupName)
     {
         if ( groupName == null )
         {
             return true;
         }
 
-        String value = dynamicAttributes.getAttribute(makeKey(groupName), "true");  // all groups are enabled by default
+        serviceName = Preconditions.checkNotNull(serviceName, "serviceName cannot be null");
+        String value = dynamicAttributes.getAttribute(makeKey(serviceName, groupName), "true");  // all groups are enabled by default
         try
         {
             return Boolean.parseBoolean(value);
@@ -87,8 +106,13 @@ public class DefaultDeploymentGroupManager implements DeploymentGroupManager
         return false;
     }
 
-    private static String makeKey(String groupName)
+    private static String makeKeyPrefix(String serviceName)
     {
-        return KEY_PREFIX + groupName;
+        return KEY_PREFIX + SEPARATOR + serviceName + SEPARATOR;
+    }
+
+    private static String makeKey(String serviceName, String groupName)
+    {
+        return makeKeyPrefix(serviceName) + groupName;
     }
 }

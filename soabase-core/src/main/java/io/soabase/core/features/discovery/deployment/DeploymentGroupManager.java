@@ -4,11 +4,13 @@ import java.util.Collection;
 
 public interface DeploymentGroupManager
 {
-    void ableGroup(String groupName, boolean enable);
+    void ableGroup(String serviceName, String groupName, boolean enable);
 
-    boolean isGroupEnabled(String groupName);
+    boolean isGroupEnabled(String serviceName, String groupName);
 
-    boolean isAnyGroupEnabled(Collection<String> groups);
+    boolean isAnyGroupEnabled(String serviceName, Collection<String> groups);
 
-    Collection<String> getKnownGroups();
+    Collection<String> getKnownGroups(String serviceName);
+
+    Collection<String> getInstanceGroups();
 }

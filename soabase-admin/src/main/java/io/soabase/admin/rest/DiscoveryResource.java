@@ -54,25 +54,25 @@ public class DiscoveryResource
     }
 
     @GET
-    @Path("deploymentGroups")
+    @Path("deploymentGroups/{serviceName}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeploymentGroups()
+    public Response getDeploymentGroups(@PathParam("serviceName") String serviceName)
     {
         Map<String, Boolean> groupStates = Maps.newTreeMap();
-        for ( String group : features.getDeploymentGroupManager().getKnownGroups() )
+        for ( String group : features.getDeploymentGroupManager().getKnownGroups(serviceName) )
         {
-            groupStates.put(group, features.getDeploymentGroupManager().isGroupEnabled(group));
+            groupStates.put(group, features.getDeploymentGroupManager().isGroupEnabled(serviceName, group));
         }
         GenericEntity<Map<String, Boolean>> entity = new GenericEntity<Map<String, Boolean>>(groupStates){};
         return Response.ok(entity).build();
     }
 
     @PUT
-    @Path("deploymentGroup/{name}")
+    @Path("deploymentGroup/{serviceName}/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response ableGroup(@PathParam("name") String groupName, boolean enable)
+    public Response ableGroup(@PathParam("serviceName") String serviceName, @PathParam("name") String groupName, boolean enable)
     {
-        features.getDeploymentGroupManager().ableGroup(groupName, enable);
+        features.getDeploymentGroupManager().ableGroup(serviceName, groupName, enable);
         return Response.ok().build();
     }
 

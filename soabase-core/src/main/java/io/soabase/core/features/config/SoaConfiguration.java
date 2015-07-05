@@ -16,14 +16,14 @@
 package io.soabase.core.features.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.attributes.DynamicAttributesFactory;
+import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.discovery.DefaultDiscoveryHealthFactory;
-import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.DiscoveryFactory;
 import io.soabase.core.features.discovery.DiscoveryHealthFactory;
+import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.deployment.DefaultDeploymentGroupFactory;
 import io.soabase.core.features.discovery.deployment.DeploymentGroupFactory;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -58,6 +58,9 @@ public class SoaConfiguration
 
     @NotNull
     private List<String> scopes = Lists.newArrayList();
+
+    @NotNull
+    private List<String> deploymentGroups = Lists.newArrayList();
 
     private boolean addCorsFilter = true;
 
@@ -137,9 +140,21 @@ public class SoaConfiguration
     }
 
     @JsonProperty("additionalScopes")
-    public void setScopes(List<String> scopes)
+    public void setScopes(String scopes)
     {
-        this.scopes = ImmutableList.copyOf(scopes);
+        this.scopes = Splitter.on(',').trimResults().omitEmptyStrings().splitToList(scopes);
+    }
+
+    @JsonProperty("deploymentGroups")
+    public List<String> getDeploymentGroups()
+    {
+        return deploymentGroups;
+    }
+
+    @JsonProperty("deploymentGroups")
+    public void setDeploymentGroups(String deploymentGroups)
+    {
+        this.deploymentGroups = Splitter.on(',').trimResults().omitEmptyStrings().splitToList(deploymentGroups);
     }
 
     @JsonProperty("addCorsFilter")

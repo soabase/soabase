@@ -1,5 +1,9 @@
 var soaActiveServiceName = null;
 
+function soaHandleActivationButton(groupName) {
+
+}
+
 function soaHandleForceButton(serviceName, localInstance) {
     var template = soaGetTemplate('soa-force-dialog-content');
     bootbox.dialog({
@@ -101,7 +105,7 @@ function soaServicesDetailsDisplay(data) {
             instances = instances + thisInstance;
         }
 
-        $('#soa-services-detail-qty').text(data.length);
+        $('#soa-services-qty').text(data.length);
         $('#soa-services-detail-instances').html(instances);
 
         function setHandlers(instance) {
@@ -128,11 +132,12 @@ function soaServicesDetailsDisplay(data) {
 
 function soaServicesCloseDetails() {
     soaActiveServiceName = null;
+    $('#soa-services-qty').text();
 
-    $('#soa-services-list-container').show();
-    $('#soa-services-detail-service-container').hide();
-    $('#soa-services-main-title').show();
-    $('#soa-services-detail-title').hide();
+    $('#soa-services-brumb-detail').hide();
+    $('#soa-services-brumb-main').show();
+
+    $('#soa-services-carousel').carousel('prev');
 }
 
 function soaServicesDetails(serviceName) {
@@ -141,11 +146,11 @@ function soaServicesDetails(serviceName) {
     $('#soa-services-detail-instances').html(soaGetTemplate('soa-services-loading-template'));
     $('#soa-services-detail-qty').text('');
 
-    $('#soa-services-list-container').hide();
-    $('#soa-services-detail-service-container').show();
-    $('#soa-services-detail-name').text(serviceName);
-    $('#soa-services-main-title').hide();
-    $('#soa-services-detail-title').show();
+    $('#soa-services-brumb-main').hide();
+    $('#soa-services-brumb-detail-service').text(serviceName);
+    $('#soa-services-brumb-detail').show();
+
+    $('#soa-services-carousel').carousel('next');
 
     soaServicesUpdateDetails(serviceName);
 }

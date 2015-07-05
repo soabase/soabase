@@ -15,6 +15,7 @@
  */
 package io.soabase.zookeeper.discovery;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
@@ -61,6 +62,11 @@ public class Payload
     public Map<String, String> getMetaData()
     {
         return metaData;
+    }
+
+    public static void addDeploymentGroups(Map<String, String> metaData, Collection<String> deploymentGroups)
+    {
+        metaData.put(Payload.META_DATA_KEY_DEPLOYMENT_GROUP, Joiner.on(',').join(deploymentGroups));
     }
 
     public Collection<String> getDeploymentGroups()

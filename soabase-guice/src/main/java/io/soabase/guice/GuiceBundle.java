@@ -111,6 +111,7 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
                 return null;
             }
         };
+        final ConfigurationFactoryFactory<? extends Configuration> configurationFactoryFactory = bootstrap.getConfigurationFactoryFactory();
         ConfigurationFactoryFactory factoryFactory = new ConfigurationFactoryFactory()
         {
             @Override
@@ -118,7 +119,7 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
             {
                 objectMapper.setInjectableValues(injectableValues);
                 //noinspection unchecked
-                return new ConfigurationFactory(klass, validator, objectMapper, propertyPrefix);
+                return configurationFactoryFactory.create(klass, validator, objectMapper, propertyPrefix);
             }
         };
         //noinspection unchecked

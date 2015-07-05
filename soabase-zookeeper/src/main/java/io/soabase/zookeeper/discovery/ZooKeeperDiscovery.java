@@ -47,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -86,7 +87,9 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
 
         try
         {
-            Payload payload = new Payload(soaInfo.getAdminPort(), Maps.<String, String>newHashMap(), ForcedState.CLEARED, HealthyState.UNHEALTHY);  // initially unhealthy
+            HashMap<String, String> metaData = Maps.newHashMap();
+            Payload.addDeploymentGroups(metaData, deploymentGroupManager.getInstanceGroups());
+            Payload payload = new Payload(soaInfo.getAdminPort(), metaData, ForcedState.CLEARED, HealthyState.UNHEALTHY);  // initially unhealthy
 
             us.set(buildInstance(payload, null));
 
@@ -292,7 +295,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         CloseableUtils.closeQuietly(discovery);
     }
 
-    private FoundInstance findInstanceFromProvider(String serviceName, final DiscoveryInstance instanceToFind)
+    private FoundInstance findInstanceFromProvider(final String serviceName, final DiscoveryInstance instanceToFind)
     {
         ServiceInstance<Payload> foundInstance = null;
         ServiceProvider<Payload> provider = providers.getUnchecked(serviceName);
@@ -308,7 +311,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
                             @Override
                             public boolean apply(ServiceInstance<Payload> instance)
                             {
-                                return deploymentGroupManager.isAnyGroupEnabled(instance.getPayload().getDeploymentGroups()) && instanceToFind.getId().equals(instance.getId());
+                                return deploymentGroupManager.isAnyGroupEnabled(serviceName, instance.getPayload().getDeploymentGroups()) && instanceToFind.getId().equals(instance.getId());
                             }
                         },
                         null

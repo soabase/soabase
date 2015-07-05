@@ -9,6 +9,14 @@
     color: #FF3333;
 }
 
+.soa-red {
+    color: #FF3333;
+}
+
+.soa-green {
+    color: #00FF00;
+}
+
 .soa-stoplight-red-on {
     background: #FF3333;
     box-shadow: 0 0 8px #441111 inset, 0 0 4px #FF3333;
@@ -55,4 +63,8 @@
 .soa-expand {
     margin-left: 16px;
     cursor: pointer;
+}
+
+#soa-services-qty-li:before {
+    content: none;
 }

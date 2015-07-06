@@ -29,12 +29,14 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.dropwizard.lifecycle.Managed;
+import io.dropwizard.setup.Environment;
+import io.soabase.core.SoaBundle;
+import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
 import io.soabase.core.features.discovery.DiscoveryInstance;
 import io.soabase.core.features.discovery.ExtendedDiscovery;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
-import io.soabase.core.features.discovery.deployment.DeploymentGroupManager;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.x.discovery.InstanceFilter;
@@ -61,7 +63,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     private final AtomicReference<ServiceInstance<Payload>> us = new AtomicReference<>();
     private final String bindAddress;
     private final SoaInfo soaInfo;
-    private final DeploymentGroupManager deploymentGroupManager;
+    private final Environment environment;
 
     private static class FoundInstance
     {
@@ -75,10 +77,10 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         }
     }
 
-    public ZooKeeperDiscovery(CuratorFramework curator, ZooKeeperDiscoveryFactory factory, SoaInfo soaInfo, DeploymentGroupManager deploymentGroupManager)
+    public ZooKeeperDiscovery(CuratorFramework curator, ZooKeeperDiscoveryFactory factory, SoaInfo soaInfo, Environment environment, Collection<String> instanceDeploymentGroups)
     {
         this.soaInfo = soaInfo;
-        this.deploymentGroupManager = deploymentGroupManager;
+        this.environment = environment;
         bindAddress = factory.getBindAddress();
         providers = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)  // TODO config
@@ -88,7 +90,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         try
         {
             HashMap<String, String> metaData = Maps.newHashMap();
-            Payload.addDeploymentGroups(metaData, deploymentGroupManager.getInstanceGroups());
+            Payload.addDeploymentGroups(metaData, instanceDeploymentGroups);
             Payload payload = new Payload(soaInfo.getAdminPort(), metaData, ForcedState.CLEARED, HealthyState.UNHEALTHY);  // initially unhealthy
 
             us.set(buildInstance(payload, null));
@@ -311,7 +313,8 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
                             @Override
                             public boolean apply(ServiceInstance<Payload> instance)
                             {
-                                return deploymentGroupManager.isAnyGroupEnabled(serviceName, instance.getPayload().getDeploymentGroups()) && instanceToFind.getId().equals(instance.getId());
+                                SoaFeatures soaFeatures = SoaBundle.getFeatures(environment);
+                                return soaFeatures.getDeploymentGroupManager().isAnyGroupEnabled(serviceName, instance.getPayload().getDeploymentGroups()) && instanceToFind.getId().equals(instance.getId());
                             }
                         },
                         null

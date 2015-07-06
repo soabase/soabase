@@ -16,11 +16,12 @@
 
 package io.soabase.core.features.discovery;
 
-import java.util.Collection;
 import java.util.Map;
 
 public interface DiscoveryInstance extends Comparable<DiscoveryInstance>
 {
+    String META_DATA_KEY_DEPLOYMENT_GROUP = "soabase-deployment-group";
+
     String getId();
 
     String getHost();
@@ -36,6 +37,4 @@ public interface DiscoveryInstance extends Comparable<DiscoveryInstance>
     Map<String, String> getMetaData();
 
     ForcedState getForcedState();
-
-    Collection<String> getDeploymentGroups();
 }

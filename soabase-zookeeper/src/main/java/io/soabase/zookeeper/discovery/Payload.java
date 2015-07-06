@@ -20,8 +20,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import io.soabase.core.features.discovery.DiscoveryInstance;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -32,8 +34,6 @@ public class Payload
     private Map<String, String> metaData;
     private ForcedState forcedState;
     private HealthyState healthyState;
-
-    public static final String META_DATA_KEY_DEPLOYMENT_GROUP = "soabase-deployment-group";
 
     public Payload()
     {
@@ -59,27 +59,31 @@ public class Payload
         this.adminPort = adminPort;
     }
 
-    public Map<String, String> getMetaData()
-    {
-        return metaData;
-    }
-
     public static void addDeploymentGroups(Map<String, String> metaData, Collection<String> deploymentGroups)
     {
-        metaData.put(Payload.META_DATA_KEY_DEPLOYMENT_GROUP, Joiner.on(',').join(deploymentGroups));
+        if ( deploymentGroups.size() > 0 )
+        {
+            metaData.put(DiscoveryInstance.META_DATA_KEY_DEPLOYMENT_GROUP, Joiner.on(',').join(deploymentGroups));
+        }
     }
 
+    @JsonIgnore
     public Collection<String> getDeploymentGroups()
     {
         if ( metaData != null )
         {
-            String value = metaData.get(META_DATA_KEY_DEPLOYMENT_GROUP);
+            String value = metaData.get(DiscoveryInstance.META_DATA_KEY_DEPLOYMENT_GROUP);
             if ( value != null )
             {
                 return Splitter.on(',').trimResults().omitEmptyStrings().splitToList(value);
             }
         }
         return Collections.emptySet();
+    }
+
+    public Map<String, String> getMetaData()
+    {
+        return metaData;
     }
 
     public void setMetaData(Map<String, String> metaData)

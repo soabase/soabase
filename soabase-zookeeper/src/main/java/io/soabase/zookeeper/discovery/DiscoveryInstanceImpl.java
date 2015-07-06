@@ -88,12 +88,6 @@ public class DiscoveryInstanceImpl implements DiscoveryInstance
     }
 
     @Override
-    public Collection<String> getDeploymentGroups()
-    {
-        return null;
-    }
-
-    @Override
     public int compareTo(DiscoveryInstance o)
     {
         if ( o == null )

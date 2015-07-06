@@ -22,6 +22,8 @@ import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
 import io.soabase.core.SoaFeatures;
 import io.soabase.core.SoaInfo;
+import io.soabase.core.features.config.ComposedConfigurationAccessor;
+import io.soabase.core.features.config.SoaConfiguration;
 import io.soabase.core.features.discovery.Discovery;
 import io.soabase.core.features.discovery.DiscoveryFactory;
 import org.apache.curator.framework.CuratorFramework;
@@ -66,6 +68,7 @@ public class ZooKeeperDiscoveryFactory implements DiscoveryFactory
     {
         SoaFeatures features = SoaBundle.getFeatures(environment);
         CuratorFramework curatorFramework = features.getNamedRequired(CuratorFramework.class, SoaFeatures.DEFAULT_NAME);
-        return new ZooKeeperDiscovery(curatorFramework, this, soaInfo, features.getDeploymentGroupManager());
+        SoaConfiguration soaConfiguration = ComposedConfigurationAccessor.access(configuration, environment, SoaConfiguration.class);
+        return new ZooKeeperDiscovery(curatorFramework, this, soaInfo, environment, soaConfiguration.getDeploymentGroups());
     }
 }

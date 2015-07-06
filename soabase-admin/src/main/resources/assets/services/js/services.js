@@ -1,5 +1,27 @@
 var soaActiveServiceName = null;
 
+function soaSortAndOrganizeInstances(data) {
+    var instances = [];
+
+    function pushTo(name, instance) {
+        if ( !instances[name] ) {
+            instances[name] = [];
+        }
+        instances[name].push(instance);
+    }
+
+    for ( var i in data ) {
+        var instance = data[i];
+        var deploymentGroup = (instance.metaData && instance.metaData['soabase-deployment-group']) ? instance.metaData['soabase-deployment-group'] : '';
+        var metaDataTab = deploymentGroup.length ? deploymentGroup.split(',') : [''];
+        for ( var j in metaDataTab ) {
+            var group = metaDataTab[j];
+            pushTo(group, instance);
+        }
+    }
+    return instances;
+}
+
 function soaHandleActivationButton(groupName) {
 
 }
@@ -66,7 +88,48 @@ function soaToName(instance) {
     return instance.host + ':' + instance.port
 }
 
-function soaServicesDetailsDisplay(data) {
+function soaServicesDetailsDisplayGroups(data) {
+    $('#soa-services-qty').text(data.length);
+    if ( data.length > 0 ) {
+        var instances = soaSortAndOrganizeInstances(data);
+
+        var instancesContent = "";
+        var index = 0;
+        for ( var groupName in instances ) {
+            instancesContent = instancesContent + soaServicesGenerateDetails(instances[groupName], groupName, index);
+            index = index + 1;
+        }
+        $('#soa-services-detail-instances').html(instancesContent);
+
+        function setHandlers(instance, groupIndex) {
+            var localId = (instance.id + '_' + groupIndex);
+            $('#soa-force-button-' + localId).click(function(){
+                soaHandleForceButton(soaActiveServiceName, instance);
+            });
+            $('#soa-logs-button-' + localId).click(function(){
+                soaHandleLogButton(instance);
+            });
+            $('#soa-trace-button-' + localId).click(function(){
+                soaHandleTraceButton(instance);
+            });
+            $('#soa-details-button-' + localId).click(function(){
+                soaHandleDetailsButton(soaActiveServiceName, instance);
+            });
+        }
+        index = 0;
+        for ( groupName in instances ) {
+            var instancesTab = instances[groupName];
+            for ( var i in instancesTab ) {
+                setHandlers(instancesTab[i], index);
+            }
+            index = index + 1;
+        }
+    } else {
+        $('#soa-services-detail-instances').html(soaGetTemplate('soa-services-no-instances'));
+    }
+}
+
+function soaServicesGenerateDetails(data, groupName, groupIndex) {
     var stoplightGreen = soaGetTemplate('soa-stoplight-set-green');
     var stoplightRed = soaGetTemplate('soa-stoplight-set-red');
     var healthy = soaGetTemplate('soa-service-healthy');
@@ -81,53 +144,35 @@ function soaServicesDetailsDisplay(data) {
         return s;
     }
 
-    if ( data.length > 0 ) {
-        var instances = "";
-        for ( var i in data ) {
-            var instance = data[i];
-            var isDiscoverable;
-            if ( instance.forcedState != 'CLEARED' ) {
-                isDiscoverable = (instance.forcedState === 'REGISTER');
-            } else {
-                isDiscoverable = (instance.healthyState === 'HEALTHY');
-            }
-            var stopLight = isDiscoverable ? stoplightGreen : stoplightRed;
-            var details = (instance.healthyState === 'HEALTHY') ? healthy : unHealthy;
-            if ( instance.forcedState != 'CLEARED' ) {
-                details = details + forced.replace('$VALUE$', instance.forcedState.toLowerCase());
-            }
-            var thisInstance = soaGetTemplate('soa-services-instance-template', {
-                '$STOPLIGHT$': stopLight,
-                '$INSTANCE_DATA$': trim(soaToName(instance)),
-                '$INSTANCE_DETAILS$': details,
-                '$ID$': instance.id
-            });
-            instances = instances + thisInstance;
+    var instances = "";
+    for ( var i in data ) {
+        var instance = data[i];
+        var isDiscoverable;
+        if ( instance.forcedState != 'CLEARED' ) {
+            isDiscoverable = (instance.forcedState === 'REGISTER');
+        } else {
+            isDiscoverable = (instance.healthyState === 'HEALTHY');
         }
-
-        $('#soa-services-qty').text(data.length);
-        $('#soa-services-detail-instances').html(instances);
-
-        function setHandlers(instance) {
-            $('#soa-force-button-' + instance.id).click(function(){
-                soaHandleForceButton(soaActiveServiceName, instance);
-            });
-            $('#soa-logs-button-' + instance.id).click(function(){
-                soaHandleLogButton(instance);
-            });
-            $('#soa-trace-button-' + instance.id).click(function(){
-                soaHandleTraceButton(instance);
-            });
-            $('#soa-details-button-' + instance.id).click(function(){
-                soaHandleDetailsButton(soaActiveServiceName, instance);
-            });
+        var stopLight = isDiscoverable ? stoplightGreen : stoplightRed;
+        var details = (instance.healthyState === 'HEALTHY') ? healthy : unHealthy;
+        if ( instance.forcedState != 'CLEARED' ) {
+            details = details + forced.replace('$VALUE$', instance.forcedState.toLowerCase());
         }
-        for ( var j in data ) {
-            setHandlers(data[j]);
-        }
-    } else {
-        $('#soa-services-detail-instances').html(soaGetTemplate('soa-services-no-instances'));
+        var thisInstance = soaGetTemplate('soa-services-instance-template', {
+            '$STOPLIGHT$': stopLight,
+            '$INSTANCE_DATA$': trim(soaToName(instance)),
+            '$INSTANCE_DETAILS$': details,
+            '$ID$': (instance.id + '_' + groupIndex)
+        });
+        instances = instances + thisInstance;
     }
+    if ( groupName === '' ) {
+        groupName = '<em>Default</em>';
+    }
+    return soaGetTemplate('soa-services-detail-service-container', {
+        '$GROUP_NAME$': groupName,
+        '$INSTANCES$': instances
+    });
 }
 
 function soaServicesCloseDetails() {
@@ -160,7 +205,7 @@ function soaServicesDetails(serviceName) {
         type: 'GET',
         url: '/soa/discovery/all/' + serviceName,
         success: function(data){
-            soaServicesDetailsDisplay(data);
+            soaServicesDetailsDisplayGroups(data);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             soaHideInfiniteProgressBar();

@@ -9,44 +9,47 @@
 </ol>
 
 <div class="panel-body">
+    <div class="pull-right small">
+        <em id="soa-services-last-updated"></em><br>
+        <br>
+    </div>
+
     <div id="soa-services-carousel" class="carousel slide" data-ride="carousel" data-interval="false">
         <div class="carousel-inner" role="listbox">
             <div class="item active">
                 <div id="soa-services-list-container">
-                    <div id="soa-services-list-click-message" class="text-right small">
-                        <em>Click a service name for details</em>
-                    </div>
                     <div id="soa-services-list" class="soa-hidden list-group"></div>
                     <div id="soa-no-services" class="soa-hidden">
                         <em>No Services Found</em>
+                    </div>
+                    <div id="soa-services-list-click-message" class="text-right small">
+                        <em>Click a service name for details</em>
                     </div>
                 </div>
             </div>
 
             <div class="item">
-                <div id="soa-services-detail-service-container">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-10">
-                                    <span class="glyphicon glyphicon-th-large soa-green"></span> Deployment Group:
-                                </div>
-                                <div class="col-xs-2 text-right">
-                                    <button type="button" class="btn btn-danger btn-xs">Activation...</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="soa-services-detail-instances" class="list-group"></div>
-                        </div>
-                    </div>
-                </div>
+                <div id="soa-services-detail-instances"></div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="pull-right small">
-        <em id="soa-services-last-updated"></em>
+<div id="soa-services-detail-service-container" class="soa-template">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-10">
+                    <span class="glyphicon glyphicon-th-large soa-green"></span> <strong>Deployment Group: $GROUP_NAME$</strong>
+                </div>
+                <div class="col-xs-2 text-right">
+                    <button type="button" class="btn btn-danger btn-xs">Activation...</button>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="list-group">$INSTANCES$</div>
+        </div>
     </div>
 </div>
 

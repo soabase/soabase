@@ -140,6 +140,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     {
         final SoaConfiguration soaConfiguration = ComposedConfigurationAccessor.access(configuration, environment, SoaConfiguration.class);
 
+        DeploymentGroupManager deploymentGroupManager = checkManaged(environment, soaConfiguration.getDeploymentGroupFactory().build(configuration, environment));
+
         environment.servlets().addFilter("SoaClientFilter", ClientFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         List<String> scopes = ((DynamicAttributesBundle.Scopes)environment.getApplicationContext().getAttribute(DynamicAttributesBundle.Scopes.class.getName())).getScopes();
@@ -149,8 +151,6 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         SoaInfo soaInfo = new SoaInfo(scopes, ports.mainPort, ports.adminPort, soaConfiguration.getServiceName(), soaConfiguration.getInstanceName(), soaConfiguration.isRegisterInDiscovery());
 
         Discovery discovery = wrapDiscovery(checkManaged(environment, soaConfiguration.getDiscoveryFactory().build(configuration, environment, soaInfo)));
-
-        DeploymentGroupManager deploymentGroupManager = checkManaged(environment, soaConfiguration.getDeploymentGroupFactory().build(configuration, environment));
 
         final SoaFeaturesImpl features = new SoaFeaturesImpl(discovery, dynamicAttributes, soaInfo, new ExecutorBuilder(environment.lifecycle()), deploymentGroupManager);
         final LoggingReader loggingReader = initLogging(configuration);

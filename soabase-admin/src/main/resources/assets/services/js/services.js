@@ -181,6 +181,7 @@ function soaServicesCloseDetails() {
 
     $('#soa-services-brumb-detail').hide();
     $('#soa-services-brumb-main').show();
+    $('#soa-services-back-container').hide();
 
     $('#soa-services-carousel').carousel('prev');
 }
@@ -188,14 +189,15 @@ function soaServicesCloseDetails() {
 function soaServicesDetails(serviceName) {
     soaActiveServiceName = serviceName;
 
+    $('#soa-services-carousel').carousel('next');
+
     $('#soa-services-detail-instances').html(soaGetTemplate('soa-services-loading-template'));
     $('#soa-services-detail-qty').text('');
+    $('#soa-services-back-container').show();
 
     $('#soa-services-brumb-main').hide();
     $('#soa-services-brumb-detail-service').text(serviceName);
     $('#soa-services-brumb-detail').show();
-
-    $('#soa-services-carousel').carousel('next');
 
     soaServicesUpdateDetails(serviceName);
 }
@@ -245,7 +247,7 @@ function soaUpdateServices() {
 }
 
 $(function() {
-    $('#soa-services-detail-service-close').click(function(){
+    $('#soa-services-back-button').click(function(){
         soaServicesCloseDetails();
     });
 

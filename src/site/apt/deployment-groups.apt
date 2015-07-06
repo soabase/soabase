@@ -1,0 +1,61 @@
+Deployment Groups
+
+    Deployment groups work in conjunction with {{{./discovery.html}Service Discovery}} to support <red/black> style deployments.
+    With red/black deployments you deploy a new version of a service while the old version of the service is still running. However,
+    the old version is removed from Service Discovery. This way, the new version can be validated while the old version is in hot
+    standby in case the new version fails and needs to reverted for some reason. You could even have three or more active versions
+    with some in Discovery and some not. This can also be used to do A/B style testing.
+
+* Usage
+
+    Every instance is defined to be in one or more deployment groups via {{{./soaconfig.html}Soabase Configuration}}. There is
+    always a "default" deployment group that instances are part of if not defined to be in other groups. Deployment Groups are
+    service specific. i.e. the deployment group "v1.0" in service "cache" is different than a group with the same name in service
+    "logging".
+
+    By default, deployment groups are active. They can be deactivated via the {{{./console.html}Admin Console}} or via
+    {{{./admin.html}Admin APIs}}.
+
+* DeploymentGroupManager
+
+    Deployment groups are managed internally by an instance of <<<DeploymentGroupManager>>>. The default implementation stores
+    deployment group active state in {{{./attributes.html}Dynamic Attributes}}. The key used is formed using this pattern
+    (where SERVICE is the service name and GROUP is the group name):
+
++------------------------------------------+
+_soabase_deployment_group_SERVICE_GROUP
++------------------------------------------+
+
+    The value of the attribute is "true" if the group is active or "false" if inactive. Instances that are part of an inactive
+    deployment group will not be returned from Service Discovery.
+
+    If needed, you can use a custom DeploymentGroupManager.
+
+* Adding a Custom Implementation
+
+    To use something other than the default DeploymentGroupManager implementation, follow these steps:
+
+    * Create implementations for <<<DeploymentGroupFactory>>> and <<<DeploymentGroupManager>>>
+
+    * Add a directory named <<<META-INF/services>>> that contains two files: <<<io.dropwizard.jackson.Discoverable>>>
+      and <<<io.soabase.core.features.discovery.deployment.DeploymentGroupFactory>>>.
+
+    []
+
+    <DeploymentGroupFactory>
+
+    Your DeploymentGroupFactory implementation is like other Dropwizard factories. It should be both configuration and a factory.
+    Use <<<DefaultDeploymentGroupFactory.java>>> as an example. This class must be annotated with <<<JsonTypeName>>> and given a unique
+    name. You then use this name as the value for the attributes type in your configuration file.
+
+    <DeploymentGroupManager>
+
+    Your implementation does the actual work of Deployment Group management. The details will depend on your implementation's needs.
+
+    <ServiceLoader files>
+
+    Like other Dropwizard plugins, your implementation needs Service Loader files. In the <<<io.dropwizard.jackson.Discoverable>>>
+    file add a line containing: <<<io.soabase.core.features.discovery.deployment.DeploymentGroupFactory>>>. In the
+    <<<io.soabase.core.features.discovery.deployment.DeploymentGroupFactory>>> file add a line the with fully-qualified path name of
+    your class. E.g. <<<com.me.my.MyDeploymentGroupManager>>>
+

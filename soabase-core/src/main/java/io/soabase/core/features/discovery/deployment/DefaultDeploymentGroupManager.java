@@ -16,7 +16,6 @@
 package io.soabase.core.features.discovery.deployment;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import io.soabase.core.features.attributes.AttributeKey;
 import io.soabase.core.features.attributes.DynamicAttributes;
@@ -30,23 +29,14 @@ import java.util.Set;
 public class DefaultDeploymentGroupManager implements DeploymentGroupManager
 {
     private final DynamicAttributes dynamicAttributes;
-    private final Collection<String> instanceDeploymentGroups;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public static final String KEY_PREFIX = "_soabase_deployment_group";
     public static final String SEPARATOR = "_";
 
-    public DefaultDeploymentGroupManager(DynamicAttributes dynamicAttributes, Collection<String> instanceDeploymentGroups)
+    public DefaultDeploymentGroupManager(DynamicAttributes dynamicAttributes)
     {
         this.dynamicAttributes = Preconditions.checkNotNull(dynamicAttributes, "dynamicAttributes cannot be null");
-        instanceDeploymentGroups = Preconditions.checkNotNull(instanceDeploymentGroups, "instanceDeploymentGroups cannot be null");
-        this.instanceDeploymentGroups = ImmutableSet.copyOf(instanceDeploymentGroups);
-    }
-
-    @Override
-    public Collection<String> getInstanceGroups()
-    {
-        return instanceDeploymentGroups;
     }
 
     @Override

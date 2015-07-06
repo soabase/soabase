@@ -20,6 +20,8 @@ Soabase
 
         * Default implementation using {{{http://curator.apache.org/curator-x-discovery/index.html}Apache Curator}}
 
+        * Supports {{{./deployment-groups.html}deployment groups}} for red/black style deploys
+
         * Supports plugging in any desired implementation
 
     * {{{./client.html}Load Balancing REST Client}}

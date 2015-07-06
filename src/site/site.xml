@@ -52,6 +52,7 @@
             <item name="Service Discovery" href="discovery.html"/>
             <item name="REST Client" href="client.html"/>
             <item name="Dynamic Attributes" href="attributes.html"/>
+            <item name="Deployment Groups" href="deployment-groups.html"/>
             <item name="Admin APIs" href="admin.html"/>
             <item name="Admin Console" href="console.html"/>
             <item name="Config Utils" href="config.html"/>

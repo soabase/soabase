@@ -23,6 +23,14 @@ Service Discovery
     section for details. To use the default Apache Curator/ZooKeeper implementation, add a <<<CuratorConfiguration>>> field to
     your application's Configuration object. If needed, you can access the <<<Discovery>>> instance from <<<SoaFeatures>>>.
 
+* Deployment Groups
+
+    Deployment Groups support red/black style deployments. For example, you can deploy a group of servers running a new version
+    of a service and disable the group of servers running the older version of the service. If the new version has a problem,
+    that group can be disabled and the old version re-enabled.
+
+    See the {{{./deployment-groups.html}Deployment Groups}} section for details.
+
 * Curator
 
     A nice side-effect of using the standard Apache Curator integration is that you can directly access the CuratorFramework

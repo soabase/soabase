@@ -29,6 +29,4 @@ public interface DeploymentGroupManager
     boolean isAnyGroupEnabled(String serviceName, Collection<String> groups);
 
     Collection<String> getKnownGroups(String serviceName);
-
-    Collection<String> getInstanceGroups();
 }

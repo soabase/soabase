@@ -22,8 +22,31 @@ function soaSortAndOrganizeInstances(data) {
     return instances;
 }
 
-function soaHandleActivationButton(groupName) {
-
+function soaHandleActivationButton(serviceName, groupName) {
+    var displayGroupName = soaDisplayGroupName(groupName);
+    var template = soaGetTemplate('soa-activate-dialog-content', {
+        '$GROUP$': displayGroupName,
+        '$SERVICE$': serviceName
+    });
+    bootbox.dialog({
+        'message': template,
+        'title': 'Change group "' + displayGroupName + '" for service: ' + serviceName,
+        'onEscape': function () {
+            bootbox.hideAll();
+        },
+        'buttons': {
+            'cancel': {
+                label: "Cancel",
+                className: "btn-default"
+            },
+            'ok': {
+                label: "Change Immediately",
+                className: "btn-danger",
+                callback: function () {
+                }
+            }
+        }
+    });
 }
 
 function soaHandleForceButton(serviceName, localInstance) {
@@ -88,7 +111,7 @@ function soaToName(instance) {
     return instance.host + ':' + instance.port
 }
 
-function soaServicesDetailsDisplayGroups(data) {
+function soaServicesDetailsDisplayGroups(serviceName, data) {
     $('#soa-services-qty').text(data.length);
     if ( data.length > 0 ) {
         var instances = soaSortAndOrganizeInstances(data);
@@ -116,17 +139,34 @@ function soaServicesDetailsDisplayGroups(data) {
                 soaHandleDetailsButton(soaActiveServiceName, instance);
             });
         }
+
+        function setActivationHandler(groupName, groupIndex) {
+            $('#soa-activation-button-' + groupIndex).click(function(){
+                soaHandleActivationButton(serviceName, groupName);
+            });
+        }
+
         index = 0;
         for ( groupName in instances ) {
             var instancesTab = instances[groupName];
             for ( var i in instancesTab ) {
                 setHandlers(instancesTab[i], index);
             }
+
+            setActivationHandler(groupName, index);
+
             index = index + 1;
         }
     } else {
         $('#soa-services-detail-instances').html(soaGetTemplate('soa-services-no-instances'));
     }
+}
+
+function soaDisplayGroupName(groupName) {
+    if ( groupName === '' ) {
+        return '<em>Default</em>';
+    }
+    return groupName;
 }
 
 function soaServicesGenerateDetails(data, groupName, groupIndex) {
@@ -166,12 +206,10 @@ function soaServicesGenerateDetails(data, groupName, groupIndex) {
         });
         instances = instances + thisInstance;
     }
-    if ( groupName === '' ) {
-        groupName = '<em>Default</em>';
-    }
     return soaGetTemplate('soa-services-detail-service-container', {
-        '$GROUP_NAME$': groupName,
-        '$INSTANCES$': instances
+        '$GROUP_NAME$': soaDisplayGroupName(groupName),
+        '$INSTANCES$': instances,
+        '$ID$': groupIndex
     });
 }
 
@@ -207,7 +245,7 @@ function soaServicesDetails(serviceName) {
         type: 'GET',
         url: '/soa/discovery/all/' + serviceName,
         success: function(data){
-            soaServicesDetailsDisplayGroups(data);
+            soaServicesDetailsDisplayGroups(serviceName, data);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             soaHideInfiniteProgressBar();

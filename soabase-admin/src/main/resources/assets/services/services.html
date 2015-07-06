@@ -35,6 +35,7 @@
 
             <div class="item">
                 <div id="soa-services-detail-instances"></div>
+                <button type="button" class="btn btn-sm btn-danger">Manage Activations...</button>
             </div>
         </div>
     </div>
@@ -45,10 +46,10 @@
         <div class="panel-heading">
             <div class="row">
                 <div class="col-xs-10">
-                    <span class="glyphicon glyphicon-th-large soa-green"></span> <strong>Deployment Group: $GROUP_NAME$</strong>
+                    <span class="glyphicon glyphicon-th-large soa-green"></span> <strong>Group: $GROUP_NAME$</strong>
                 </div>
                 <div class="col-xs-2 text-right">
-                    <button type="button" class="btn btn-danger btn-xs">Activation...</button>
+                    <button id="soa-activation-button-$ID$" type="button" class="btn btn-danger btn-xs">Activation...</button>
                 </div>
             </div>
         </div>
@@ -112,6 +113,26 @@
             <label>
                 <input type="radio" name="soa-force-radios" class="soa-force-radios" value="UNREGISTER">
                 Force the instance to be unregistered/unavailable
+            </label>
+        </div>
+    </form>
+</div>
+
+<div class="soa-template" id="soa-activate-dialog-content">
+    <div class="alert alert-warning" role="alert">
+        Change the activation for all instances in the deployment group. Use with caution!
+    </div>
+    <form name="soa-force-dialog">
+        <div class="radio">
+            <label>
+                <input type="radio" name="soa-force-radios" class="soa-activate-radios" value="true" checked>
+                Activate "$GROUP$" for service: $SERVICE$
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="soa-force-radios" class="soa-activate-radios" value="false">
+                Deactivate "$GROUP$" for service: $SERVICE$
             </label>
         </div>
     </form>

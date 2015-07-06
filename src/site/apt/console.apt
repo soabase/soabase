@@ -49,7 +49,7 @@ Administration Console
     When you run the application, you will be able to see the console from a browser. Assuming port 8080, go to
     {{{http://localhost:8080}http://localhost:8080}}.
 
-[images/admin-services.png]
+[images/admin-services2.png]
 
     <<< >>>
 

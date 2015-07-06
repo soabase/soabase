@@ -49,16 +49,19 @@ java -jar ./target/admin.jar &
 
     Open the main page in a browser: {{{http://localhost:8080}http://localhost:8080}}. You will see the main admin console page:
 
-[images/admin-services.png]
+[images/admin-services2.png]
 
     << >>
 
-    From this screen you will see all registered instances. For each instance:
+    From this screen you will see all services. Clicking on a service will advance to a list of
+    all instances for the service grouped by deployment group. For each instance:
 
     * There is a green or red light. Green means the instance will be returned as available in Discovery.
     Red means it will not be returned.
 
     * Healthy/unhealthy and forced state. Shows whether the instance is healthy, unhealthy or forced.
+
+    * Deployment Group activation button.
 
     * Action buttons:
 

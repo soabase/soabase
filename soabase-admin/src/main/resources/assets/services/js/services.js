@@ -1,4 +1,30 @@
 var soaActiveServiceName = null;
+var soaActiveDeploymentGroups = [];
+
+function soaActivateDialogSubmit(serviceName, groupName, ableValue) {
+    soaShowInfiniteProgressBar();
+    $.ajax({
+        type: "PUT",
+        url: '/soa/discovery/deploymentGroup/' + serviceName + '/' + groupName,
+        contentType: "application/json",
+        data: JSON.stringify(ableValue),
+        success: function() {
+            soaHideInfiniteProgressBar();
+            soaServicesUpdateDetailsAndGroups(serviceName);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            soaHideInfiniteProgressBar();
+            bootbox.alert('Operation failed: ' + errorThrown);
+        }
+    });
+}
+
+function soaGroupIsActive(groupName) {
+    if ( soaActiveDeploymentGroups[groupName] === undefined ) {
+        return true;
+    }
+    return soaActiveDeploymentGroups[groupName];
+}
 
 function soaSortAndOrganizeInstances(data) {
     var instances = [];
@@ -43,6 +69,8 @@ function soaHandleActivationButton(serviceName, groupName) {
                 label: "Change Immediately",
                 className: "btn-danger",
                 callback: function () {
+                    var ableValue = $('.soa-activate-radios').filter(':checked').val();
+                    soaActivateDialogSubmit(serviceName, groupName, ableValue === 'true');
                 }
             }
         }
@@ -83,7 +111,7 @@ function soaForceDialogSubmit(serviceName, instanceId, forceValue) {
         data: JSON.stringify(forceValue),
         success: function() {
             soaHideInfiniteProgressBar();
-            soaServicesUpdateDetails(serviceName);
+            soaServicesUpdateDetailsAndGroups(serviceName);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             soaHideInfiniteProgressBar();
@@ -206,10 +234,15 @@ function soaServicesGenerateDetails(data, groupName, groupIndex) {
         });
         instances = instances + thisInstance;
     }
+
+    var isActive = soaGroupIsActive(groupName);
     return soaGetTemplate('soa-services-detail-service-container', {
         '$GROUP_NAME$': soaDisplayGroupName(groupName),
         '$INSTANCES$': instances,
-        '$ID$': groupIndex
+        '$ID$': groupIndex,
+        '$PANEL_TYPE$': (isActive ? 'panel-primary' : 'panel-danger'),
+        '$ACTIVE_COLOR$': (isActive ? 'soa-green' : 'soa-red'),
+        '$BUTTON_NAME$':  (isActive ? 'Deactivate...' : 'Activate...')
     });
 }
 
@@ -237,10 +270,25 @@ function soaServicesDetails(serviceName) {
     $('#soa-services-brumb-detail-service').text(serviceName);
     $('#soa-services-brumb-detail').show();
 
-    soaServicesUpdateDetails(serviceName);
+    soaServicesUpdateDetailsAndGroups(serviceName);
 }
 
- function soaServicesUpdateDetails(serviceName) {
+function soaServicesUpdateDetailsAndGroups(serviceName) {
+    $.ajax({
+        type: 'GET',
+        url: '/soa/discovery/deploymentGroups/' + serviceName,
+        success: function(data){
+            soaActiveDeploymentGroups = data;
+            soaServicesUpdateDetails(serviceName);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            soaHideInfiniteProgressBar();
+            bootbox.alert('Operation failed: ' + errorThrown);
+        }
+    });
+}
+
+function soaServicesUpdateDetails(serviceName) {
     $.ajax({
         type: 'GET',
         url: '/soa/discovery/all/' + serviceName,
@@ -277,7 +325,7 @@ function soaUpdateServices() {
         }
 
         if ( soaActiveServiceName ) {
-            soaServicesUpdateDetails(soaActiveServiceName);
+            soaServicesUpdateDetailsAndGroups(soaActiveServiceName);
         }
 
         $('#soa-services-last-updated').text('Last updated ' + (new Date()).toLocaleString());

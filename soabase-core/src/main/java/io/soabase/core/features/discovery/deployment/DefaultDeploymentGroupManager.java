@@ -75,8 +75,10 @@ public class DefaultDeploymentGroupManager implements DeploymentGroupManager
         {
             ((WritableDynamicAttributes)dynamicAttributes).put(new AttributeKey(makeKey(serviceName, groupName), ""), Boolean.toString(enable));
         }
-
-        throw new UnsupportedOperationException("Dynamic attributes instance is not writable");
+        else
+        {
+            throw new UnsupportedOperationException("Dynamic attributes instance is not writable");
+        }
     }
 
     @Override

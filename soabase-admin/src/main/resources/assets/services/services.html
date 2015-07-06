@@ -42,19 +42,21 @@
 </div>
 
 <div id="soa-services-detail-service-container" class="soa-template">
-    <div class="panel panel-primary">
+    <div class="panel $PANEL_TYPE$">
         <div class="panel-heading">
             <div class="row">
                 <div class="col-xs-10">
-                    <span class="glyphicon glyphicon-th-large soa-green"></span> <strong>Group: $GROUP_NAME$</strong>
+                    <span class="glyphicon glyphicon-th-large $ACTIVE_COLOR$"></span> <strong>Group: $GROUP_NAME$</strong>
                 </div>
                 <div class="col-xs-2 text-right">
-                    <button id="soa-activation-button-$ID$" type="button" class="btn btn-danger btn-xs">Activation...</button>
+                    <button id="soa-activation-button-$ID$" type="button" class="btn btn-danger btn-xs">$BUTTON_NAME$</button>
                 </div>
             </div>
         </div>
         <div class="panel-body">
-            <div class="list-group">$INSTANCES$</div>
+            <div class="list-group">
+                $INSTANCES$
+            </div>
         </div>
     </div>
 </div>

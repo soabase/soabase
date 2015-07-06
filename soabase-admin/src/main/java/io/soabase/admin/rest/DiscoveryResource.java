@@ -68,6 +68,14 @@ public class DiscoveryResource
     }
 
     @PUT
+    @Path("deploymentGroup/{serviceName}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response ableDefaultGroup(@PathParam("serviceName") String serviceName, boolean enable)
+    {
+        return ableGroup(serviceName, "", enable);
+    }
+
+    @PUT
     @Path("deploymentGroup/{serviceName}/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response ableGroup(@PathParam("serviceName") String serviceName, @PathParam("name") String groupName, boolean enable)

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -81,6 +82,20 @@ public class DiscoveryResource
     public Response ableGroup(@PathParam("serviceName") String serviceName, @PathParam("name") String groupName, boolean enable)
     {
         features.getDeploymentGroupManager().ableGroup(serviceName, groupName, enable);
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("deploymentGroup/{serviceName}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response ableGroups(@PathParam("serviceName") String serviceName, List<DeploymentGroupSetting> groups)
+    {
+        Map<String, Boolean> newGroupAbles = Maps.newHashMap();
+        for ( DeploymentGroupSetting setting : groups )
+        {
+            newGroupAbles.put(setting.getName(), setting.isActive());
+        }
+        features.getDeploymentGroupManager().resetGroups(serviceName, newGroupAbles);
         return Response.ok().build();
     }
 

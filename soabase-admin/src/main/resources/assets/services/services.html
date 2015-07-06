@@ -35,7 +35,7 @@
 
             <div class="item">
                 <div id="soa-services-detail-instances"></div>
-                <button type="button" class="btn btn-sm btn-danger">Manage Activations...</button>
+                <button id="soa-services-manage-activations-button" type="button" class="btn btn-sm btn-danger">Manage Activations...</button>
             </div>
         </div>
     </div>
@@ -140,6 +140,37 @@
     </form>
 </div>
 
+<div class="soa-template" id="soa-manage-activations-dialog-content">
+    <form name="soa-manage-activations-dialog">
+        <label for="soa-activation-group-names">Deployment Groups</label>
+        <div class="input-group">
+            <input type="text" class="form-control" id="soa-activation-group-names" placeholder="Enter group names separated by spaces (use * for default group)">
+            <span id="soa-manage-activations-remove-button" class="btn btn-default input-group-addon"><span class="glyphicon glyphicon glyphicon-minus"></span></span>
+            <span id="soa-manage-activations-add-button" class="btn btn-default input-group-addon"><span class="glyphicon glyphicon glyphicon-plus"></span></span>
+        </div>
+    </form>
+    <br>
+
+    <p class="small text-right"><em>Click group name to move to active/deactive groups</em></p>
+
+
+    <div class="panel panel-default">
+        <div class="panel-heading"><span class="glyphicon glyphicon-th-large soa-green"></span> <strong>Active Groups</strong></div>
+        <div class="panel-body" id="soa-manage-activations-dialog-active">
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading"><span class="glyphicon glyphicon-th-large soa-red"></span> <strong>Deactive Groups</strong></div>
+        <div class="panel-body" id="soa-manage-activations-dialog-inactive">
+        </div>
+    </div>
+
+    <div class="alert alert-warning" role="alert">
+        Change the activation for all instances in all deployment groups for this service. Use with great caution!
+    </div>
+</div>
+
 <div class="soa-template" id="soa-stoplight-set-green">
     <div class="soa-stoplight-green-on"></div>
 </div>
@@ -158,4 +189,8 @@
 
 <div class="soa-template" id="soa-service-forced">
     <span class="glyphicon glyphicon-pushpin soa-service-forced" aria-hidden="true"></span> Force $VALUE$
+</div>
+
+<div class="soa-template" id="soa-service-activation-item-button">
+    <button type="button" class="btn $BUTTON_TYPE$" onClick="javascript:soaActivationsitemClick($FROM_TAB$, $TO_TAB$, '$NAME$'); return true;"><span class="glyphicon $ICON$"></span> $DISPLAY_NAME$</button>
 </div>

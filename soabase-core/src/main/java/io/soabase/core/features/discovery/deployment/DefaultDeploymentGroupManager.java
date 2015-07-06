@@ -24,6 +24,7 @@ import io.soabase.core.features.attributes.WritableDynamicAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public class DefaultDeploymentGroupManager implements DeploymentGroupManager
@@ -63,6 +64,33 @@ public class DefaultDeploymentGroupManager implements DeploymentGroupManager
             }
         }
         return groups;
+    }
+
+    @Override
+    public void resetGroups(String serviceName, Map<String, Boolean> newGroupAbles)
+    {
+        serviceName = Preconditions.checkNotNull(serviceName, "serviceName; cannot be null");
+        newGroupAbles = Preconditions.checkNotNull(newGroupAbles, "newGroupAbles cannot be null");
+
+        Set<String> knownGroups = Sets.newHashSet(getKnownGroups(serviceName));
+        for ( Map.Entry<String, Boolean> entry : newGroupAbles.entrySet() )
+        {
+            knownGroups.remove(entry.getKey());
+            ableGroup(serviceName, entry.getKey(), entry.getValue());
+        }
+
+        // remaining groups have been removed by definition
+        for ( String groupName : knownGroups )
+        {
+            if ( dynamicAttributes instanceof WritableDynamicAttributes )
+            {
+                ((WritableDynamicAttributes)dynamicAttributes).remove(new AttributeKey(makeKey(serviceName, groupName), ""));
+            }
+            else
+            {
+                throw new UnsupportedOperationException("Dynamic attributes instance is not writable");
+            }
+        }
     }
 
     @Override

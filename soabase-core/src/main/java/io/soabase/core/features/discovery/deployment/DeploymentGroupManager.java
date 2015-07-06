@@ -16,10 +16,13 @@
 package io.soabase.core.features.discovery.deployment;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface DeploymentGroupManager
 {
     void ableGroup(String serviceName, String groupName, boolean enable);
+
+    void resetGroups(String serviceName, Map<String, Boolean> newGroupAbles);
 
     boolean isGroupEnabled(String serviceName, String groupName);
 

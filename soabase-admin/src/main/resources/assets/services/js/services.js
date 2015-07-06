@@ -4,7 +4,7 @@ var soaActiveDeploymentGroups = [];
 function soaActivateDialogSubmit(serviceName, groupName, ableValue) {
     soaShowInfiniteProgressBar();
     $.ajax({
-        type: "PUT",
+        type: 'PUT',
         url: '/soa/discovery/deploymentGroup/' + serviceName + '/' + groupName,
         contentType: "application/json",
         data: JSON.stringify(ableValue),
@@ -46,6 +46,145 @@ function soaSortAndOrganizeInstances(data) {
         }
     }
     return instances;
+}
+
+var soaTempActive = [];
+var soaTempInactive = [];
+
+function soaActivationsUpdate() {
+    function buildButtonList(tab, fromTabName, toTabName, buttonType, icon) {
+        var list = '';
+        for ( var i in tab ) {
+            var name = tab[i];
+            list = list + soaGetTemplate('soa-service-activation-item-button', {
+                '$NAME$': name,
+                '$DISPLAY_NAME$': soaDisplayGroupName(name),
+                '$FROM_TAB$': fromTabName,
+                '$TO_TAB$': toTabName,
+                '$BUTTON_TYPE$': buttonType,
+                '$ICON$': icon
+            });
+        }
+        return list;
+    }
+
+    $('#soa-manage-activations-dialog-active').html(buildButtonList(soaTempActive, 'soaTempActive', 'soaTempInactive', 'btn-success', 'glyphicon-chevron-down'));
+    $('#soa-manage-activations-dialog-inactive').html(buildButtonList(soaTempInactive, 'soaTempInactive', 'soaTempActive', 'btn-danger', 'glyphicon-chevron-up'));
+}
+
+function soaActivationsitemClick(fromTab, toTab, name) {
+    var index = fromTab.indexOf(name);
+    if ( index >= 0 ) {
+        fromTab.splice(index, 1);
+    }
+    if ( toTab.indexOf(name) < 0 ) {
+        toTab.push(name);
+    }
+    soaActivationsUpdate();
+}
+
+function soaActivationsSubmit() {
+    var data = [];
+    for ( var i in soaTempActive ) {
+        data.push({
+            name: soaTempActive[i],
+            active: true
+        });
+    }
+    for ( var i in soaTempInactive ) {
+        data.push({
+            name: soaTempInactive[i],
+            active: false
+        });
+    }
+
+    soaShowInfiniteProgressBar();
+    $.ajax({
+        type: 'POST',
+        url: '/soa/discovery/deploymentGroup/' + soaActiveServiceName,
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function() {
+            soaHideInfiniteProgressBar();
+            soaServicesUpdateDetailsAndGroups(soaActiveServiceName);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            soaHideInfiniteProgressBar();
+            bootbox.alert('Operation failed: ' + errorThrown);
+        }
+    });
+}
+
+function soaHandleManageActivationsButton() {
+    soaTempActive = [];
+    soaTempInactive = [];
+    for ( var name in soaActiveDeploymentGroups ) {
+        if ( soaActiveDeploymentGroups[name] ) {
+            soaTempActive.push(name);
+        } else {
+            soaTempInactive.push(name);
+        }
+    }
+
+    var template = soaGetTemplate('soa-manage-activations-dialog-content');
+    bootbox.dialog({
+        'message': template,
+        'title': 'Manage activations for service: ' + soaActiveServiceName,
+        'onEscape': function () {
+            bootbox.hideAll();
+        },
+        'buttons': {
+            'cancel': {
+                label: "Cancel",
+                className: "btn-default"
+            },
+            'ok': {
+                label: "Change Immediately",
+                className: "btn-danger",
+                callback: function () {
+                    soaActivationsSubmit();
+                }
+            }
+        }
+    });
+
+    soaActivationsUpdate();
+
+    function localFixName(name) {
+        if ( name === '*' ) {
+            name = '';
+        }
+        return name;
+    }
+
+    $('#soa-manage-activations-add-button').click(function(){
+        var list = $('#soa-activation-group-names').val().split(' ');
+        for ( var i in list ) {
+            var name = localFixName(list[i]);
+            soaActivationsitemClick(soaTempInactive, soaTempActive, name);
+            $('#soa-activation-group-names').val('');
+        }
+        return true;
+    });
+
+    function removeItem(tab, name) {
+        var index = tab.indexOf(name);
+        if ( index >= 0 ) {
+            tab.splice(index, 1);
+        }
+    }
+
+    $('#soa-manage-activations-remove-button').click(function(){
+        var list = $('#soa-activation-group-names').val().split(' ');
+        for ( var i in list ) {
+            var name = localFixName(list[i]);
+            removeItem(soaTempActive, name);
+            removeItem(soaTempInactive, name);
+            $('#soa-activation-group-names').val('');
+            soaActivationsUpdate();
+        }
+        return true;
+    });
 }
 
 function soaHandleActivationButton(serviceName, groupName) {
@@ -105,7 +244,7 @@ function soaHandleForceButton(serviceName, localInstance) {
 function soaForceDialogSubmit(serviceName, instanceId, forceValue) {
     soaShowInfiniteProgressBar();
     $.ajax({
-        type: "PUT",
+        type: 'PUT',
         url: '/soa/discovery/force/' + serviceName + '/' + instanceId,
         contentType: "application/json",
         data: JSON.stringify(forceValue),
@@ -156,21 +295,26 @@ function soaServicesDetailsDisplayGroups(serviceName, data) {
             var localId = (instance.id + '_' + groupIndex);
             $('#soa-force-button-' + localId).click(function(){
                 soaHandleForceButton(soaActiveServiceName, instance);
+                return true;
             });
             $('#soa-logs-button-' + localId).click(function(){
                 soaHandleLogButton(instance);
+                return true;
             });
             $('#soa-trace-button-' + localId).click(function(){
                 soaHandleTraceButton(instance);
+                return true;
             });
             $('#soa-details-button-' + localId).click(function(){
                 soaHandleDetailsButton(soaActiveServiceName, instance);
+                return true;
             });
         }
 
         function setActivationHandler(groupName, groupIndex) {
             $('#soa-activation-button-' + groupIndex).click(function(){
                 soaHandleActivationButton(serviceName, groupName);
+                return true;
             });
         }
 
@@ -335,6 +479,12 @@ function soaUpdateServices() {
 $(function() {
     $('#soa-services-back-button').click(function(){
         soaServicesCloseDetails();
+        return true;
+    });
+
+    $('#soa-services-manage-activations-button').click(function(){
+        soaHandleManageActivationsButton();
+        return true;
     });
 
     soaUpdateServices();

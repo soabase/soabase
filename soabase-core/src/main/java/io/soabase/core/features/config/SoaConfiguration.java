@@ -15,9 +15,11 @@
  */
 package io.soabase.core.features.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import io.dropwizard.validation.ValidationMethod;
 import io.soabase.core.features.attributes.DynamicAttributesFactory;
 import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.discovery.DefaultDiscoveryHealthFactory;
@@ -27,6 +29,7 @@ import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.deployment.DefaultDeploymentGroupFactory;
 import io.soabase.core.features.discovery.deployment.DeploymentGroupFactory;
 import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -59,7 +62,6 @@ public class SoaConfiguration
     @NotNull
     private List<String> scopes = Lists.newArrayList();
 
-    @NotNull
     private List<String> deploymentGroups = Lists.newArrayList();
 
     private boolean addCorsFilter = true;
@@ -72,6 +74,24 @@ public class SoaConfiguration
     @NotEmpty
     @Pattern(regexp = "/.*")
     private String adminJerseyPath = "/api";
+
+    @ValidationMethod(message="deploymentGroups cannot be null and names can only contain letters, numbers, underscores, dashes or periods")
+    @JsonIgnore
+    public boolean isValidDeploymentGroups() {
+        if ( deploymentGroups == null )
+        {
+            return false;
+        }
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("^[a-zA-Z0-9_\\-.]+$");
+        for ( String group : deploymentGroups )
+        {
+            if ( !pattern.matcher(group).matches() )
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @JsonProperty("checkPeriodMs")
     public int getDiscoveryHealthCheckPeriodMs()

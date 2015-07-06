@@ -19,9 +19,11 @@ import io.dropwizard.Configuration;
 import io.soabase.core.features.config.SoaConfiguration;
 import io.soabase.sql.attributes.SqlConfiguration;
 import io.soabase.zookeeper.discovery.CuratorConfiguration;
+import javax.validation.Valid;
 
 public class ExampleConfiguration extends Configuration
 {
+    @Valid
     public SoaConfiguration soa = new SoaConfiguration();
     public SqlConfiguration sql = new SqlConfiguration();
     public CuratorConfiguration curator = new CuratorConfiguration();

@@ -18,6 +18,7 @@ package io.soabase.core.features.config;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import io.dropwizard.validation.ValidationMethod;
 import io.soabase.core.features.attributes.DynamicAttributesFactory;
@@ -29,11 +30,12 @@ import io.soabase.core.features.discovery.NullDiscoveryFactory;
 import io.soabase.core.features.discovery.deployment.DefaultDeploymentGroupFactory;
 import io.soabase.core.features.discovery.deployment.DeploymentGroupFactory;
 import org.hibernate.validator.constraints.NotEmpty;
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class SoaConfiguration
@@ -160,9 +162,9 @@ public class SoaConfiguration
     }
 
     @JsonProperty("additionalScopes")
-    public void setScopes(String scopes)
+    public void setScopes(Object scopes)
     {
-        this.scopes = Splitter.on(',').trimResults().omitEmptyStrings().splitToList(scopes);
+        this.scopes = toList(scopes);
     }
 
     @JsonProperty("deploymentGroups")
@@ -172,9 +174,9 @@ public class SoaConfiguration
     }
 
     @JsonProperty("deploymentGroups")
-    public void setDeploymentGroups(String deploymentGroups)
+    public void setDeploymentGroups(Objects deploymentGroups)
     {
-        this.deploymentGroups = Splitter.on(',').trimResults().omitEmptyStrings().splitToList(deploymentGroups);
+        this.deploymentGroups = toList(deploymentGroups);
     }
 
     @JsonProperty("addCorsFilter")
@@ -247,5 +249,15 @@ public class SoaConfiguration
     public void setDeploymentGroupFactory(DeploymentGroupFactory deploymentGroupFactory)
     {
         this.deploymentGroupFactory = deploymentGroupFactory;
+    }
+
+    private static List<String> toList(Object o)
+    {
+        if ( Collection.class.isAssignableFrom(o.getClass()) )
+        {
+            //noinspection unchecked
+            return ImmutableList.copyOf((Collection)o);
+        }
+        return Splitter.on(',').trimResults().omitEmptyStrings().splitToList(String.valueOf(o));
     }
 }

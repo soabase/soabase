@@ -47,3 +47,5 @@ Details
 -------
 
 For full details, see the website: http://soabase.io
+
+[![Build Status](https://travis-ci.org/soabase/soabase.svg?branch=master)](https://travis-ci.org/soabase/soabase)

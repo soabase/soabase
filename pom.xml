@@ -4,7 +4,7 @@
 
     <groupId>io.soabase</groupId>
     <artifactId>soabase</artifactId>
-    <version>0.6.1</version>
+    <version>0.6.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>

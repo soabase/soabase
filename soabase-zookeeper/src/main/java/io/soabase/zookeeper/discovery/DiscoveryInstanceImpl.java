@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.soabase.zookeeper.discovery;
 
 import com.google.common.base.Preconditions;
+import io.soabase.core.features.discovery.DiscoveryInstance;
 import io.soabase.core.features.discovery.ForcedState;
 import io.soabase.core.features.discovery.HealthyState;
-import io.soabase.core.features.discovery.DiscoveryInstance;
-import java.util.Collection;
 import java.util.Map;
 
 public class DiscoveryInstanceImpl implements DiscoveryInstance
@@ -61,6 +61,12 @@ public class DiscoveryInstanceImpl implements DiscoveryInstance
     public boolean isForceSsl()
     {
         return forceSsl;
+    }
+
+    @Override
+    public String getAdminHost()
+    {
+        return payload.getAdminHost();
     }
 
     @Override

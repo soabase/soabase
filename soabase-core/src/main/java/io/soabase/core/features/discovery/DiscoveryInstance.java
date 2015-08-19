@@ -30,6 +30,8 @@ public interface DiscoveryInstance extends Comparable<DiscoveryInstance>
 
     boolean isForceSsl();
 
+    String getAdminHost();
+
     int getAdminPort();
 
     HealthyState getHealthyState();

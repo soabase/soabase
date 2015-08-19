@@ -22,7 +22,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Sets;
+import com.google.common.net.HostAndPort;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.jersey.DropwizardResourceConfig;
@@ -85,6 +87,8 @@ import java.util.concurrent.TimeUnit;
 public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
+
+    private static final HostAndPort defaultHostAndPort = HostAndPort.fromHost("localhost");
 
     static final boolean hasAdminKey;
 
@@ -200,10 +204,10 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     @VisibleForTesting
     static class Ports
     {
-        final int mainPort;
-        final int adminPort;
+        final HostAndPort mainPort;
+        final HostAndPort adminPort;
 
-        Ports(int mainPort, int adminPort)
+        Ports(HostAndPort mainPort, HostAndPort adminPort)
         {
             this.mainPort = mainPort;
             this.adminPort = adminPort;
@@ -228,8 +232,8 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             return new Ports(accessor.getMainPort(configuration), accessor.getAdminPort(configuration));
         }
 
-        int mainPort = 0;
-        int adminPort = 0;
+        HostAndPort mainPort = defaultHostAndPort;
+        HostAndPort adminPort = defaultHostAndPort;
         if ( DefaultServerFactory.class.isAssignableFrom(serverFactory.getClass()) )
         {
             mainPort = portFromConnectorFactories(((DefaultServerFactory)serverFactory).getApplicationConnectors());
@@ -242,30 +246,31 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
             mainPort = adminPort = portFromConnectorFactory(((SimpleServerFactory)serverFactory).getConnector());
         }
 
-        if ( (mainPort == 0) && (adminPort == 0) )
+        if ( !mainPort.hasPort() && !adminPort.hasPort() )
         {
             throw new RuntimeException("Cannot determine the main server ports");
         }
         return new Ports(mainPort, adminPort);
     }
 
-    private static int portFromConnectorFactories(List<ConnectorFactory> applicationConnectors)
+    private static HostAndPort portFromConnectorFactories(List<ConnectorFactory> applicationConnectors)
     {
         if ( applicationConnectors.size() > 0 )
         {
             return portFromConnectorFactory(applicationConnectors.get(0));
         }
-        return 0;
+        return defaultHostAndPort;
     }
 
-    private static int portFromConnectorFactory(ConnectorFactory connectorFactory)
+    private static HostAndPort portFromConnectorFactory(ConnectorFactory connectorFactory)
     {
         if ( (connectorFactory != null) && HttpConnectorFactory.class.isAssignableFrom(connectorFactory.getClass()) )
         {
             HttpConnectorFactory factory = (HttpConnectorFactory)connectorFactory;
-            return factory.getPort();
+            String bindHost = MoreObjects.firstNonNull(factory.getBindHost(), "localhost");
+            return HostAndPort.fromParts(bindHost, factory.getPort());
         }
-        return 0;
+        return defaultHostAndPort;
     }
 
     private void startDiscoveryHealth(Discovery discovery, SoaConfiguration soaConfiguration, T configuration, Environment environment)
@@ -302,7 +307,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
 
     private void initJerseyAdmin(SoaConfiguration configuration, SoaFeaturesImpl features, Ports ports, Environment environment, AbstractBinder binder)
     {
-        if ( (configuration.getAdminJerseyPath() == null) || (ports.adminPort == 0) )
+        if ( (configuration.getAdminJerseyPath() == null) || !ports.adminPort.hasPort() )
         {
             return;
         }

@@ -30,6 +30,7 @@ import java.util.Map;
 
 public class Payload
 {
+    private String adminHost;
     private int adminPort;
     private Map<String, String> metaData;
     private ForcedState forcedState;
@@ -37,16 +38,27 @@ public class Payload
 
     public Payload()
     {
-        this(0, Maps.<String, String>newHashMap(), ForcedState.CLEARED, HealthyState.HEALTHY);
+        this(null, 0, Maps.<String, String>newHashMap(), ForcedState.CLEARED, HealthyState.HEALTHY);
     }
 
-    public Payload(int adminPort, Map<String, String> metaData, ForcedState forcedState, HealthyState healthyState)
+    public Payload(String adminHost, int adminPort, Map<String, String> metaData, ForcedState forcedState, HealthyState healthyState)
     {
+        this.adminHost = Preconditions.checkNotNull(adminHost, "adminHost cannot be null");
         this.forcedState = Preconditions.checkNotNull(forcedState, "forcedState cannot be null");
         this.healthyState = Preconditions.checkNotNull(healthyState, "healthyState cannot be null");
         metaData = Preconditions.checkNotNull(metaData, "metaData cannot be null");
         this.adminPort = adminPort;
         this.metaData = ImmutableMap.copyOf(metaData);
+    }
+
+    public String getAdminHost()
+    {
+        return adminHost;
+    }
+
+    public void setAdminHost(String adminHost)
+    {
+        this.adminHost = adminHost;
     }
 
     public int getAdminPort()
@@ -130,27 +142,28 @@ public class Payload
         {
             return false;
         }
-        if ( forcedState != payload.forcedState )
+        if ( !adminHost.equals(payload.adminHost) )
         {
             return false;
         }
-        if ( healthyState != payload.healthyState )
-        {
-            return false;
-        }
-        //noinspection RedundantIfStatement
         if ( !metaData.equals(payload.metaData) )
         {
             return false;
         }
+        //noinspection SimplifiableIfStatement
+        if ( forcedState != payload.forcedState )
+        {
+            return false;
+        }
+        return healthyState == payload.healthyState;
 
-        return true;
     }
 
     @Override
     public int hashCode()
     {
-        int result = adminPort;
+        int result = adminHost.hashCode();
+        result = 31 * result + adminPort;
         result = 31 * result + metaData.hashCode();
         result = 31 * result + forcedState.hashCode();
         result = 31 * result + healthyState.hashCode();
@@ -161,7 +174,8 @@ public class Payload
     public String toString()
     {
         return "Payload{" +
-            "adminPort=" + adminPort +
+            "adminHost='" + adminHost + '\'' +
+            ", adminPort=" + adminPort +
             ", metaData=" + metaData +
             ", forcedState=" + forcedState +
             ", healthyState=" + healthyState +

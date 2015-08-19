@@ -15,6 +15,7 @@
  */
 package io.soabase.core;
 
+import com.google.common.net.HostAndPort;
 import io.dropwizard.Configuration;
 
 /**
@@ -26,18 +27,18 @@ import io.dropwizard.Configuration;
 public interface SoaMainPortAccessor<T extends Configuration>
 {
     /**
-     * Return the main port to use for the application
+     * Return the main host/port to use for the application
      *
      * @param configuration config
      * @return main port
      */
-    public int getMainPort(T configuration);
+    HostAndPort getMainPort(T configuration);
 
     /**
-     * Return the admin port to use for the application
+     * Return the admin host/port to use for the application
      *
      * @param configuration config
      * @return admin port
      */
-    public int getAdminPort(T configuration);
+    HostAndPort getAdminPort(T configuration);
 }

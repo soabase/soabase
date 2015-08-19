@@ -28,6 +28,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.net.HostAndPort;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaBundle;
@@ -91,7 +92,7 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         {
             HashMap<String, String> metaData = Maps.newHashMap();
             Payload.addDeploymentGroups(metaData, instanceDeploymentGroups);
-            Payload payload = new Payload(soaInfo.getAdminPort(), metaData, ForcedState.CLEARED, HealthyState.UNHEALTHY);  // initially unhealthy
+            Payload payload = new Payload(soaInfo.getAdminPort().getHostText(), soaInfo.getAdminPort().getPort(), metaData, ForcedState.CLEARED, HealthyState.UNHEALTHY);  // initially unhealthy
 
             us.set(buildInstance(payload, null));
 
@@ -134,14 +135,14 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
     public void setHealthyState(HealthyState newHealthyState)
     {
         Payload payload = us.get().getPayload();
-        updateRegistration(new Payload(payload.getAdminPort(), payload.getMetaData(), payload.getForcedState(), newHealthyState));
+        updateRegistration(new Payload(null, payload.getAdminPort(), payload.getMetaData(), payload.getForcedState(), newHealthyState));
     }
 
     @Override
     public void setMetaData(Map<String, String> newMetaData)
     {
         Payload payload = us.get().getPayload();
-        updateRegistration(new Payload(payload.getAdminPort(), newMetaData, payload.getForcedState(), payload.getHealthyState()));
+        updateRegistration(new Payload(null, payload.getAdminPort(), newMetaData, payload.getForcedState(), payload.getHealthyState()));
     }
 
     @Override
@@ -154,8 +155,8 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
             {
                 DiscoveryInstance soaInstance = toSoaInstance(foundInstance);
                 Payload oldPayload = foundInstance.getPayload();
-                Payload newPayload = new Payload(oldPayload.getAdminPort(), oldPayload.getMetaData(), forcedState, oldPayload.getHealthyState());
-                ServiceInstance<Payload> updatedInstance = buildInstance(serviceName, soaInstance.getPort(), newPayload, instanceId, soaInstance.getHost());
+                Payload newPayload = new Payload(null, oldPayload.getAdminPort(), oldPayload.getMetaData(), forcedState, oldPayload.getHealthyState());
+                ServiceInstance<Payload> updatedInstance = buildInstance(serviceName, HostAndPort.fromParts(soaInstance.getHost(), soaInstance.getPort()), newPayload, instanceId, soaInstance.getHost());
                 discovery.updateService(updatedInstance);
             } // TODO else?
         }
@@ -371,12 +372,14 @@ public class ZooKeeperDiscovery extends CacheLoader<String, ServiceProvider<Payl
         return buildInstance(soaInfo.getServiceName(), soaInfo.getMainPort(), payload, id, null);
     }
 
-    private ServiceInstance<Payload> buildInstance(String serviceName, int mainPort, Payload payload, String id, String address) throws Exception
+    private ServiceInstance<Payload> buildInstance(String serviceName, HostAndPort mainPort, Payload payload, String id, String address) throws Exception
     {
         ServiceInstanceBuilder<Payload> builder = ServiceInstance.<Payload>builder()
             .name(serviceName)
             .payload(payload)
-            .port(mainPort);
+            .address(mainPort.getHostText())
+            .port(mainPort.getPort())
+            ;
         if ( id != null )
         {
             builder = builder.id(id);

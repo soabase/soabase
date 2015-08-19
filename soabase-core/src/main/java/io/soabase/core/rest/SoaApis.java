@@ -16,6 +16,7 @@
 package io.soabase.core.rest;
 
 import io.soabase.core.SoaInfo;
+import io.soabase.core.rest.entities.HostAndPort;
 import io.soabase.core.rest.entities.Info;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -43,6 +44,6 @@ public class SoaApis
         DateFormat df = SoaInfo.newUtcFormatter();
         String now = df.format(new Date());
         String start = df.format(new Date(soaInfo.getStartTimeMs()));
-        return new Info(soaInfo.getScopes(), soaInfo.getMainPort(), soaInfo.getAdminPort(), soaInfo.getServiceName(), soaInfo.getInstanceName(), start, now);
+        return new Info(soaInfo.getScopes(), new HostAndPort(soaInfo.getMainPort()), new HostAndPort(soaInfo.getAdminPort()), soaInfo.getServiceName(), soaInfo.getInstanceName(), start, now);
     }
 }

@@ -23,8 +23,8 @@ import java.util.List;
 public class Info
 {
     private List<String> scopes;
-    private int mainPort;
-    private int adminPort;
+    private HostAndPort mainPort;
+    private HostAndPort adminPort;
     private String serviceName;
     private String instanceName;
     private String startTimeUtc;
@@ -32,15 +32,15 @@ public class Info
 
     public Info()
     {
-        this(Lists.<String>newArrayList(), 0, 0, "", "", "", "");
+        this(Lists.<String>newArrayList(), new HostAndPort(), new HostAndPort(), "", "", "", "");
     }
 
-    public Info(List<String> scopes, int mainPort, int adminPort, String serviceName, String instanceName, String startTimeUtc, String currentTimeUtc)
+    public Info(List<String> scopes, HostAndPort mainPort, HostAndPort adminPort, String serviceName, String instanceName, String startTimeUtc, String currentTimeUtc)
     {
         scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");
         this.scopes = ImmutableList.copyOf(scopes);
-        this.mainPort = mainPort;
-        this.adminPort = adminPort;
+        this.mainPort = Preconditions.checkNotNull(mainPort, "mainPort cannot be null");
+        this.adminPort = Preconditions.checkNotNull(adminPort, "adminPort cannot be null");
         this.serviceName = Preconditions.checkNotNull(serviceName, "serviceName cannot be null");
         this.instanceName = Preconditions.checkNotNull(instanceName, "instanceName cannot be null");
         this.startTimeUtc = Preconditions.checkNotNull(startTimeUtc, "startTimeUtc cannot be null");
@@ -57,12 +57,12 @@ public class Info
         this.scopes = scopes;
     }
 
-    public int getMainPort()
+    public HostAndPort getMainPort()
     {
         return mainPort;
     }
 
-    public void setMainPort(int mainPort)
+    public void setMainPort(HostAndPort mainPort)
     {
         this.mainPort = mainPort;
     }
@@ -107,12 +107,12 @@ public class Info
         this.currentTimeUtc = currentTimeUtc;
     }
 
-    public int getAdminPort()
+    public HostAndPort getAdminPort()
     {
         return adminPort;
     }
 
-    public void setAdminPort(int adminPort)
+    public void setAdminPort(HostAndPort adminPort)
     {
         this.adminPort = adminPort;
     }
@@ -168,8 +168,8 @@ public class Info
     public int hashCode()
     {
         int result = scopes.hashCode();
-        result = 31 * result + mainPort;
-        result = 31 * result + adminPort;
+        result = 31 * result + mainPort.hashCode();
+        result = 31 * result + adminPort.hashCode();
         result = 31 * result + serviceName.hashCode();
         result = 31 * result + instanceName.hashCode();
         result = 31 * result + startTimeUtc.hashCode();

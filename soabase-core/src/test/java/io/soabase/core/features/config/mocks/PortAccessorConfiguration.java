@@ -15,20 +15,21 @@
  */
 package io.soabase.core.features.config.mocks;
 
+import com.google.common.net.HostAndPort;
 import io.dropwizard.Configuration;
 import io.soabase.core.SoaMainPortAccessor;
 
 public class PortAccessorConfiguration extends Configuration implements SoaMainPortAccessor<Configuration>
 {
     @Override
-    public int getMainPort(Configuration configuration)
+    public HostAndPort getMainPort(Configuration configuration)
     {
-        return 1;
+        return HostAndPort.fromParts("x", 1);
     }
 
     @Override
-    public int getAdminPort(Configuration configuration)
+    public HostAndPort getAdminPort(Configuration configuration)
     {
-        return 2;
+        return HostAndPort.fromParts("y", 2);
     }
 }

@@ -18,28 +18,28 @@ package io.soabase.core;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.net.HostAndPort;
 import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
 public class SoaInfo
 {
     private final List<String> scopes;
-    private final int mainPort;
-    private final int adminPort;
+    private final HostAndPort mainPort;
+    private final HostAndPort adminPort;
     private final String serviceName;
     private final String instanceName;
     private final long startTimeMs = System.currentTimeMillis();
     private final boolean registerInDiscovery;
 
-    public SoaInfo(List<String> scopes, int mainPort, int adminPort, String serviceName, String instanceName, boolean registerInDiscovery)
+    public SoaInfo(List<String> scopes, HostAndPort mainPort, HostAndPort adminPort, String serviceName, String instanceName, boolean registerInDiscovery)
     {
         this.registerInDiscovery = registerInDiscovery;
         scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");
         this.scopes = ImmutableList.copyOf(scopes);
-        this.mainPort = mainPort;
-        this.adminPort = adminPort;
+        this.mainPort = Preconditions.checkNotNull(mainPort, "mainPort cannot be null");
+        this.adminPort = Preconditions.checkNotNull(adminPort, "adminPort cannot be null");
         this.serviceName = Preconditions.checkNotNull(serviceName, "serviceName cannot be null");
         this.instanceName = Preconditions.checkNotNull(instanceName, "instanceName cannot be null");
     }
@@ -49,7 +49,7 @@ public class SoaInfo
         return scopes;
     }
 
-    public int getMainPort()
+    public HostAndPort getMainPort()
     {
         return mainPort;
     }
@@ -69,7 +69,7 @@ public class SoaInfo
         return startTimeMs;
     }
 
-    public int getAdminPort()
+    public HostAndPort getAdminPort()
     {
         return adminPort;
     }

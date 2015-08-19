@@ -15,6 +15,7 @@
  */
 package io.soabase.core;
 
+import com.google.common.net.HostAndPort;
 import io.soabase.core.features.config.mocks.MyConfiguration;
 import io.soabase.core.features.config.mocks.PortAccessorConfiguration;
 import org.testng.Assert;
@@ -26,15 +27,15 @@ public class TestSoaMainPortAccessor
     public void testNoAccessor()
     {
         SoaBundle.Ports ports = SoaBundle.getPorts(new MyConfiguration());
-        Assert.assertEquals(ports.mainPort, 8080);
-        Assert.assertEquals(ports.adminPort, 8081);
+        Assert.assertEquals(ports.mainPort, HostAndPort.fromParts("localhost", 8080));
+        Assert.assertEquals(ports.adminPort, HostAndPort.fromParts("localhost", 8081));
     }
 
     @Test
     public void testWithAccessor()
     {
         SoaBundle.Ports ports = SoaBundle.getPorts(new PortAccessorConfiguration());
-        Assert.assertEquals(ports.mainPort, 1);
-        Assert.assertEquals(ports.adminPort, 2);
+        Assert.assertEquals(ports.mainPort, HostAndPort.fromParts("x", 1));
+        Assert.assertEquals(ports.adminPort, HostAndPort.fromParts("y", 2));
     }
 }

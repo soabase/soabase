@@ -29,6 +29,11 @@ public class PropertiesAttributes implements DynamicAttributes
         container = new StandardAttributesContainer(properties, Collections.<String>emptyList());
     }
 
+    public PropertiesAttributes(DefaultPropertiesAccessor properties)
+    {
+        container = new StandardAttributesContainer(properties, Collections.<String>emptyList());
+    }
+
     public PropertiesAttributes()
     {
         container = new StandardAttributesContainer();

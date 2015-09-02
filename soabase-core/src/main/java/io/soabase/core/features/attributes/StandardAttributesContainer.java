@@ -40,7 +40,7 @@ public class StandardAttributesContainer
     private final ListenerContainer<DynamicAttributeListener> listenable = new ListenerContainer<>();
     private final List<String> scopes;
     private final AtomicBoolean firstTime = new AtomicBoolean(true);
-    private final Properties defaultProperties;
+    private final DefaultPropertiesAccessor defaultProperties;
 
     public static DynamicAttributes wrapAttributes(DynamicAttributes attributes, boolean hasAdminKey)
     {
@@ -53,15 +53,20 @@ public class StandardAttributesContainer
 
     public StandardAttributesContainer()
     {
-        this(System.getProperties(), Lists.<String>newArrayList());
+        this(new Accessor(System.getProperties()), Lists.<String>newArrayList());
     }
 
     public StandardAttributesContainer(List<String> scopes)
     {
-        this(System.getProperties(), scopes);
+        this(new Accessor(System.getProperties()), scopes);
     }
 
     public StandardAttributesContainer(Properties defaultProperties, List<String> scopes)
+    {
+        this(new Accessor(defaultProperties), scopes);
+    }
+
+    public StandardAttributesContainer(DefaultPropertiesAccessor defaultProperties, List<String> scopes)
     {
         this.defaultProperties = Preconditions.checkNotNull(defaultProperties, "defaultProperties cannot be null");
         scopes = Preconditions.checkNotNull(scopes, "scopes cannot be null");
@@ -320,5 +325,27 @@ public class StandardAttributesContainer
             // ignore
         }
         return defaultValue;
+    }
+
+    private static class Accessor implements DefaultPropertiesAccessor
+    {
+        private final Properties properties;
+
+        Accessor(Properties properties)
+        {
+            this.properties = properties;
+        }
+
+        @Override
+        public String getProperty(String key, String defaultValue)
+        {
+            return properties.getProperty(key, defaultValue);
+        }
+
+        @Override
+        public Set<?> keySet()
+        {
+            return properties.keySet();
+        }
     }
 }

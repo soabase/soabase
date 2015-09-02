@@ -68,6 +68,11 @@ public class SoaIntegrationModule extends AbstractModule
                 Object named = features.getNamed(clazz, name);
                 //noinspection unchecked
                 bind((Class)clazz).annotatedWith(Names.named(name)).toInstance(named);
+                if ( name.equals(SoaFeatures.DEFAULT_NAME) )
+                {
+                    //noinspection unchecked
+                    bind((Class)clazz).toInstance(named);
+                }
             }
         }
     }

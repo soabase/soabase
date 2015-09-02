@@ -21,7 +21,6 @@ import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.internal.UniqueAnnotations;
 import org.glassfish.jersey.message.MessageBodyWorkers;
-import org.glassfish.jersey.model.internal.CommonConfig;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.ExtendedResourceContext;
 import javax.servlet.Filter;
@@ -62,17 +61,17 @@ public class JerseyGuiceModule extends AbstractModule
         filter = new InternalFilter();
     }
 
-    protected Configurable<?> configurable()
+    public Configurable<?> configurable()
     {
         return commonConfig;
     }
 
-    protected final FilterKeyBindingBuilder filter(String... urlPatterns)
+    public FilterKeyBindingBuilder filter(String... urlPatterns)
     {
         return new FilterKeyBindingBuilderImpl(this, Lists.newArrayList(urlPatterns));
     }
 
-    protected final ServletKeyBindingBuilder serve(String... urlPatterns)
+    public ServletKeyBindingBuilder serve(String... urlPatterns)
     {
         return new ServletKeyBindingBuilderImpl(this, Lists.newArrayList(urlPatterns));
     }

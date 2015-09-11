@@ -16,36 +16,49 @@
 package io.soabase.core.features.discovery;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaInfo;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 @JsonTypeName("default")
 public class NullDiscoveryFactory implements DiscoveryFactory
 {
     @Override
-    public Discovery build(Configuration configuration, Environment environment, SoaInfo soaInfo)
+    public Discovery build(Configuration configuration, Environment environment, final SoaInfo soaInfo)
     {
         return new Discovery()
         {
-            @Override
+            private volatile Map<String, String> metaData = ImmutableMap.of();
+            private volatile HealthyState healthyState = HealthyState.HEALTHY;
+
             public Collection<String> getServiceNames()
             {
-                return ImmutableSet.of();
+                return Collections.singletonList(soaInfo.getServiceName());
             }
 
             @Override
             public Collection<DiscoveryInstance> getAllInstances(String serviceName)
             {
+                if ( serviceName.equals(soaInfo.getServiceName()) )
+                {
+                    return Collections.singletonList(getInstance(serviceName));
+                }
                 return ImmutableSet.of();
             }
 
             @Override
             public DiscoveryInstance getInstance(String serviceName)
             {
+                if ( serviceName.equals(soaInfo.getServiceName()) )
+                {
+                    return newDiscoveryInstance(soaInfo, healthyState, metaData);
+                }
                 return null;
             }
 
@@ -64,13 +77,85 @@ public class NullDiscoveryFactory implements DiscoveryFactory
             @Override
             public void setMetaData(Map<String, String> newMetaData)
             {
-                // NOP
+                metaData = ImmutableMap.copyOf(newMetaData);
             }
 
             @Override
             public void setHealthyState(HealthyState healthyState)
             {
-                // NOP
+                this.healthyState = healthyState;
+            }
+        };
+    }
+
+    private DiscoveryInstance newDiscoveryInstance(final SoaInfo soaInfo, final HealthyState healthyState, final Map<String, String> newMetaData)
+    {
+        final String id = UUID.randomUUID().toString();
+        return new DiscoveryInstance()
+        {
+            @Override
+            public String getId()
+            {
+                return id;
+            }
+
+            @Override
+            public String getHost()
+            {
+                return soaInfo.getMainPort().getHostText();
+            }
+
+            @Override
+            public int getPort()
+            {
+                return soaInfo.getMainPort().getPort();
+            }
+
+            @Override
+            public boolean isForceSsl()
+            {
+                return false;
+            }
+
+            @Override
+            public String getAdminHost()
+            {
+                return soaInfo.getAdminPort().getHostText();
+            }
+
+            @Override
+            public int getAdminPort()
+            {
+                return soaInfo.getAdminPort().getPort();
+            }
+
+            @Override
+            public HealthyState getHealthyState()
+            {
+                return healthyState;
+            }
+
+            @Override
+            public Map<String, String> getMetaData()
+            {
+                return newMetaData;
+            }
+
+            @Override
+            public ForcedState getForcedState()
+            {
+                return ForcedState.CLEARED;
+            }
+
+            @SuppressWarnings("NullableProblems")
+            @Override
+            public int compareTo(DiscoveryInstance o)
+            {
+                if ( o == null )
+                {
+                    return -1;
+                }
+                return id.compareTo(o.getId());
             }
         };
     }

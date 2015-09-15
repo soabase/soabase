@@ -57,26 +57,30 @@ public class ClientBuilder
         final SoaFeatures features = SoaBundle.getFeatures(environment);
         retryComponents = new RetryComponents(features.getDiscovery(), maxRetries, retry500s, features.getExecutorBuilder());
 
-        AbstractBinder binder = new AbstractBinder()
+        if ( environment.getApplicationContext().getAttributes().getAttribute(ClientBuilder.class.getName()) == null )
         {
-            @Override
-            protected void configure()
+            AbstractBinder binder = new AbstractBinder()
             {
-                for ( String name : features.getNames(Client.class) )
+                @Override
+                protected void configure()
                 {
-                    bind(features.getNamed(Client.class, name)).named(name).to(Client.class);
+                    for ( String name : features.getNames(Client.class) )
+                    {
+                        bind(features.getNamed(Client.class, name)).named(name).to(Client.class);
+                    }
+                    for ( String name : features.getNames(HttpClient.class) )
+                    {
+                        bind(features.getNamed(HttpClient.class, name)).named(name).to(HttpClient.class);
+                    }
                 }
-                for ( String name : features.getNames(HttpClient.class) )
-                {
-                    bind(features.getNamed(HttpClient.class, name)).named(name).to(HttpClient.class);
-                }
+            };
+            environment.jersey().register(binder);
+            JerseyEnvironment adminJerseyEnvironment = features.getNamed(JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
+            if ( adminJerseyEnvironment != null )
+            {
+                adminJerseyEnvironment.register(binder);
             }
-        };
-        environment.jersey().register(binder);
-        JerseyEnvironment adminJerseyEnvironment = features.getNamed(JerseyEnvironment.class, SoaFeatures.ADMIN_NAME);
-        if ( adminJerseyEnvironment != null )
-        {
-            adminJerseyEnvironment.register(binder);
+            environment.getApplicationContext().getAttributes().setAttribute(ClientBuilder.class.getName(), "");
         }
     }
 

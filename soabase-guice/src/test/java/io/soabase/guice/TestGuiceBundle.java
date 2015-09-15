@@ -18,8 +18,6 @@ package io.soabase.guice;
 
 import com.google.common.io.CharStreams;
 import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.soabase.guice.mocks.JerseyGuiceResource;
 import io.soabase.guice.mocks.MockApplication;

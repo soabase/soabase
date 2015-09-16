@@ -45,11 +45,7 @@ import java.util.Map;
 public class JerseyGuiceModule extends JerseyMultiGuiceModule
 {
     private final InternalCommonConfig commonConfig = new InternalCommonConfig();
-
-    public JerseyGuiceModule()
-    {
-        super(new InternalFilter());
-    }
+    private final InternalFilter filter = new InternalFilter();
 
     public Configurable<?> configurable()
     {
@@ -59,9 +55,9 @@ public class JerseyGuiceModule extends JerseyMultiGuiceModule
     @Override
     void internalConfigure()
     {
-        bind(InternalFilter.class).toInstance(getFilter());
+        bind(InternalFilter.class).toInstance(filter);
         bind(InternalCommonConfig.class).toInstance(commonConfig);
-        filter("/*").through(getFilter());
+        filter("/*").through(filter);
 
         bindScope(RequestScoped.class, ServletScopes.REQUEST);
         bindScope(SessionScoped.class, ServletScopes.SESSION);
@@ -71,21 +67,21 @@ public class JerseyGuiceModule extends JerseyMultiGuiceModule
     @RequestScoped
     public HttpServletRequest provideHttpServletRequest()
     {
-        return getFilter().getServletRequest();
+        return filter.getServletRequest();
     }
 
     @Provides
     @RequestScoped
     public HttpServletResponse provideHttpServletResponse()
     {
-        return getFilter().getServletResponse();
+        return filter.getServletResponse();
     }
 
     @Provides
     @RequestScoped
     public ServletContext provideServletContext()
     {
-        HttpServletRequest request = getFilter().getServletRequest();
+        HttpServletRequest request = filter.getServletRequest();
         return (request != null) ? request.getServletContext() : null;
     }
 
@@ -93,7 +89,7 @@ public class JerseyGuiceModule extends JerseyMultiGuiceModule
     @RequestScoped
     public HttpSession provideHttpSession()
     {
-        HttpServletRequest request = getFilter().getServletRequest();
+        HttpServletRequest request = filter.getServletRequest();
         return (request != null) ? request.getSession() : null;
     }
 
@@ -102,7 +98,7 @@ public class JerseyGuiceModule extends JerseyMultiGuiceModule
     @RequestScoped
     public Map<String, String[]> provideParameterMap()
     {
-        HttpServletRequest request = getFilter().getServletRequest();
+        HttpServletRequest request = filter.getServletRequest();
         return (request != null) ? request.getParameterMap() : null;
     }
 
@@ -110,35 +106,35 @@ public class JerseyGuiceModule extends JerseyMultiGuiceModule
     @RequestScoped
     public ContainerRequestContext providesContainerRequestContext()
     {
-        return getFilter().getContainerRequestContext();
+        return filter.getContainerRequestContext();
     }
 
     @Provides
     @RequestScoped
     public ExtendedResourceContext providesExtendedResourceContext()
     {
-        return getFilter().getResourceContext();
+        return filter.getResourceContext();
     }
 
     @Provides
     @RequestScoped
     public ResourceContext providesResourceContext()
     {
-        return getFilter().getResourceContext();
+        return filter.getResourceContext();
     }
 
     @Provides
     @RequestScoped
     public Request providesRequest()
     {
-        return getFilter().getContainerRequestContext().getRequest();
+        return filter.getContainerRequestContext().getRequest();
     }
 
     @Provides
     @RequestScoped
     public UriInfo providesUriInfo()
     {
-        ContainerRequestContext context = getFilter().getContainerRequestContext();
+        ContainerRequestContext context = filter.getContainerRequestContext();
         return (context != null) ? context.getUriInfo() : null;
     }
 
@@ -146,7 +142,7 @@ public class JerseyGuiceModule extends JerseyMultiGuiceModule
     @RequestScoped
     public HttpHeaders providesHttpHeaders()
     {
-        ContainerRequestContext context = getFilter().getContainerRequestContext();
+        ContainerRequestContext context = filter.getContainerRequestContext();
         return (context != null) ? (ContainerRequest)context.getRequest() : null;
     }
 
@@ -154,7 +150,7 @@ public class JerseyGuiceModule extends JerseyMultiGuiceModule
     @RequestScoped
     public MessageBodyWorkers providesMessageBodyWorkers()
     {
-        ContainerRequestContext context = getFilter().getContainerRequestContext();
+        ContainerRequestContext context = filter.getContainerRequestContext();
         return (context != null) ? ((ContainerRequest)context.getRequest()).getWorkers() : null;
     }
 
@@ -162,7 +158,7 @@ public class JerseyGuiceModule extends JerseyMultiGuiceModule
     @RequestScoped
     public SecurityContext providesSecurityContext()
     {
-        ContainerRequestContext context = getFilter().getContainerRequestContext();
+        ContainerRequestContext context = filter.getContainerRequestContext();
         return (context != null) ? context.getSecurityContext() : null;
     }
 }

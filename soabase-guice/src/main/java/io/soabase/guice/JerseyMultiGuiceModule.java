@@ -45,20 +45,6 @@ public class JerseyMultiGuiceModule extends AbstractModule
     private final List<FilterDefinition> filterDefinitions = Lists.newArrayList();
     private final List<ServletDefinition> servletDefinitions = Lists.newArrayList();
     private final InternalCommonConfig commonConfig = new InternalCommonConfig();
-    private final InternalFilter filter;
-
-    /**
-     * @param parent the single required {@link JerseyGuiceModule} instance
-     */
-    public JerseyMultiGuiceModule(JerseyGuiceModule parent)
-    {
-        filter = parent.getFilter();
-    }
-
-    JerseyMultiGuiceModule(InternalFilter filter)
-    {
-        this.filter = filter;
-    }
 
     public FilterKeyBindingBuilder filter(String... urlPatterns)
     {
@@ -84,11 +70,6 @@ public class JerseyMultiGuiceModule extends AbstractModule
         {
             bind(ServletDefinition.class).annotatedWith(UniqueAnnotations.create()).toInstance(servletDefinition);
         }
-    }
-
-    InternalFilter getFilter()
-    {
-        return filter;
     }
 
     void internalConfigure()

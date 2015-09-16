@@ -82,7 +82,7 @@ public class TestGuiceBundle
     @Test
     public void testJerseyMultiServletModule() throws Exception
     {
-        JerseyGuiceModule module = new JerseyGuiceModule()
+        Module module = new JerseyGuiceModule()
         {
             @Override
             protected void configureServlets()
@@ -95,7 +95,7 @@ public class TestGuiceBundle
             }
         };
 
-        Module module2 = new JerseyMultiGuiceModule(module)
+        Module module2 = new JerseyMultiGuiceModule()
         {
             @Override
             protected void configureServlets()

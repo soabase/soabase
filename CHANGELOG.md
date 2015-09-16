@@ -1,8 +1,11 @@
 # Change Log
 
-## [Unreleased](https://github.com/soabase/soabase/tree/HEAD)
+## [soabase-0.8.3](https://github.com/soabase/soabase/tree/soabase-0.8.3) (2015-09-16)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.2...soabase-0.8.3)
 
-[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.2...HEAD)
+**Implemented enhancements:**
+
+- Allow for multiple JerseyGuiceModules [\#15](https://github.com/soabase/soabase/issues/15)
 
 **Fixed bugs:**
 

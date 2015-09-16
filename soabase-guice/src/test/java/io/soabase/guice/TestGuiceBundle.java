@@ -30,8 +30,10 @@ import io.soabase.guice.mocks.MockServlet;
 import org.eclipse.jetty.util.thread.ShutdownThread;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -78,6 +80,35 @@ public class TestGuiceBundle
     }
 
     @Test
+    public void testJerseyMultiServletModule() throws Exception
+    {
+        JerseyGuiceModule module = new JerseyGuiceModule()
+        {
+            @Override
+            protected void configureServlets()
+            {
+                bind(MockResource.class);
+                bind(MockHK2Injected.class).asEagerSingleton();
+                bind(MockGuiceInjected.class).asEagerSingleton();
+
+                filter("/*").through(MockFilter.class);
+            }
+        };
+
+        Module module2 = new JerseyMultiGuiceModule(module)
+        {
+            @Override
+            protected void configureServlets()
+            {
+                serve("/mock/test").with(MockServlet.class);
+                bind(JerseyGuiceResource.class);
+            }
+        };
+
+        runTest(module, module2);
+    }
+
+    @Test
     public void testJerseyServletModule() throws Exception
     {
         Module module = new JerseyGuiceModule()
@@ -96,7 +127,12 @@ public class TestGuiceBundle
             }
         };
 
-        final MockOldStyleApplication mockApplication = new MockOldStyleApplication(module);
+        runTest(module);
+    }
+
+    private void runTest(Module... modules) throws InterruptedException, URISyntaxException, IOException
+    {
+        final MockOldStyleApplication mockApplication = new MockOldStyleApplication(modules);
         Callable callable = new Callable()
         {
             @Override

@@ -29,17 +29,17 @@ import java.util.concurrent.CountDownLatch;
 public class MockOldStyleApplication extends Application<Configuration>
 {
     private final CountDownLatch startedLatch = new CountDownLatch(1);
-    private final Module module;
+    private final Module[] modules;
 
-    public MockOldStyleApplication(Module module)
+    public MockOldStyleApplication(Module... modules)
     {
-        this.module = module;
+        this.modules = modules;
     }
 
     @Override
     public void initialize(Bootstrap<Configuration> bootstrap)
     {
-        bootstrap.addBundle(new GuiceBundle<>(new StandardInjectorProvider(module)));
+        bootstrap.addBundle(new GuiceBundle<>(new StandardInjectorProvider(modules)));
     }
 
     @Override

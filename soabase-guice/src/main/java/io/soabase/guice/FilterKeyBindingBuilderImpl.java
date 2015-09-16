@@ -26,10 +26,10 @@ import java.util.Map;
 // heavily copied from Guice Servlet
 class FilterKeyBindingBuilderImpl implements FilterKeyBindingBuilder
 {
-    private final JerseyGuiceModule module;
+    private final JerseyMultiGuiceModule module;
     private final List<String> uriPatterns;
 
-    FilterKeyBindingBuilderImpl(JerseyGuiceModule module, List<String> uriPatterns)
+    FilterKeyBindingBuilderImpl(JerseyMultiGuiceModule module, List<String> uriPatterns)
     {
         this.module = module;
         this.uriPatterns = ImmutableList.copyOf(uriPatterns);

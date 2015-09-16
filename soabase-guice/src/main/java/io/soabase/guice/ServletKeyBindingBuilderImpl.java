@@ -27,9 +27,9 @@ import java.util.Map;
 class ServletKeyBindingBuilderImpl implements ServletKeyBindingBuilder
 {
     private final List<String> uriPatterns;
-    private final JerseyGuiceModule module;
+    private final JerseyMultiGuiceModule module;
 
-    ServletKeyBindingBuilderImpl(JerseyGuiceModule module, List<String> uriPatterns)
+    ServletKeyBindingBuilderImpl(JerseyMultiGuiceModule module, List<String> uriPatterns)
     {
         this.module = module;
         this.uriPatterns = ImmutableList.copyOf(uriPatterns);

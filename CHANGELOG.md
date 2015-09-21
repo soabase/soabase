@@ -1,5 +1,12 @@
 # Change Log
 
+## [soabase-0.8.4](https://github.com/soabase/soabase/tree/soabase-0.8.4) (2015-09-21)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.3...soabase-0.8.4)
+
+**Implemented enhancements:**
+
+- Allow admin builder to accept a ConfigurationFactoryFactory [\#16](https://github.com/soabase/soabase/issues/16)
+
 ## [soabase-0.8.3](https://github.com/soabase/soabase/tree/soabase-0.8.3) (2015-09-16)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.2...soabase-0.8.3)
 

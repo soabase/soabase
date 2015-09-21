@@ -45,6 +45,10 @@ Features
 * Guice Integration
  * Bundle for adding Guice support to Jersey 2.0 Resources which supports most features of Guice's ServletModule
 
+Release Notes
+-------------
+https://github.com/soabase/soabase/blob/master/CHANGELOG.md
+
 Details
 -------
 

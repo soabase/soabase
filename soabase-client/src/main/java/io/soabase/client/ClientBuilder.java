@@ -15,6 +15,8 @@
  */
 package io.soabase.client;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.client.HttpClientConfiguration;
 import io.dropwizard.client.JerseyClientBuilder;
@@ -30,13 +32,18 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.client.spi.ConnectorProvider;
 import javax.ws.rs.client.Client;
 import java.io.IOException;
+import java.util.List;
 
 public class ClientBuilder
 {
     private final RetryComponents retryComponents;
     private final Environment environment;
+    private final List<Class<?>> providerClasses = Lists.newArrayList();
+    private final List<Object> providers = Lists.newArrayList();
+    private ConnectorProvider connectorProvider = null;
 
     private static final int DEFAULT_MAX_RETRIES = 3;
     private static final boolean DEFAULT_RETRY_500s = true;
@@ -89,11 +96,36 @@ public class ClientBuilder
         return retryComponents;
     }
 
+    public ClientBuilder withProvider(Class<?> klass) {
+        providerClasses.add(klass);
+        return this;
+    }
+
+    public ClientBuilder withProvider(Object provider) {
+        providers.add(provider);
+        return this;
+    }
+
+    public ClientBuilder withConnectorProvider(ConnectorProvider connectorProvider) {
+        this.connectorProvider = connectorProvider;
+        return this;
+    }
+
     public Client buildJerseyClient(JerseyClientConfiguration configuration, String clientName)
     {
-        Client client = new JerseyClientBuilder(environment)
+        ConnectorProvider localConnectorProvider = (connectorProvider != null) ? connectorProvider : new JerseyRetryConnectorProvider(retryComponents);
+        JerseyClientBuilder builder = new JerseyClientBuilder(environment)
             .using(configuration)
-            .using(new JerseyRetryConnectorProvider(retryComponents))
+            .using(localConnectorProvider);
+        for ( Class<?> klass : providerClasses )
+        {
+            builder = builder.withProvider(klass);
+        }
+        for ( Object provider : providers )
+        {
+            builder = builder.withProvider(provider);
+        }
+        Client client = builder
             .build(clientName);
 
         SoaBundle.getFeatures(environment).putNamed(client, Client.class, clientName);
@@ -103,6 +135,10 @@ public class ClientBuilder
 
     public HttpClient buildHttpClient(HttpClientConfiguration configuration, String clientName)
     {
+        Preconditions.checkState(providers.size() == 0, "HttpClient does not support providers");
+        Preconditions.checkState(providerClasses.size() == 0, "HttpClient does not support providers");
+        Preconditions.checkState(connectorProvider == null, "HttpClient does not support ConnectorProvider");
+
         HttpRequestRetryHandler nullRetry = new HttpRequestRetryHandler()
         {
             @Override

@@ -16,15 +16,12 @@
 
 package io.soabase.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import io.dropwizard.Application;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.assets.AssetsBundle;
-import io.dropwizard.configuration.ConfigurationFactory;
-import io.dropwizard.configuration.ConfigurationFactoryFactory;
 import io.dropwizard.jetty.ConnectorFactory;
 import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.servlets.assets.AssetServlet;
@@ -45,7 +42,6 @@ import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.config.FlexibleConfigurationSourceProvider;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import javax.validation.Validator;
 
 public class AdminConsoleApp<T extends Configuration> extends Application<T>
 {
@@ -64,16 +60,7 @@ public class AdminConsoleApp<T extends Configuration> extends Application<T>
     @Override
     public final void initialize(Bootstrap<T> bootstrap)
     {
-        ConfigurationFactoryFactory<T> configurationFactoryFactory = new ConfigurationFactoryFactory<T>()
-        {
-            @Override
-            public ConfigurationFactory<T> create(Class<T> klass, Validator validator, ObjectMapper objectMapper, String propertyPrefix)
-            {
-                //noinspection unchecked
-                return new ConfigurationFactory(builder.getConfigurationClass(), validator, objectMapper, propertyPrefix);  // this is safe due to other constraints
-            }
-        };
-        bootstrap.setConfigurationFactoryFactory(configurationFactoryFactory);
+        bootstrap.setConfigurationFactoryFactory(builder.getFactoryFactory());
         bootstrap.setConfigurationSourceProvider(new FlexibleConfigurationSourceProvider());
 
         ConfiguredBundle<T> bundle = new ConfiguredBundle<T>()

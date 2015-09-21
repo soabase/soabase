@@ -15,14 +15,18 @@
  */
 package io.soabase.admin;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.dropwizard.Configuration;
+import io.dropwizard.configuration.ConfigurationFactory;
+import io.dropwizard.configuration.ConfigurationFactoryFactory;
 import io.soabase.admin.auth.AuthSpec;
 import io.soabase.admin.components.MetricComponent;
 import io.soabase.admin.components.StandardComponents;
 import io.soabase.admin.components.TabComponent;
 import io.soabase.admin.details.BundleSpec;
+import javax.validation.Validator;
 import java.util.List;
 
 public class AdminConsoleAppBuilder<T extends Configuration>
@@ -32,10 +36,10 @@ public class AdminConsoleAppBuilder<T extends Configuration>
     private String footerMessage = "- Internal use only - Proprietary and Confidential";
     private String soaConfigFieldName = "soa";
     private AuthSpec authSpec = null;
-    private Class<? extends Configuration> configurationClass = Configuration.class;
     private final List<TabComponent> tabs = Lists.newArrayList();
     private final List<BundleSpec<T>> bundles = Lists.newArrayList();
     private final List<MetricComponent> metrics = Lists.newArrayList();
+    private ConfigurationFactoryFactory<T> factoryFactory = null;
 
     public static <T extends Configuration> AdminConsoleAppBuilder<T> builder()
     {
@@ -53,9 +57,22 @@ public class AdminConsoleAppBuilder<T extends Configuration>
         return this;
     }
 
-    public AdminConsoleAppBuilder<T> withConfigurationClass(Class<T> configurationClass)
+    public AdminConsoleAppBuilder<T> withConfigurationClass(final Class<T> configurationClass)
     {
-        this.configurationClass = Preconditions.checkNotNull(configurationClass, "configurationClass cannot be null");
+        factoryFactory = new ConfigurationFactoryFactory<T>()
+        {
+            @Override
+            public ConfigurationFactory<T> create(Class<T> klass, Validator validator, ObjectMapper objectMapper, String propertyPrefix)
+            {
+                return new ConfigurationFactory<>(configurationClass, validator, objectMapper, propertyPrefix);
+            }
+        };
+        return this;
+    }
+
+    public AdminConsoleAppBuilder<T> withConfigurationClassFactory(ConfigurationFactoryFactory<T> factoryFactory)
+    {
+        this.factoryFactory = Preconditions.checkNotNull(factoryFactory, "factoryFactory cannot be null");
         return this;
     }
 
@@ -141,9 +158,9 @@ public class AdminConsoleAppBuilder<T extends Configuration>
         return bundles;
     }
 
-    Class<? extends Configuration> getConfigurationClass()
+    ConfigurationFactoryFactory<T> getFactoryFactory()
     {
-        return configurationClass;
+        return factoryFactory;
     }
 
     List<MetricComponent> getMetrics()

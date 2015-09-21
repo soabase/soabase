@@ -1,5 +1,12 @@
 # Change Log
 
+## [soabase-0.8.5](https://github.com/soabase/soabase/tree/soabase-0.8.5) (2015-09-21)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.4...soabase-0.8.5)
+
+**Implemented enhancements:**
+
+- It would be useful to be able to override the ConnectorProvider used by the Jersey client builder [\#17](https://github.com/soabase/soabase/issues/17)
+
 ## [soabase-0.8.4](https://github.com/soabase/soabase/tree/soabase-0.8.4) (2015-09-21)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.3...soabase-0.8.4)
 

@@ -44,7 +44,6 @@ public class JerseyMultiGuiceModule extends AbstractModule
 {
     private final List<FilterDefinition> filterDefinitions = Lists.newArrayList();
     private final List<ServletDefinition> servletDefinitions = Lists.newArrayList();
-    private final InternalCommonConfig commonConfig = new InternalCommonConfig();
 
     public FilterKeyBindingBuilder filter(String... urlPatterns)
     {

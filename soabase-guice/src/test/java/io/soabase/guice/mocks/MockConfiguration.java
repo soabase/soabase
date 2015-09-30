@@ -13,22 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.guice;
+package io.soabase.guice.mocks;
 
-import com.google.inject.Injector;
-import com.google.inject.Module;
 import io.dropwizard.Configuration;
-import io.dropwizard.setup.Environment;
 
-public interface InjectorProvider<T extends Configuration>
+public class MockConfiguration extends Configuration
 {
-    /**
-     * Return the Guice injector
-     *
-     * @param configuration Dropwizard configuration
-     * @param environment Dropwizard environment
-     * @param additionalModule This module must be installed in the injector
-     * @return Guice injector
-     */
-    Injector get(T configuration, Environment environment, Module additionalModule);
 }

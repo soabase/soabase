@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class StandardInjectorProvider implements InjectorProvider
+public class StandardInjectorProvider<T extends Configuration> implements InjectorProvider<T>
 {
     private final Module[] modules;
 
@@ -35,7 +35,7 @@ public class StandardInjectorProvider implements InjectorProvider
     }
 
     @Override
-    public Injector get(Configuration configuration, Environment environment, Module additionalModule)
+    public Injector get(T configuration, Environment environment, Module additionalModule)
     {
         List<Module> localModules = Lists.newArrayList();
         Collections.addAll(localModules, modules);

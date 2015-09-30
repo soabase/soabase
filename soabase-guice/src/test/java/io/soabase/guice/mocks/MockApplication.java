@@ -17,7 +17,6 @@ package io.soabase.guice.mocks;
 
 import com.google.inject.Module;
 import io.dropwizard.Application;
-import io.dropwizard.Configuration;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.soabase.guice.GuiceBundle;
@@ -27,7 +26,7 @@ import org.eclipse.jetty.util.component.LifeCycle;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import java.util.concurrent.CountDownLatch;
 
-public class MockApplication extends Application<Configuration>
+public class MockApplication extends Application<MockConfiguration>
 {
     private final CountDownLatch startedLatch = new CountDownLatch(1);
     private final Module module;
@@ -38,13 +37,13 @@ public class MockApplication extends Application<Configuration>
     }
 
     @Override
-    public void initialize(Bootstrap<Configuration> bootstrap)
+    public void initialize(Bootstrap<MockConfiguration> bootstrap)
     {
-        bootstrap.addBundle(new GuiceBundle<>(new StandardInjectorProvider(module)));
+        bootstrap.addBundle(new GuiceBundle<>(new StandardInjectorProvider<>(module)));
     }
 
     @Override
-    public void run(Configuration configuration, Environment environment) throws Exception
+    public void run(MockConfiguration configuration, Environment environment) throws Exception
     {
         AbstractBinder abstractBinder = new AbstractBinder()
         {

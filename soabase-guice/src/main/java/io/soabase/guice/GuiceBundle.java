@@ -70,7 +70,7 @@ import java.util.Map;
 public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final InjectorProvider injectorProvider;
+    private final InjectorProvider<T> injectorProvider;
     private final DropwizardResourceConfig loggingConfig = new DropwizardResourceConfig()
     {
         @Override
@@ -95,7 +95,7 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
     /**
      * @param injectorProvider a provider for the Guice injector to use
      */
-    public GuiceBundle(InjectorProvider injectorProvider)
+    public GuiceBundle(InjectorProvider<T> injectorProvider)
     {
         this.injectorProvider = injectorProvider;
     }

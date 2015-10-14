@@ -1,5 +1,16 @@
 # Change Log
 
+## [soabase-0.8.6](https://github.com/soabase/soabase/tree/soabase-0.8.6) (2015-10-14)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.5...soabase-0.8.6)
+
+**Implemented enhancements:**
+
+- Service names should allow '.' [\#20](https://github.com/soabase/soabase/issues/20)
+
+**Fixed bugs:**
+
+- GuiceBundle creates its own Configuration [\#19](https://github.com/soabase/soabase/issues/19)
+
 ## [soabase-0.8.5](https://github.com/soabase/soabase/tree/soabase-0.8.5) (2015-09-21)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.4...soabase-0.8.5)
 

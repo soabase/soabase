@@ -53,7 +53,7 @@ public class SoaConfiguration
     private DeploymentGroupFactory deploymentGroupFactory = new DefaultDeploymentGroupFactory();
 
     @NotEmpty
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Service Names can only contain letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9.]+$", message = "Service Names can only contain letters and numbers")
     private String serviceName;
 
     @Min(0)

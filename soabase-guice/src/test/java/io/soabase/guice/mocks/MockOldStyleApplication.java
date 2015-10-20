@@ -39,7 +39,7 @@ public class MockOldStyleApplication extends Application<Configuration>
     @Override
     public void initialize(Bootstrap<Configuration> bootstrap)
     {
-        bootstrap.addBundle(new GuiceBundle<>(new StandardInjectorProvider(modules)));
+        bootstrap.addBundle(new GuiceBundle<>(new StandardInjectorProvider<>(modules)));
     }
 
     @Override

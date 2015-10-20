@@ -15,6 +15,7 @@
  */
 package io.soabase.core.features.config;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Splitter;
@@ -35,7 +36,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class SoaConfiguration
@@ -62,8 +62,10 @@ public class SoaConfiguration
     private String instanceName;
 
     @NotNull
+    @JsonIgnore
     private List<String> scopes = Lists.newArrayList();
 
+    @JsonIgnore
     private List<String> deploymentGroups = Lists.newArrayList();
 
     private boolean addCorsFilter = true;
@@ -155,28 +157,27 @@ public class SoaConfiguration
         this.instanceName = instanceName;
     }
 
-    @JsonProperty("additionalScopes")
     public List<String> getScopes()
     {
         return scopes;
     }
 
-    @JsonProperty("additionalScopes")
-    public void setScopes(Object scopes)
-    {
-        this.scopes = toList(scopes);
-    }
-
-    @JsonProperty("deploymentGroups")
     public List<String> getDeploymentGroups()
     {
         return deploymentGroups;
     }
 
-    @JsonProperty("deploymentGroups")
-    public void setDeploymentGroups(Objects deploymentGroups)
+    @JsonAnySetter
+    public void setAny(String name, Object value)
     {
-        this.deploymentGroups = toList(deploymentGroups);
+        if ( name.equals("deploymentGroups") )
+        {
+            this.deploymentGroups = toList(value);
+        }
+        else if ( name.equals("additionalScopes") )
+        {
+            this.scopes = toList(value);
+        }
     }
 
     @JsonProperty("addCorsFilter")

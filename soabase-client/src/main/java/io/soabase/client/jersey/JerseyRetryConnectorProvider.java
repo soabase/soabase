@@ -15,7 +15,9 @@
  */
 package io.soabase.client.jersey;
 
+import io.dropwizard.client.DropwizardApacheConnector;
 import io.soabase.core.features.client.RetryComponents;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.glassfish.jersey.client.spi.Connector;
 import org.glassfish.jersey.client.spi.ConnectorProvider;
 import javax.ws.rs.client.Client;
@@ -24,15 +26,20 @@ import javax.ws.rs.core.Configuration;
 public class JerseyRetryConnectorProvider implements ConnectorProvider
 {
     private final RetryComponents retryComponents;
+    private final CloseableHttpClient apacheHttpClient;
+    private final boolean isChunkedEncodingEnabled;
 
-    public JerseyRetryConnectorProvider(RetryComponents retryComponents)
+    public JerseyRetryConnectorProvider(RetryComponents retryComponents, CloseableHttpClient closeableHttpClient, boolean isChunkedEncodingEnabled)
     {
         this.retryComponents = retryComponents;
+        this.apacheHttpClient = closeableHttpClient;
+        this.isChunkedEncodingEnabled = isChunkedEncodingEnabled;
     }
 
     @Override
     public Connector getConnector(Client client, Configuration runtimeConfig)
     {
-        return new JerseyRetryConnector(client, retryComponents, runtimeConfig);
+        DropwizardApacheConnector dropwizardApacheConnector = new DropwizardApacheConnector(apacheHttpClient, isChunkedEncodingEnabled);
+        return new JerseyRetryConnector(dropwizardApacheConnector, retryComponents);
     }
 }

@@ -1,0 +1,53 @@
+package io.soabase.core.features.client;
+
+import org.eclipse.jetty.util.thread.ShutdownThread;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+public class TestClientRetries
+{
+    private MockApplication application;
+
+    @BeforeClass
+    public void setup() throws Exception
+    {
+        application = new MockApplication();
+        application.run("server");
+    }
+
+    @AfterClass
+    public void tearDown()
+    {
+        ShutdownThread.getInstance().run();
+    }
+
+    @BeforeMethod
+    public void setupMethod() throws InterruptedException
+    {
+        application.getStartedLatch().await();
+        application.getThrowInternalError().set(true);
+        application.getCounter().set(0);
+    }
+
+    @Test
+    public void testSyncRetry()
+    {
+        String value = application.getClient().target("http://localhost:8080/test").request().get(String.class);
+        Assert.assertEquals(value, "test");
+        Assert.assertEquals(application.getCounter().get(), 2);
+    }
+
+    @Test
+    public void testAsyncRetry() throws ExecutionException, InterruptedException
+    {
+        Future<String> future = application.getClient().target("http://localhost:8080/test").request().async().get(String.class);
+        String value = future.get();
+        Assert.assertEquals(value, "test");
+        Assert.assertEquals(application.getCounter().get(), 2);
+    }
+}

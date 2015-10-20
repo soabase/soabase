@@ -30,6 +30,7 @@ import io.soabase.core.SoaFeatures;
 import io.soabase.core.features.client.RetryComponents;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.spi.ConnectorProvider;
@@ -113,9 +114,10 @@ public class ClientBuilder
 
     public Client buildJerseyClient(JerseyClientConfiguration configuration, String clientName)
     {
-        ConnectorProvider localConnectorProvider = (connectorProvider != null) ? connectorProvider : new JerseyRetryConnectorProvider(retryComponents);
+        HttpClientBuilder apacheHttpClientBuilder = new HttpClientBuilder(environment).using(configuration);
+        CloseableHttpClient closeableHttpClient = apacheHttpClientBuilder.build(clientName);
+        ConnectorProvider localConnectorProvider = (connectorProvider != null) ? connectorProvider : new JerseyRetryConnectorProvider(retryComponents, closeableHttpClient, configuration.isChunkedEncodingEnabled());
         JerseyClientBuilder builder = new JerseyClientBuilder(environment)
-            .using(configuration)
             .using(localConnectorProvider);
         for ( Class<?> klass : providerClasses )
         {

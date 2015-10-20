@@ -17,17 +17,14 @@ package io.soabase.client.jersey;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
+import io.soabase.core.features.client.RequestId;
 import io.soabase.core.features.client.RequestRunner;
 import io.soabase.core.features.client.RetryComponents;
-import io.soabase.core.features.client.RequestId;
-import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
 import org.glassfish.jersey.client.spi.AsyncConnectorCallback;
 import org.glassfish.jersey.client.spi.Connector;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Configuration;
 import java.net.URI;
 import java.util.concurrent.Future;
 
@@ -44,10 +41,10 @@ public class JerseyRetryConnector implements Connector
         }
     };
 
-    public JerseyRetryConnector(Client client, RetryComponents retryComponents, Configuration runtimeConfig)
+    public JerseyRetryConnector(Connector connector, RetryComponents retryComponents)
     {
         this.retryComponents = retryComponents;
-        connector = new ApacheConnectorProvider().getConnector(client, runtimeConfig);
+        this.connector = connector;
     }
 
     @Override

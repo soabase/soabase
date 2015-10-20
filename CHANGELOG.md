@@ -1,5 +1,16 @@
 # Change Log
 
+## [soabase-0.8.7](https://github.com/soabase/soabase/tree/soabase-0.8.7) (2015-10-20)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.6...soabase-0.8.7)
+
+**Implemented enhancements:**
+
+- Soabase's ClientBuilder doesn't use DropwizardApacheConnector [\#22](https://github.com/soabase/soabase/issues/22)
+
+**Fixed bugs:**
+
+- Issue \#7 wasn't completely fixed [\#23](https://github.com/soabase/soabase/issues/23)
+
 ## [soabase-0.8.6](https://github.com/soabase/soabase/tree/soabase-0.8.6) (2015-10-14)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.5...soabase-0.8.6)
 

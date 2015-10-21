@@ -1,5 +1,12 @@
 # Change Log
 
+## [soabase-0.8.8](https://github.com/soabase/soabase/tree/soabase-0.8.8) (2015-10-21)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.7...soabase-0.8.8)
+
+**Fixed bugs:**
+
+- 0.8.7 introduced Client bug [\#24](https://github.com/soabase/soabase/issues/24)
+
 ## [soabase-0.8.7](https://github.com/soabase/soabase/tree/soabase-0.8.7) (2015-10-20)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.6...soabase-0.8.7)
 

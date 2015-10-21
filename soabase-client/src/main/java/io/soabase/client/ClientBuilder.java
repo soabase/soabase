@@ -114,10 +114,19 @@ public class ClientBuilder
 
     public Client buildJerseyClient(JerseyClientConfiguration configuration, String clientName)
     {
-        HttpClientBuilder apacheHttpClientBuilder = new HttpClientBuilder(environment).using(configuration);
-        CloseableHttpClient closeableHttpClient = apacheHttpClientBuilder.build(clientName);
-        ConnectorProvider localConnectorProvider = (connectorProvider != null) ? connectorProvider : new JerseyRetryConnectorProvider(retryComponents, closeableHttpClient, configuration.isChunkedEncodingEnabled());
+        ConnectorProvider localConnectorProvider;
+        if ( connectorProvider != null )
+        {
+            localConnectorProvider = connectorProvider;
+        }
+        else
+        {
+            HttpClientBuilder apacheHttpClientBuilder = new HttpClientBuilder(environment).using(configuration);
+            CloseableHttpClient closeableHttpClient = apacheHttpClientBuilder.build(clientName);
+            localConnectorProvider = new JerseyRetryConnectorProvider(retryComponents, closeableHttpClient, configuration.isChunkedEncodingEnabled());
+        }
         JerseyClientBuilder builder = new JerseyClientBuilder(environment)
+            .using(configuration)
             .using(localConnectorProvider);
         for ( Class<?> klass : providerClasses )
         {

@@ -16,6 +16,7 @@
         <module>soabase-admin</module>
         <module>soabase-guice</module>
         <module>soabase-jdbi</module>
+        <module>soabase-launcher</module>
     </modules>
 
     <properties>

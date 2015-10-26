@@ -1,5 +1,12 @@
 # Change Log
 
+## [soabase-0.8.9](https://github.com/soabase/soabase/tree/soabase-0.8.9) (2015-10-26)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.8...soabase-0.8.9)
+
+**Implemented enhancements:**
+
+- Add a launcher [\#21](https://github.com/soabase/soabase/issues/21)
+
 ## [soabase-0.8.8](https://github.com/soabase/soabase/tree/soabase-0.8.8) (2015-10-21)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.7...soabase-0.8.8)
 

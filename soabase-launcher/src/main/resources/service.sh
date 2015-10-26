@@ -40,6 +40,13 @@ verboseWarnMessage() {
     fi
 }
 
+# Output a message only if verbose
+verboseMessage() {
+    if [ $VERBOSE = true ]; then
+        echo -e "\033[33m*** $1\033[0m"
+    fi
+}
+
 # find the first JAR
 # findjar <SERVICE_PATH> <BIN_PATH>
 findJar() {
@@ -79,13 +86,13 @@ initialize() {
     PIDFILE="$BIN_PATH/service.pid"
 
     findJar "$SERVICE_PATH" "$BIN_PATH"
-    verboseWarnMessage "JAR: $JAR_FILE"
+    verboseMessage "JAR: $JAR_FILE"
 
     JVM_OPTIONS=""
     if [ -e "$JVM_OPTIONS_PATH" ]; then
         JVM_OPTIONS=`cat "$JVM_OPTIONS_PATH"`
         JVM_OPTIONS=`echo $JVM_OPTIONS`
-        verboseWarnMessage "JVM_OPTIONS: $JVM_OPTIONS"
+        verboseMessage "JVM_OPTIONS: $JVM_OPTIONS"
     fi
 
     if [ -z "$SERVICE_USER" ]; then
@@ -93,8 +100,6 @@ initialize() {
     else
         SERVICE_USER="--user $SERVICE_USER"
     fi
-
-    JAVA_SCRIPT="$JVM_OPTIONS -jar \"$JAR_FILE\""
 
     if [ -z "$JAVA_HOME" ]; then
         JAVA_EXE=java
@@ -116,16 +121,18 @@ start() {
             errorMessage "Could not find a JAR file to run"
         fi
 
-        verboseWarnMessage "Starting Service"
+        verboseMessage "Starting Service"
         if [ $DEBUG = "true" ]; then
-            echo $JAVA_EXE $JAVA_SCRIPT
+            echo "$JAVA_EXE $JAVA_SCRIPT $JVM_OPTIONS -jar $JAR_FILE"
         elif [ $1 = "run" ]; then
-            $JAVA_EXE $JAVA_SCRIPT
+            verboseMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE"
+            "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE"
         else
             if [ $VERBOSE = true ]; then
-                $JAVA_EXE $JAVA_SCRIPT &
+                warnMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE"
+                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" &
             else
-                $JAVA_EXE $JAVA_SCRIPT > /dev/null 2>&1 &
+                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" > /dev/null 2>&1 &
             fi
         fi
 
@@ -134,14 +141,16 @@ start() {
             PID=`ps aux | grep java | grep "$JAR_FILE" | awk '{print $2}'`
             if ! [ -z "$PID" ]; then
                 echo $PID>$PIDFILE
-                verboseWarnMessage "id: $PID"
+                verboseMessage "id: $PID"
+            else
+                errorMessage "Could not find id for process"
             fi
         fi
     fi
 }
 
 stop() {
-    verboseWarnMessage "Stopping Service"
+    verboseMessage "Stopping Service"
     if [ -f $PIDFILE ]; then
         kill `cat $PIDFILE`
         rm $PIDFILE

@@ -1,7 +1,7 @@
 soabase Launcher
 ================
 
-This is a simple launcher script that can be registered via init.d or something *nix startup.
+This is a simple launcher script that can be registered via init.d or some other *nix startup.
 
 Usage
 =====
@@ -12,15 +12,15 @@ Usage
              \_____ service.sh
         \___ config
              \_____ jvm.properties
-             \_____ config.json
-             \_____ config.yaml
+             \_____ *.json
+             \_____ *.yaml
 
 
 NOTES:
 
 * The uber jar can optionally be in the bin directory
-* The config directory is optional as are each file in it
-* You can have a config.json or a config.yaml, but only 1 will be used
+* The config directory is optional as is each file in it
+* You can have a config.json or a config.yaml, it can have any name, but only 1 will be used
 * If config.json or config.yaml are present, the uber jar is called with the arguments: "server config.nnn"
 
 The service.sh script supports these commands:
@@ -35,6 +35,5 @@ The service.sh script supports these commands:
 Installing
 ==========
 
-Add an init.d script that executes service.sh.
-
+Add an init.d script that executes service.sh. NOTE: make sure service.sh has execute permissions.
  

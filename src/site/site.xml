@@ -57,6 +57,7 @@
             <item name="Admin Console" href="console.html"/>
             <item name="Config Utils" href="config.html"/>
             <item name="Guice Integration" href="guice.html"/>
+            <item name="Launcher Script" href="launcher.html"/>
         </menu>
 
         <menu name="Details">

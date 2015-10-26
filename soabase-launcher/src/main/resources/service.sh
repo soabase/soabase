@@ -51,8 +51,21 @@ verboseMessage() {
 # findjar <SERVICE_PATH> <BIN_PATH>
 findJar() {
     JAR_FILE=`ls -t $1/*.jar 2> /dev/null | head -n 1`
-    if [ -z "$JAR_FILE" ]; then
+    if [ -z $JAR_FILE ]; then
         JAR_FILE=`ls -t $2/*.jar 2> /dev/null | head -n 1`
+    fi
+}
+
+findConfig() {
+    CONFIG_FILE=`ls -t $CONFIG_PATH/*.json 2> /dev/null | head -n 1`
+    if [ -z $CONFIG_FILE ]; then
+        CONFIG_FILE=`ls -t $CONFIG_PATH/*.yaml 2> /dev/null | head -n 1`
+    fi
+
+    if [ -z "$CONFIG_FILE" ]; then
+        ARGUMENT=""
+    else
+        ARGUMENT="server"
     fi
 }
 
@@ -88,9 +101,16 @@ initialize() {
     findJar "$SERVICE_PATH" "$BIN_PATH"
     verboseMessage "JAR: $JAR_FILE"
 
+    findConfig
+    if [ -z "$CONFIG_FILE" ]; then
+        verboseMessage "No config file"
+    else
+        verboseMessage "Config: $ARGUMENT $CONFIG_FILE"
+    fi
+
     JVM_OPTIONS=""
     if [ -e "$JVM_OPTIONS_PATH" ]; then
-        JVM_OPTIONS=`cat "$JVM_OPTIONS_PATH"`
+        JVM_OPTIONS=`cat $JVM_OPTIONS_PATH`
         JVM_OPTIONS=`echo $JVM_OPTIONS`
         verboseMessage "JVM_OPTIONS: $JVM_OPTIONS"
     fi
@@ -123,16 +143,16 @@ start() {
 
         verboseMessage "Starting Service"
         if [ $DEBUG = "true" ]; then
-            echo "$JAVA_EXE $JAVA_SCRIPT $JVM_OPTIONS -jar $JAR_FILE"
+            echo "$JAVA_EXE $JAVA_SCRIPT $JVM_OPTIONS -jar $JAR_FILE $ARGUMENT $CONFIG_FILE"
         elif [ $1 = "run" ]; then
-            verboseMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE"
-            "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE"
+            verboseMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE $ARGUMENT $CONFIG_FILE"
+            "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENT "$CONFIG_FILE"
         else
             if [ $VERBOSE = true ]; then
-                warnMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE"
-                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" &
+                warnMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE $ARGUMENT $CONFIG_FILE"
+                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENT "$CONFIG_FILE" &
             else
-                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" > /dev/null 2>&1 &
+                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENT "$CONFIG_FILE" > /dev/null 2>&1 &
             fi
         fi
 

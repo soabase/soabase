@@ -36,7 +36,9 @@ import io.dropwizard.jetty.HttpConnectorFactory;
 import io.dropwizard.jetty.setup.ServletEnvironment;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.logging.AppenderFactory;
+import io.dropwizard.logging.DefaultLoggingFactory;
 import io.dropwizard.logging.FileAppenderFactory;
+import io.dropwizard.logging.LoggingFactory;
 import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.server.ServerFactory;
 import io.dropwizard.server.SimpleServerFactory;
@@ -348,20 +350,24 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     {
         Set<File> mainFiles = Sets.newHashSet();
         Set<File> archiveDirectories = Sets.newHashSet();
-        for ( AppenderFactory appenderFactory : configuration.getLoggingFactory().getAppenders() )
+        LoggingFactory loggingFactory = configuration.getLoggingFactory();
+        if ( loggingFactory instanceof DefaultLoggingFactory )
         {
-            if ( appenderFactory instanceof FileAppenderFactory )
+            for ( AppenderFactory appenderFactory : ((DefaultLoggingFactory)loggingFactory).getAppenders() )
             {
-                FileAppenderFactory fileAppenderFactory = (FileAppenderFactory)appenderFactory;
-                if ( fileAppenderFactory.getCurrentLogFilename() != null )
+                if ( appenderFactory instanceof FileAppenderFactory )
                 {
-                    mainFiles.add(new File(fileAppenderFactory.getCurrentLogFilename()).getCanonicalFile());
-                }
+                    FileAppenderFactory fileAppenderFactory = (FileAppenderFactory)appenderFactory;
+                    if ( fileAppenderFactory.getCurrentLogFilename() != null )
+                    {
+                        mainFiles.add(new File(fileAppenderFactory.getCurrentLogFilename()).getCanonicalFile());
+                    }
 
-                if ( fileAppenderFactory.getArchivedLogFilenamePattern() != null )
-                {
-                    File archive = new File(fileAppenderFactory.getArchivedLogFilenamePattern()).getParentFile().getCanonicalFile();
-                    archiveDirectories.add(archive);
+                    if ( fileAppenderFactory.getArchivedLogFilenamePattern() != null )
+                    {
+                        File archive = new File(fileAppenderFactory.getArchivedLogFilenamePattern()).getParentFile().getCanonicalFile();
+                        archiveDirectories.add(archive);
+                    }
                 }
             }
         }

@@ -17,6 +17,7 @@ package io.soabase.client.jersey;
 
 import io.dropwizard.client.DropwizardApacheConnector;
 import io.soabase.core.features.client.RetryComponents;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.glassfish.jersey.client.spi.Connector;
 import org.glassfish.jersey.client.spi.ConnectorProvider;
@@ -39,7 +40,7 @@ public class JerseyRetryConnectorProvider implements ConnectorProvider
     @Override
     public Connector getConnector(Client client, Configuration runtimeConfig)
     {
-        DropwizardApacheConnector dropwizardApacheConnector = new DropwizardApacheConnector(apacheHttpClient, isChunkedEncodingEnabled);
+        DropwizardApacheConnector dropwizardApacheConnector = new DropwizardApacheConnector(apacheHttpClient, RequestConfig.custom().build(), isChunkedEncodingEnabled);
         return new JerseyRetryConnector(dropwizardApacheConnector, retryComponents);
     }
 }

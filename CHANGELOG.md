@@ -1,5 +1,13 @@
 # Change Log
 
+## [soabase-0.9.1](https://github.com/soabase/soabase/tree/soabase-0.9.1) (2015-11-10)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.9...soabase-0.9.1)
+
+**Implemented enhancements:**
+
+- ClientUtils and doc is slightly wrong [\#27](https://github.com/soabase/soabase/issues/27)
+- Port to Dropwizard 0.9.0 [\#25](https://github.com/soabase/soabase/issues/25)
+
 ## [soabase-0.8.9](https://github.com/soabase/soabase/tree/soabase-0.8.9) (2015-10-26)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.8...soabase-0.8.9)
 

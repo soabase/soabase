@@ -60,4 +60,28 @@ public class TestClientUtils
         Mockito.when(instance.isForceSsl()).thenReturn(true);
         Assert.assertEquals(ClientUtils.applyToUri(uri, instance), new URI("https://test:100"));
     }
+
+    @Test
+    public void testServiceNameToUriForm()
+    {
+        final String path = "/a/b";
+        String[] testServiceNames =
+        {
+            "one",
+            "one-two",
+            "one_two",
+            "12",
+            "x_Y_z",
+            "a.b.c",
+            ClientUtils.HOST_SUBSTITUTION_TOKEN
+        };
+
+        for ( String service : testServiceNames )
+        {
+            String uriForm = ClientUtils.serviceNameToUriForm(service);
+            Assert.assertEquals(uriForm, "//" + ClientUtils.HOST_SUBSTITUTION_TOKEN + service);
+            uriForm = ClientUtils.serviceNameToUriForm(service, path);
+            Assert.assertEquals(uriForm, "//" + ClientUtils.HOST_SUBSTITUTION_TOKEN + service + path);
+        }
+    }
 }

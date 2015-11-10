@@ -39,6 +39,16 @@ public class ClientUtils
         return null;
     }
 
+    public static String serviceNameToUriForm(String serviceName)
+    {
+        return serviceNameToUriForm(serviceName, null);
+    }
+
+    public static String serviceNameToUriForm(String serviceName, String path)
+    {
+        return "//" + serviceNameToHost(serviceName, path);
+    }
+
     public static String serviceNameToHost(String serviceName)
     {
         return serviceNameToHost(serviceName, null);

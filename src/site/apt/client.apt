@@ -11,7 +11,7 @@ REST Client Enhancements
 
     <<<//0.service-name/path/to/api>>>
 
-    You can also use the utility <<<ClientUtils.serviceNameToHost()>>>. When the enhanced REST clients
+    You can also use the utility <<<ClientUtils.serviceNameToUriForm()>>>. When the enhanced REST clients
     see this hostname format, they call <<<Discovery.getInstance()>>> using the service
     name and substituting the returned instance's host and port. If the request needs to be retried
     (due to errors, etc.) a new instance is retrieved and substituted.

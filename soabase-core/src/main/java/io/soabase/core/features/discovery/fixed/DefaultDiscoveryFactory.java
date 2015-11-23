@@ -13,17 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.core.features.discovery;
+package io.soabase.core.features.discovery.fixed;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.google.common.collect.Lists;
 import io.dropwizard.Configuration;
-import io.dropwizard.jackson.Discoverable;
 import io.dropwizard.setup.Environment;
 import io.soabase.core.SoaInfo;
-import io.soabase.core.features.discovery.fixed.DefaultDiscoveryFactory;
+import io.soabase.core.features.discovery.Discovery;
+import io.soabase.core.features.discovery.DiscoveryFactory;
+import javax.validation.Valid;
+import java.util.List;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = DefaultDiscoveryFactory.class)
-public interface DiscoveryFactory extends Discoverable
+@JsonTypeName("default")
+public class DefaultDiscoveryFactory implements DiscoveryFactory
 {
-    public Discovery build(Configuration configuration, Environment environment, SoaInfo soaInfo);
+    @Valid
+    public List<Instance> instances = Lists.newArrayList();
+
+    @Override
+    public Discovery build(Configuration configuration, Environment environment, final SoaInfo soaInfo)
+    {
+        return new DefaultDiscovery(soaInfo, instances);
+    }
+
 }

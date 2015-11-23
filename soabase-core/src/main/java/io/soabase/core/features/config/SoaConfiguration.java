@@ -27,7 +27,7 @@ import io.soabase.core.features.attributes.NullDynamicAttributesFactory;
 import io.soabase.core.features.discovery.DefaultDiscoveryHealthFactory;
 import io.soabase.core.features.discovery.DiscoveryFactory;
 import io.soabase.core.features.discovery.DiscoveryHealthFactory;
-import io.soabase.core.features.discovery.NullDiscoveryFactory;
+import io.soabase.core.features.discovery.fixed.DefaultDiscoveryFactory;
 import io.soabase.core.features.discovery.deployment.DefaultDeploymentGroupFactory;
 import io.soabase.core.features.discovery.deployment.DeploymentGroupFactory;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 public class SoaConfiguration
 {
     @NotNull
-    private DiscoveryFactory discoveryFactory = new NullDiscoveryFactory();
+    private DiscoveryFactory discoveryFactory = new DefaultDiscoveryFactory();
 
     @NotNull
     private DiscoveryHealthFactory discoveryHealthFactory = new DefaultDiscoveryHealthFactory();

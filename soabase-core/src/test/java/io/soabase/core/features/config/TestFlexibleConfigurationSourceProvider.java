@@ -35,7 +35,7 @@ public class TestFlexibleConfigurationSourceProvider
     public void testString() throws Exception
     {
         FlexibleConfigurationSourceProvider provider = new FlexibleConfigurationSourceProvider();
-        Assert.assertArrayEquals(ByteStreams.toByteArray(provider.open("%one")), "one".getBytes());
+        Assert.assertArrayEquals("one".getBytes(), ByteStreams.toByteArray(provider.open("%one")));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class TestFlexibleConfigurationSourceProvider
     {
         FlexibleConfigurationSourceProvider provider = new FlexibleConfigurationSourceProvider();
         byte[] bytes = ByteStreams.toByteArray(provider.open("|package/test-file.txt"));
-        Assert.assertArrayEquals(bytes, "one\ntwo\nthree\n".getBytes());
+        Assert.assertArrayEquals("one\ntwo\nthree\n".getBytes(), bytes);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class TestFlexibleConfigurationSourceProvider
     {
         FlexibleConfigurationSourceProvider provider = new FlexibleConfigurationSourceProvider();
         byte[] bytes = ByteStreams.toByteArray(provider.open("foo/bad/bar/nada/nothing|package/test-file.txt"));
-        Assert.assertArrayEquals(bytes, "one\ntwo\nthree\n".getBytes());
+        Assert.assertArrayEquals("one\ntwo\nthree\n".getBytes(), bytes);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class TestFlexibleConfigurationSourceProvider
 
             FlexibleConfigurationSourceProvider provider = new FlexibleConfigurationSourceProvider();
             byte[] bytes = ByteStreams.toByteArray(provider.open(tempFile.getCanonicalPath() + "|package/test-file.txt"));
-            Assert.assertArrayEquals(bytes, "override".getBytes());
+            Assert.assertArrayEquals("override".getBytes(), bytes);
         }
         finally
         {
@@ -80,6 +80,6 @@ public class TestFlexibleConfigurationSourceProvider
         ObjectMapper objectMapper = Jackson.newObjectMapper();
         ConfigurationFactory<MyConfiguration> configurationFactory = new DefaultConfigurationFactoryFactory<MyConfiguration>().create(MyConfiguration.class, validator, objectMapper, "dw");
         MyConfiguration configuration = configurationFactory.build(new FlexibleConfigurationSourceProvider(), "%{\"testValue\": \"override\"}");
-        Assert.assertEquals(configuration.testValue, "override");
+        Assert.assertEquals("override", configuration.testValue);
     }
 }

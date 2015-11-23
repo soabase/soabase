@@ -29,17 +29,17 @@ public class TestStandardAttributesContainer
     public void testBasic()
     {
         StandardAttributesContainer container = new StandardAttributesContainer();
-        Assert.assertEquals(container.getAll().size(), 0);
+        Assert.assertEquals(0, container.getAll().size());
 
         Map<AttributeKey, Object> newAttributes = Maps.newHashMap();
         newAttributes.put(new AttributeKey("one", ""), 1.2);
         container.reset(newAttributes);
 
-        Assert.assertEquals(container.getAttribute("one", ""), "1.2");
-        Assert.assertEquals(container.getAttributeInt("one", 0), 1);
-        Assert.assertEquals(container.getAttributeLong("one", 0), 1L);
-        Assert.assertEquals(container.getAttributeDouble("one", 0.0), 1.2, 0);
-        Assert.assertEquals(container.getAttributeBoolean("one", false), true);
+        Assert.assertEquals("1.2", container.getAttribute("one", ""));
+        Assert.assertEquals(1, container.getAttributeInt("one", 0));
+        Assert.assertEquals(1L, container.getAttributeLong("one", 0));
+        Assert.assertEquals(1.2, container.getAttributeDouble("one", 0.0), 0);
+        Assert.assertEquals(true, container.getAttributeBoolean("one", false));
     }
 
     @Test
@@ -52,29 +52,29 @@ public class TestStandardAttributesContainer
         newAttributes.put(new AttributeKey("one", "a"), 2);
         newAttributes.put(new AttributeKey("one", "b"), 3);
         container.reset(newAttributes);
-        Assert.assertEquals(container.getAttributeInt("one", 0), 2);    // first matching scope wins
+        Assert.assertEquals(2, container.getAttributeInt("one", 0));    // first matching scope wins
 
         newAttributes = Maps.newHashMap();
         newAttributes.put(new AttributeKey("one", ""), 1);
         newAttributes.put(new AttributeKey("one", "b"), 3);
         container.reset(newAttributes);
-        Assert.assertEquals(container.getAttributeInt("one", 0), 3);
+        Assert.assertEquals(3, container.getAttributeInt("one", 0));
 
         newAttributes = Maps.newHashMap();
         newAttributes.put(new AttributeKey("one", ""), 1);
         container.reset(newAttributes);
-        Assert.assertEquals(container.getAttributeInt("one", 0), 1);
+        Assert.assertEquals(1, container.getAttributeInt("one", 0));
 
         container.temporaryOverride("one", "over");
-        Assert.assertEquals(container.getAttribute("one", ""), "over");
-        Assert.assertEquals(container.getAttributeInt("one", 0), 0);
+        Assert.assertEquals("over", container.getAttribute("one", ""));
+        Assert.assertEquals(0, container.getAttributeInt("one", 0));
 
         newAttributes = Maps.newHashMap();
         newAttributes.put(new AttributeKey("two", ""), 1);
         newAttributes.put(new AttributeKey("two", "y"), 2);
         newAttributes.put(new AttributeKey("two", "z"), 3);
         container.reset(newAttributes);
-        Assert.assertEquals(container.getAttributeInt("two", 0), 1);    // other scopes don't match
+        Assert.assertEquals(1, container.getAttributeInt("two", 0));    // other scopes don't match
     }
 
     @Test
@@ -85,21 +85,21 @@ public class TestStandardAttributesContainer
         defaultProperties.setProperty("two", "2");
         StandardAttributesContainer container = new StandardAttributesContainer(defaultProperties, Collections.<String>emptyList());
 
-        Assert.assertEquals(container.getAttribute("one", null), "1");
-        Assert.assertEquals(container.getAttribute("two", null), "2");
-        Assert.assertEquals(container.getAttribute("three", null), null);
+        Assert.assertEquals("1", container.getAttribute("one", null));
+        Assert.assertEquals("2", container.getAttribute("two", null));
+        Assert.assertNull(container.getAttribute("three", null));
 
         container.temporaryOverride("two", "too");
-        Assert.assertEquals(container.getAttribute("one", null), "1");
-        Assert.assertEquals(container.getAttribute("two", null), "too");
-        Assert.assertEquals(container.getAttribute("three", null), null);
+        Assert.assertEquals("1", container.getAttribute("one", null));
+        Assert.assertEquals("too", container.getAttribute("two", null));
+        Assert.assertNull(container.getAttribute("three", null));
         container.removeOverride("two");
 
         Map<AttributeKey, Object> newAttributes = Maps.newHashMap();
         newAttributes.put(new AttributeKey("two", ""), "new");
         container.reset(newAttributes);
-        Assert.assertEquals(container.getAttribute("one", null), "1");
-        Assert.assertEquals(container.getAttribute("two", null), "new");
-        Assert.assertEquals(container.getAttribute("three", null), null);
+        Assert.assertEquals("1", container.getAttribute("one", null));
+        Assert.assertEquals("new", container.getAttribute("two", null));
+        Assert.assertNull(container.getAttribute("three", null));
     }
 }

@@ -57,22 +57,22 @@ public class TestDynamicAttributeListener
         container.getListenable().addListener(listener);
 
         container.reset(container.getAll());    // first commit doesn't notify
-        Assert.assertEquals(attributeChangedLatch.getCount(), 1);
-        Assert.assertEquals(attributeAddedLatch.getCount(), 1);
-        Assert.assertEquals(attributeRemovedLatch.getCount(), 1);
+        Assert.assertEquals(1, attributeChangedLatch.getCount());
+        Assert.assertEquals(1, attributeAddedLatch.getCount());
+        Assert.assertEquals(1, attributeRemovedLatch.getCount());
 
         Map<AttributeKey, Object> newAttributes = Maps.newHashMap();
         newAttributes.put(new AttributeKey("a", "one"), "a");
         container.reset(newAttributes);
         Assert.assertTrue(attributeAddedLatch.await(1, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(attributeChangedLatch.getCount(), 1);
-        Assert.assertEquals(attributeRemovedLatch.getCount(), 1);
+        Assert.assertEquals(1, attributeChangedLatch.getCount());
+        Assert.assertEquals(1, attributeRemovedLatch.getCount());
 
         newAttributes = Maps.newHashMap();
         newAttributes.put(new AttributeKey("a", "one"), "b");
         container.reset(newAttributes);
         Assert.assertTrue(attributeChangedLatch.await(1, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(attributeRemovedLatch.getCount(), 1);
+        Assert.assertEquals(1, attributeRemovedLatch.getCount());
 
         newAttributes = Maps.newHashMap();
         container.reset(newAttributes);
@@ -104,7 +104,7 @@ public class TestDynamicAttributeListener
 
         container.temporaryOverride("a", "a");
         Assert.assertTrue(overrideAddedLatch.await(1, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(overrideRemovedLatch.getCount(), 1);
+        Assert.assertEquals(1, overrideRemovedLatch.getCount());
 
         container.removeOverride("a");
         Assert.assertTrue(overrideRemovedLatch.await(1, TimeUnit.MILLISECONDS));
@@ -141,7 +141,7 @@ public class TestDynamicAttributeListener
                 new ListenerEntry("attributeAdded", "b", ""),
                 new ListenerEntry("attributeRemoved", "a", "b")
             );
-        Assert.assertEquals(Sets.newHashSet(listener.getEntries()), expected);
+        Assert.assertEquals(expected, Sets.newHashSet(listener.getEntries()));
         listener.clear();
 
         newAttributes = Maps.newHashMap();
@@ -151,6 +151,6 @@ public class TestDynamicAttributeListener
         newAttributes.put(new AttributeKey("b", "b"), "two");
         newAttributes.put(new AttributeKey("b", ""), "hey");
         container.reset(newAttributes);
-        Assert.assertEquals(listener.getEntries().size(), 0);
+        Assert.assertEquals(0, listener.getEntries().size());
     }
 }

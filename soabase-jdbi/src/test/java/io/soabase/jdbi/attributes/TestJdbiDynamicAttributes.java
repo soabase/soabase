@@ -58,28 +58,28 @@ public class TestJdbiDynamicAttributes
     @Test
     public void testBasic() throws Exception
     {
-        Assert.assertEquals(dynamicAttributes.getAttribute("file.separator"), System.getProperty("file.separator"));
-        Assert.assertEquals(dynamicAttributes.getAttribute("os.version"), System.getProperty("os.version"));
+        Assert.assertEquals(System.getProperty("file.separator"), dynamicAttributes.getAttribute("file.separator"));
+        Assert.assertEquals(System.getProperty("os.version"), dynamicAttributes.getAttribute("os.version"));
 
-        Assert.assertEquals(dynamicAttributes.getAttribute("test.foo.bar", ""), "");
+        Assert.assertEquals("", dynamicAttributes.getAttribute("test.foo.bar", ""));
 
         AttributeEntity attribute = new AttributeEntity("test.foo.bar", "test");
         dynamicAttributes.getDao().insert(attribute.getfKEY(), attribute.getfSCOPE(), attribute.getfVALUE(), attribute.getfTIMESTAMP());
         dynamicAttributes.update();
-        Assert.assertEquals(dynamicAttributes.getAttribute("test.foo.bar", ""), "test");
+        Assert.assertEquals("test", dynamicAttributes.getAttribute("test.foo.bar", ""));
 
         attribute = new AttributeEntity("test.foo.bar", "bad", "scoped-value");
         dynamicAttributes.getDao().insert(attribute.getfKEY(), attribute.getfSCOPE(), attribute.getfVALUE(), attribute.getfTIMESTAMP());
         dynamicAttributes.update();
-        Assert.assertEquals(dynamicAttributes.getAttribute("test.foo.bar", ""), "test");
+        Assert.assertEquals("test", dynamicAttributes.getAttribute("test.foo.bar", ""));
 
         attribute = new AttributeEntity("test.foo.bar", "test", "new-value");
         dynamicAttributes.getDao().insert(attribute.getfKEY(), attribute.getfSCOPE(), attribute.getfVALUE(), attribute.getfTIMESTAMP());
         dynamicAttributes.update();
-        Assert.assertEquals(dynamicAttributes.getAttribute("test.foo.bar", ""), "new-value");
+        Assert.assertEquals("new-value", dynamicAttributes.getAttribute("test.foo.bar", ""));
 
         dynamicAttributes.getDao().delete("test.foo.bar", "test");
         dynamicAttributes.update();
-        Assert.assertEquals(dynamicAttributes.getAttribute("test.foo.bar", ""), "test");
+        Assert.assertEquals("test", dynamicAttributes.getAttribute("test.foo.bar", ""));
     }
 }

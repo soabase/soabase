@@ -31,7 +31,7 @@ public class TestComposedConfigurationAccessor
         ComposedConfigurationAccessor accessor = new ComposedConfigurationAccessor(new ContainerConfiguration());
         MyConfiguration accessed = accessor.access(MyConfiguration.class);
         Assert.assertNotNull(accessed);
-        Assert.assertEquals(accessed.testValue, "unset");
+        Assert.assertEquals("unset", accessed.testValue);
     }
 
     @Test
@@ -40,7 +40,7 @@ public class TestComposedConfigurationAccessor
         ComposedConfigurationAccessor accessor = new ComposedConfigurationAccessor(new BaseConfiguration());
         MyConfiguration accessed = accessor.access(MyConfiguration.class);
         Assert.assertNotNull(accessed);
-        Assert.assertEquals(accessed.testValue, "unset");
+        Assert.assertEquals("unset", accessed.testValue);
     }
 
     @Test
@@ -70,6 +70,6 @@ public class TestComposedConfigurationAccessor
         ComposedConfigurationAccessor accessor = new ComposedConfigurationAccessor(new ConfigurationWithArray());
         MyConfiguration[] configurations = accessor.access(MyConfiguration[].class);
         Assert.assertNotNull(configurations);
-        Assert.assertEquals(configurations.length, 5);
+        Assert.assertEquals(5, configurations.length);
     }
 }

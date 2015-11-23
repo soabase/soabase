@@ -60,25 +60,25 @@ public class TestSqlDynamicAttributes
     @Test
     public void testBasic()
     {
-        Assert.assertEquals(dynamicAttributes.getAttribute("file.separator"), System.getProperty("file.separator"));
-        Assert.assertEquals(dynamicAttributes.getAttribute("os.version"), System.getProperty("os.version"));
+        Assert.assertEquals(System.getProperty("file.separator"), dynamicAttributes.getAttribute("file.separator"));
+        Assert.assertEquals(System.getProperty("os.version"), dynamicAttributes.getAttribute("os.version"));
 
-        Assert.assertEquals(dynamicAttributes.getAttribute("test.foo.bar", ""), "");
+        Assert.assertEquals("", dynamicAttributes.getAttribute("test.foo.bar", ""));
 
         AttributeEntityMapper mapper = session.getMapper(AttributeEntityMapper.class);
         AttributeEntity attribute = new AttributeEntity("test.foo.bar", "test");
         mapper.insert(attribute);
         dynamicAttributes.update();
-        Assert.assertEquals(dynamicAttributes.getAttribute("test.foo.bar", ""), "test");
+        Assert.assertEquals("test", dynamicAttributes.getAttribute("test.foo.bar", ""));
 
         attribute = new AttributeEntity("test.foo.bar", "bad", "scoped-value");
         mapper.insert(attribute);
         dynamicAttributes.update();
-        Assert.assertEquals(dynamicAttributes.getAttribute("test.foo.bar", ""), "test");
+        Assert.assertEquals("test", dynamicAttributes.getAttribute("test.foo.bar", ""));
 
         attribute = new AttributeEntity("test.foo.bar", "test", "new-value");
         mapper.insert(attribute);
         dynamicAttributes.update();
-        Assert.assertEquals(dynamicAttributes.getAttribute("test.foo.bar", ""), "new-value");
+        Assert.assertEquals("new-value", dynamicAttributes.getAttribute("test.foo.bar", ""));
     }
 }

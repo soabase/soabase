@@ -27,15 +27,15 @@ public class TestSoaMainPortAccessor
     public void testNoAccessor()
     {
         SoaBundle.Ports ports = SoaBundle.getPorts(new MyConfiguration());
-        Assert.assertEquals(ports.mainPort, HostAndPort.fromParts("localhost", 8080));
-        Assert.assertEquals(ports.adminPort, HostAndPort.fromParts("localhost", 8081));
+        Assert.assertEquals(HostAndPort.fromParts("localhost", 8080), ports.mainPort);
+        Assert.assertEquals(HostAndPort.fromParts("localhost", 8081), ports.adminPort);
     }
 
     @Test
     public void testWithAccessor()
     {
         SoaBundle.Ports ports = SoaBundle.getPorts(new PortAccessorConfiguration());
-        Assert.assertEquals(ports.mainPort, HostAndPort.fromParts("x", 1));
-        Assert.assertEquals(ports.adminPort, HostAndPort.fromParts("y", 2));
+        Assert.assertEquals(HostAndPort.fromParts("x", 1), ports.mainPort);
+        Assert.assertEquals(HostAndPort.fromParts("y", 2), ports.adminPort);
     }
 }

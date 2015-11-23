@@ -54,7 +54,7 @@ public class TestClientRetries
     public void testSyncRetry()
     {
         String value = application.getClient().target("http://localhost:8080/test").request().get(String.class);
-        Assert.assertEquals(value, "test");
+        Assert.assertEquals("test", value);
         Assert.assertEquals(application.getCounter().get(), 2);
     }
 
@@ -63,7 +63,7 @@ public class TestClientRetries
     {
         Future<String> future = application.getClient().target("http://localhost:8080/test").request().async().get(String.class);
         String value = future.get();
-        Assert.assertEquals(value, "test");
-        Assert.assertEquals(application.getCounter().get(), 2);
+        Assert.assertEquals("test", value);
+        Assert.assertEquals(2, application.getCounter().get());
     }
 }

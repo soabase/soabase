@@ -70,7 +70,7 @@ public class TestGuiceBundle
             Assert.assertTrue(mockApplication.getStartedLatch().await(5, TimeUnit.SECONDS));
             URI uri = new URI("http://localhost:8080/test");
             String str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
-            Assert.assertEquals(str, "guice - hk2");
+            Assert.assertEquals("guice - hk2", str);
         }
         finally
         {
@@ -149,15 +149,15 @@ public class TestGuiceBundle
             Assert.assertTrue(mockApplication.getStartedLatch().await(5, TimeUnit.SECONDS));
             URI uri = new URI("http://localhost:8080/test");
             String str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
-            Assert.assertEquals(str, "success - guice - hk2");
+            Assert.assertEquals("success - guice - hk2", str);
 
             uri = new URI("http://localhost:8080/mock/test");
             str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
-            Assert.assertEquals(str, "hello");
+            Assert.assertEquals("hello", str);
 
             uri = new URI("http://localhost:8080/jg");
             str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
-            Assert.assertEquals(str, "jg");
+            Assert.assertEquals("jg", str);
         }
         finally
         {

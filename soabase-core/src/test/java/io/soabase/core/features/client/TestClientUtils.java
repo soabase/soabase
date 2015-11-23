@@ -41,7 +41,7 @@ public class TestClientUtils
         for ( String service : testServiceNames )
         {
             String host = ClientUtils.serviceNameToHost(service);
-            Assert.assertEquals(ClientUtils.hostToServiceName(host), service);
+            Assert.assertEquals(service, ClientUtils.hostToServiceName(host));
         }
     }
 
@@ -49,16 +49,16 @@ public class TestClientUtils
     public void testApplyToUri() throws URISyntaxException
     {
         URI uri = new URI("http://www.apple.com");
-        Assert.assertEquals(ClientUtils.applyToUri(uri, null), uri);
+        Assert.assertEquals(uri, ClientUtils.applyToUri(uri, null));
 
         DiscoveryInstance instance = Mockito.mock(DiscoveryInstance.class);
         Mockito.when(instance.isForceSsl()).thenReturn(false);
         Mockito.when(instance.getHost()).thenReturn("test");
         Mockito.when(instance.getPort()).thenReturn(100);
-        Assert.assertEquals(ClientUtils.applyToUri(uri, instance), new URI("http://test:100"));
+        Assert.assertEquals(new URI("http://test:100"), ClientUtils.applyToUri(uri, instance));
 
         Mockito.when(instance.isForceSsl()).thenReturn(true);
-        Assert.assertEquals(ClientUtils.applyToUri(uri, instance), new URI("https://test:100"));
+        Assert.assertEquals(new URI("https://test:100"), ClientUtils.applyToUri(uri, instance));
     }
 
     @Test
@@ -79,9 +79,9 @@ public class TestClientUtils
         for ( String service : testServiceNames )
         {
             String uriForm = ClientUtils.serviceNameToUriForm(service);
-            Assert.assertEquals(uriForm, "//" + ClientUtils.HOST_SUBSTITUTION_TOKEN + service);
+            Assert.assertEquals("//" + ClientUtils.HOST_SUBSTITUTION_TOKEN + service, uriForm);
             uriForm = ClientUtils.serviceNameToUriForm(service, path);
-            Assert.assertEquals(uriForm, "//" + ClientUtils.HOST_SUBSTITUTION_TOKEN + service + path);
+            Assert.assertEquals("//" + ClientUtils.HOST_SUBSTITUTION_TOKEN + service + path, uriForm);
         }
     }
 }

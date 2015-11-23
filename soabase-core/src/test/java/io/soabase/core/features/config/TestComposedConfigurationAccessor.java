@@ -20,8 +20,8 @@ import io.soabase.core.features.config.mocks.ConfigurationWithArray;
 import io.soabase.core.features.config.mocks.ContainerConfiguration;
 import io.soabase.core.features.config.mocks.DuplicateConfiguration;
 import io.soabase.core.features.config.mocks.MyConfiguration;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class TestComposedConfigurationAccessor
 {
@@ -52,13 +52,13 @@ public class TestComposedConfigurationAccessor
         Assert.assertSame(configuration, accessed);
     }
 
-    @Test(expectedExceptions = RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void testFailure()
     {
         new ComposedConfigurationAccessor("").access(MyConfiguration.class);
     }
 
-    @Test(expectedExceptions = RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void testDuplicate()
     {
         new ComposedConfigurationAccessor(new DuplicateConfiguration()).access(MyConfiguration.class);

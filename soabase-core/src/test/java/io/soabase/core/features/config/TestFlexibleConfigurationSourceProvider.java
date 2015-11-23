@@ -22,8 +22,8 @@ import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
 import io.dropwizard.jackson.Jackson;
 import io.soabase.core.features.config.mocks.MyConfiguration;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.io.File;
@@ -35,7 +35,7 @@ public class TestFlexibleConfigurationSourceProvider
     public void testString() throws Exception
     {
         FlexibleConfigurationSourceProvider provider = new FlexibleConfigurationSourceProvider();
-        Assert.assertEquals(ByteStreams.toByteArray(provider.open("%one")), "one".getBytes());
+        Assert.assertArrayEquals(ByteStreams.toByteArray(provider.open("%one")), "one".getBytes());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class TestFlexibleConfigurationSourceProvider
     {
         FlexibleConfigurationSourceProvider provider = new FlexibleConfigurationSourceProvider();
         byte[] bytes = ByteStreams.toByteArray(provider.open("|package/test-file.txt"));
-        Assert.assertEquals(bytes, "one\ntwo\nthree\n".getBytes());
+        Assert.assertArrayEquals(bytes, "one\ntwo\nthree\n".getBytes());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class TestFlexibleConfigurationSourceProvider
     {
         FlexibleConfigurationSourceProvider provider = new FlexibleConfigurationSourceProvider();
         byte[] bytes = ByteStreams.toByteArray(provider.open("foo/bad/bar/nada/nothing|package/test-file.txt"));
-        Assert.assertEquals(bytes, "one\ntwo\nthree\n".getBytes());
+        Assert.assertArrayEquals(bytes, "one\ntwo\nthree\n".getBytes());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class TestFlexibleConfigurationSourceProvider
 
             FlexibleConfigurationSourceProvider provider = new FlexibleConfigurationSourceProvider();
             byte[] bytes = ByteStreams.toByteArray(provider.open(tempFile.getCanonicalPath() + "|package/test-file.txt"));
-            Assert.assertEquals(bytes, "override".getBytes());
+            Assert.assertArrayEquals(bytes, "override".getBytes());
         }
         finally
         {

@@ -16,32 +16,33 @@
 package io.soabase.core.features.client;
 
 import org.eclipse.jetty.util.thread.ShutdownThread;
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class TestClientRetries
 {
-    private MockApplication application;
+    private static volatile MockApplication application;
 
     @BeforeClass
-    public void setup() throws Exception
+    public static void setup() throws Exception
     {
         application = new MockApplication();
         application.run("server");
     }
 
     @AfterClass
-    public void tearDown()
+    public static void tearDown()
     {
         ShutdownThread.getInstance().run();
+        application = null;
     }
 
-    @BeforeMethod
+    @Before
     public void setupMethod() throws InterruptedException
     {
         application.getStartedLatch().await();

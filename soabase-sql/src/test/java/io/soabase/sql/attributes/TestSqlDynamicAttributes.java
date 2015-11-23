@@ -20,10 +20,10 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import java.io.InputStream;
 import java.util.Collections;
 
@@ -32,7 +32,7 @@ public class TestSqlDynamicAttributes
     private SqlSession session;
     private SqlDynamicAttributes dynamicAttributes;
 
-    @BeforeMethod
+    @Before
     public void setup() throws Exception
     {
         try ( InputStream stream = Resources.getResource("test-mybatis.xml").openStream() )
@@ -50,7 +50,7 @@ public class TestSqlDynamicAttributes
         }
     }
 
-    @AfterMethod
+    @After
     public void tearDown() throws Exception
     {
         dynamicAttributes.stop();

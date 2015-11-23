@@ -16,8 +16,8 @@
 package io.soabase.core.features.attributes;
 
 import com.google.common.collect.Maps;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class TestStandardAttributesContainer
         Assert.assertEquals(container.getAttribute("one", ""), "1.2");
         Assert.assertEquals(container.getAttributeInt("one", 0), 1);
         Assert.assertEquals(container.getAttributeLong("one", 0), 1L);
-        Assert.assertEquals(container.getAttributeDouble("one", 0.0), 1.2);
+        Assert.assertEquals(container.getAttributeDouble("one", 0.0), 1.2, 0);
         Assert.assertEquals(container.getAttributeBoolean("one", false), true);
     }
 

@@ -18,8 +18,8 @@ package io.soabase.core;
 import com.google.common.net.HostAndPort;
 import io.soabase.core.features.config.mocks.MyConfiguration;
 import io.soabase.core.features.config.mocks.PortAccessorConfiguration;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class TestSoaMainPortAccessor
 {

@@ -20,19 +20,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
-import io.dropwizard.util.Duration;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.skife.jdbi.v2.DBI;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import java.util.Collections;
 
 public class TestJdbiDynamicAttributes
 {
     private JdbiDynamicAttributes dynamicAttributes;
 
-    @BeforeMethod
+    @Before
     public void setup() throws Exception
     {
         DBIFactory factory = new DBIFactory();
@@ -50,7 +49,7 @@ public class TestJdbiDynamicAttributes
         dynamicAttributes.start();
     }
 
-    @AfterMethod
+    @After
     public void tearDown() throws Exception
     {
         dynamicAttributes.stop();

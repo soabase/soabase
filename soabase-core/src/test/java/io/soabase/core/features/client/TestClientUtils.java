@@ -16,9 +16,9 @@
 package io.soabase.core.features.client;
 
 import io.soabase.core.features.discovery.DiscoveryInstance;
+import org.junit.Assert;
+import org.junit.Test;
 import org.mockito.Mockito;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 

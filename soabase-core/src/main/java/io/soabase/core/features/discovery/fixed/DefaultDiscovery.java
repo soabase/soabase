@@ -15,10 +15,12 @@
  */
 package io.soabase.core.features.discovery.fixed;
 
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.net.HostAndPort;
 import io.soabase.core.SoaInfo;
@@ -36,7 +38,7 @@ import java.util.UUID;
 class DefaultDiscovery implements Discovery
 {
     private final SoaInfo soaInfo;
-    private final Map<String, DiscoveryInstance> instances;
+    private final Multimap<String, DiscoveryInstance> instances;
     private volatile Map<String, String> metaData;
     private volatile HealthyState healthyState;
 
@@ -46,7 +48,7 @@ class DefaultDiscovery implements Discovery
         metaData = ImmutableMap.of();
         healthyState = HealthyState.HEALTHY;
 
-        ImmutableMap.Builder<String, DiscoveryInstance> builder = ImmutableMap.builder();
+        ImmutableListMultimap.Builder<String, DiscoveryInstance> builder = ImmutableListMultimap.builder();
         for ( Instance instance : instances )
         {
             HostAndPort mainPort = HostAndPort.fromParts(instance.getHost(), instance.getPort());
@@ -71,6 +73,10 @@ class DefaultDiscovery implements Discovery
         {
             return Collections.singletonList(getInstance(serviceName));
         }
+        if ( instances.containsKey(serviceName) )
+        {
+            return instances.get(serviceName);
+        }
         return ImmutableSet.of();
     }
 
@@ -80,6 +86,13 @@ class DefaultDiscovery implements Discovery
         if ( serviceName.equals(soaInfo.getServiceName()) )
         {
             return newDiscoveryInstance(soaInfo, healthyState, metaData);
+        }
+        Collection<DiscoveryInstance> discoveryInstances = instances.get(serviceName);
+        if ( (discoveryInstances != null) && (discoveryInstances.size() > 0) )
+        {
+            List<DiscoveryInstance> localList = Lists.newArrayList(discoveryInstances);
+            Collections.shuffle(localList);
+            return localList.get(0);
         }
         return null;
     }

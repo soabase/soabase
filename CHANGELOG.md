@@ -1,5 +1,14 @@
 # Change Log
 
+## [soabase-0.10.0](https://github.com/soabase/soabase/tree/soabase-0.10.0) (2015-12-01)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.9.1...soabase-0.10.0)
+
+**Implemented enhancements:**
+
+- Bump versions [\#30](https://github.com/soabase/soabase/issues/30)
+- Use dropwizard-testing [\#29](https://github.com/soabase/soabase/issues/29)
+- Default discovery should support fixed instance list [\#28](https://github.com/soabase/soabase/issues/28)
+
 ## [soabase-0.9.1](https://github.com/soabase/soabase/tree/soabase-0.9.1) (2015-11-10)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.8.9...soabase-0.9.1)
 

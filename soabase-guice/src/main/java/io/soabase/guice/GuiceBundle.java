@@ -63,12 +63,15 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Bundle for adding Guice support to Jersey 2.0 Resources
  */
 public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
+    // guarded by sync
+    private Injector injector = null;
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final InjectorProvider<T> injectorProvider;
     private final DropwizardResourceConfig loggingConfig = new DropwizardResourceConfig()
@@ -131,8 +134,22 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
     {
         Feature feature = new GuiceBundleFeature()
         {
+            private final AtomicBoolean firstTime = new AtomicBoolean(true);
+
+            @Override
+            public void apply(FeatureContext context)
+            {
+                internalApply(context);
+            }
+
             @Override
             public boolean configure(FeatureContext context)
+            {
+                internalApply(context);
+                return true;
+            }
+
+            private void internalApply(FeatureContext context)
             {
                 ServiceLocator serviceLocator = ServiceLocatorProvider.getServiceLocator(context);
                 GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
@@ -161,10 +178,12 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
                         }
                     }
                 };
-                Injector injector = injectorProvider.get(configuration, environment, additionalModule);
-                guiceBridge.bridgeGuiceInjector(injector);
-                registerBoundJerseyComponents(injector, context, environment);
-                return true;
+                Injector localInjector = getInjector(configuration, environment, additionalModule);
+                guiceBridge.bridgeGuiceInjector(localInjector);
+                if ( firstTime.compareAndSet(true, false) )
+                {
+                    registerBoundJerseyComponents(localInjector, context, environment);
+                }
             }
         };
         environment.jersey().register(feature);
@@ -243,6 +262,15 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
             }
             injector = injector.getParent();
         }
+    }
+
+    private synchronized Injector getInjector(T configuration, Environment environment, Module module)
+    {
+        if ( injector == null )
+        {
+            injector = injectorProvider.get(configuration, environment, module);
+        }
+        return injector;
     }
 
     private void applyInternalCommonConfig(FeatureContext context, InternalCommonConfig internalCommonConfig)

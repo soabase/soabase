@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.soabase.guice;
+package io.soabase.core.features.config;
 
-import io.soabase.core.features.config.InternalFeatureRegistrations;
-import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
 
-public interface GuiceBundleFeature extends Feature, InternalFeatureRegistrations
+public interface InternalFeatureRegistrations
 {
+    void apply(FeatureContext context);
 }

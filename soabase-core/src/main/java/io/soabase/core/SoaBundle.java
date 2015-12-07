@@ -48,6 +48,7 @@ import io.soabase.core.features.ExecutorBuilder;
 import io.soabase.core.features.attributes.DynamicAttributes;
 import io.soabase.core.features.client.ClientFilter;
 import io.soabase.core.features.config.ComposedConfigurationAccessor;
+import io.soabase.core.features.config.InternalFeatureRegistrations;
 import io.soabase.core.features.config.SoaConfiguration;
 import io.soabase.core.features.discovery.Discovery;
 import io.soabase.core.features.discovery.DiscoveryHealth;
@@ -355,8 +356,6 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
     {
         try
         {
-            final Class<?> guiceBundleFeatureClass = Class.forName("io.soabase.guice.GuiceBundleFeature");  // GuiceBundle may not be installed so we have to use reflection
-            final Method method = guiceBundleFeatureClass.getMethod("configure", FeatureContext.class);
             Feature feature = new Feature()
             {
                 @Override
@@ -364,17 +363,9 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
                 {
                     for ( Object obj : environment.jersey().getResourceConfig().getSingletons() )
                     {
-                        if ( guiceBundleFeatureClass.isAssignableFrom(obj.getClass()) )
+                        if ( obj instanceof InternalFeatureRegistrations )
                         {
-                            try
-                            {
-                                method.invoke(obj, context);
-                            }
-                            catch ( Exception e )
-                            {
-                                log.error("Could not apply guice context to admin Jersey environment", e);
-                            }
-                            break;
+                            ((InternalFeatureRegistrations)obj).apply(context);
                         }
                     }
                     return true;

@@ -70,9 +70,13 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -307,7 +311,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         return obj;
     }
 
-    private void initJerseyAdmin(SoaConfiguration configuration, SoaFeaturesImpl features, Ports ports, Environment environment, AbstractBinder binder)
+    private void initJerseyAdmin(SoaConfiguration configuration, SoaFeaturesImpl features, Ports ports, final Environment environment, AbstractBinder binder)
     {
         if ( (configuration.getAdminJerseyPath() == null) || !ports.adminPort.hasPort() )
         {
@@ -344,6 +348,44 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         jerseyEnvironment.register(new JacksonMessageBodyProvider(environment.getObjectMapper(), environment.getValidator()));
 
         checkCorsFilter(configuration, environment.admin());
+        checkAdminGuiceFeature(environment, jerseyEnvironment);
+    }
+
+    private void checkAdminGuiceFeature(final Environment environment, final JerseyEnvironment jerseyEnvironment)
+    {
+        try
+        {
+            final Class<?> guiceBundleFeatureClass = Class.forName("io.soabase.guice.GuiceBundleFeature");  // GuiceBundle may not be installed so we have to use reflection
+            final Method method = guiceBundleFeatureClass.getMethod("configure", FeatureContext.class);
+            Feature feature = new Feature()
+            {
+                @Override
+                public boolean configure(FeatureContext context)
+                {
+                    for ( Object obj : environment.jersey().getResourceConfig().getSingletons() )
+                    {
+                        if ( guiceBundleFeatureClass.isAssignableFrom(obj.getClass()) )
+                        {
+                            try
+                            {
+                                method.invoke(obj, context);
+                            }
+                            catch ( Exception e )
+                            {
+                                log.error("Could not apply guice context to admin Jersey environment", e);
+                            }
+                            break;
+                        }
+                    }
+                    return true;
+                }
+            };
+            jerseyEnvironment.register(feature);
+        }
+        catch ( Exception ignore )
+        {
+            // ignore - GuiceBundle not added
+        }
     }
 
     private LoggingReader initLogging(Configuration configuration) throws IOException

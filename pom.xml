@@ -171,6 +171,18 @@
             </dependency>
 
             <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-logging</artifactId>
+                <version>${dropwizard-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-forms</artifactId>
+                <version>${dropwizard-version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-x-discovery</artifactId>
                 <version>${curator-version}</version>

@@ -129,7 +129,7 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
     @Override
     public void run(final T configuration, final Environment environment) throws Exception
     {
-        Feature feature = new Feature()
+        Feature feature = new GuiceBundleFeature()
         {
             @Override
             public boolean configure(FeatureContext context)

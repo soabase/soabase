@@ -1,5 +1,12 @@
 # Change Log
 
+## [soabase-0.10.1](https://github.com/soabase/soabase/tree/soabase-0.10.1) (2015-12-07)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.10.0...soabase-0.10.1)
+
+**Implemented enhancements:**
+
+- Guice injections should be available on the Soabase's Jersey admin resources [\#31](https://github.com/soabase/soabase/issues/31)
+
 ## [soabase-0.10.0](https://github.com/soabase/soabase/tree/soabase-0.10.0) (2015-12-01)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.9.1...soabase-0.10.0)
 

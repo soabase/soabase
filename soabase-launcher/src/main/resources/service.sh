@@ -156,13 +156,13 @@ start() {
             echo "$JAVA_EXE $JAVA_SCRIPT $JVM_OPTIONS -jar $JAR_FILE $ARGUMENTS"
         elif [ $1 = "run" ]; then
             verboseMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE $ARGUMENTS"
-            "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENTS
+            eval "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENTS
         else
             if [ $VERBOSE = true ]; then
                 warnMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE $ARGUMENTS $CONFIG_FILE"
-                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENTS &
+                eval "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENTS &
             else
-                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENTS > /dev/null 2>&1 &
+                eval "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENTS > /dev/null 2>&1 &
             fi
         fi
 

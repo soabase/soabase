@@ -13,6 +13,7 @@ io.soabase.core.features.client
 io.soabase.core.features.config
 io.soabase.core.features.discovery
 io.soabase.core.features.discovery.deployment
+io.soabase.core.features.discovery.fixed
 io.soabase.core.features.logging
 io.soabase.core.listening
 io.soabase.core.rest

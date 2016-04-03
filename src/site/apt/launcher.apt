@@ -31,6 +31,7 @@ Soabase Launcher Script
         \___ bin
              \_____ service.sh
         \___ config
+             \_____ arguments.txt
              \_____ jvm.properties
              \_____ *.json
              \_____ *.yaml
@@ -44,7 +45,10 @@ Soabase Launcher Script
 
     * You can have a config.json or a config.yaml, it can have any name, but only 1 will be used
 
-    * If config.json or config.yaml are present, the uber jar is called with the arguments: "server config.nnn"
+    * If arguments.txt is present it should contain application arguments (single line or 1 per line).
+      The string $CONFIG_FILE in your arguments file will be replaced with the path to your config file.
+      If arguments.txt is not present and there is a config file, the arguments to the application
+      are: server config.nnn
 
 * Installing
 

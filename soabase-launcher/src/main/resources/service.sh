@@ -58,14 +58,8 @@ findJar() {
 
 findConfig() {
     CONFIG_FILE=`ls -t $CONFIG_PATH/*.json 2> /dev/null | head -n 1`
-    if [ -z $CONFIG_FILE ]; then
-        CONFIG_FILE=`ls -t $CONFIG_PATH/*.yaml 2> /dev/null | head -n 1`
-    fi
-
     if [ -z "$CONFIG_FILE" ]; then
-        ARGUMENT=""
-    else
-        ARGUMENT="server"
+        CONFIG_FILE=`ls -t $CONFIG_PATH/*.yaml 2> /dev/null | head -n 1`
     fi
 }
 
@@ -95,7 +89,8 @@ initialize() {
 
     CONFIG_PATH="$SERVICE_PATH/config"
     BIN_PATH="$SCRIPT_PATH"
-    JVM_OPTIONS_PATH="$CONFIG_PATH/jvm.properties"
+    JVM_OPTIONS_FILE="$CONFIG_PATH/jvm.properties"
+    ARGUMENTS_FILE="$CONFIG_PATH/arguments.txt"
     PIDFILE="$BIN_PATH/service.pid"
 
     findJar "$SERVICE_PATH" "$BIN_PATH"
@@ -105,12 +100,27 @@ initialize() {
     if [ -z "$CONFIG_FILE" ]; then
         verboseMessage "No config file"
     else
-        verboseMessage "Config: $ARGUMENT $CONFIG_FILE"
+        verboseMessage "Config: $CONFIG_FILE"
+    fi
+
+    if [ -e "$ARGUMENTS_FILE" ]; then
+        ARGUMENTS=`cat $ARGUMENTS_FILE`
+        ARGUMENTS=`echo $ARGUMENTS`
+        ARGUMENTS=${ARGUMENTS/\$CONFIG_FILE/$CONFIG_FILE}
+        verboseMessage "Arguments: $ARGUMENTS"
+    else
+        verboseMessage "No arguments file"
+        if [ -z "$CONFIG_FILE" ]; then
+            ARGUMENTS=""
+        else
+            ARGUMENTS="server \"$CONFIG_FILE\""
+            verboseMessage "Arguments: $ARGUMENTS"
+        fi
     fi
 
     JVM_OPTIONS=""
-    if [ -e "$JVM_OPTIONS_PATH" ]; then
-        JVM_OPTIONS=`cat $JVM_OPTIONS_PATH`
+    if [ -e "$JVM_OPTIONS_FILE" ]; then
+        JVM_OPTIONS=`cat $JVM_OPTIONS_FILE`
         JVM_OPTIONS=`echo $JVM_OPTIONS`
         verboseMessage "JVM_OPTIONS: $JVM_OPTIONS"
     fi
@@ -143,16 +153,16 @@ start() {
 
         verboseMessage "Starting Service"
         if [ $DEBUG = "true" ]; then
-            echo "$JAVA_EXE $JAVA_SCRIPT $JVM_OPTIONS -jar $JAR_FILE $ARGUMENT $CONFIG_FILE"
+            echo "$JAVA_EXE $JAVA_SCRIPT $JVM_OPTIONS -jar $JAR_FILE $ARGUMENTS"
         elif [ $1 = "run" ]; then
-            verboseMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE $ARGUMENT $CONFIG_FILE"
-            "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENT "$CONFIG_FILE"
+            verboseMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE $ARGUMENTS"
+            "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENTS
         else
             if [ $VERBOSE = true ]; then
-                warnMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE $ARGUMENT $CONFIG_FILE"
-                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENT "$CONFIG_FILE" &
+                warnMessage "$JAVA_EXE $JVM_OPTIONS -jar $JAR_FILE $ARGUMENTS $CONFIG_FILE"
+                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENTS &
             else
-                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENT "$CONFIG_FILE" > /dev/null 2>&1 &
+                "$JAVA_EXE" $JVM_OPTIONS -jar "$JAR_FILE" $ARGUMENTS > /dev/null 2>&1 &
             fi
         fi
 
@@ -180,21 +190,25 @@ stop() {
 }
 
 usage() {
-    echo $"Usage: $(basename "$0") {help|start|run|stop|restart|status}"
-    echo ""
+cat <<END_OF_HELP
+Usage: $(basename "$0") {help|start|run|stop|restart|status}
 
-    echo "Environment variables:"
-    printf "\t%-15s %-12s %-25s %s\n" "NAME" "REQUIRED" "DEFAULT" "DESCRIPTION"
-    printf "\t%-15s %-12s %-25s %s\n" "====" "========" "=======" "==========="
-    printf "\t%-15s %-12s %-25s %s\n" "DEBUG" "N" "false" "If true, don't execute. Only output the command."
-    printf "\t%-15s %-12s %-25s %s\n" "VERBOSE" "N" "false" "If true, output to console."
-    printf "\t%-15s %-12s %-25s %s\n" "SERVICE_PATH" "N" "service.sh dir" "The location for config, log, bin, etc directories."
-    printf "\t%-15s %-12s %-25s %s\n" "JAVA_HOME" "N" "java" "Java root directory."
-    echo ""
+Environment variables:
+    NAME            REQUIRED     DEFAULT                   DESCRIPTION
+    ====            ========     =======                   ===========
+    DEBUG           N            false                     If true, don't execute. Only output the command.
+    VERBOSE         N            false                     If true, output to console.
+    SERVICE_PATH    N            service.sh parent dir     The location for config, log, bin, etc directories.
+    JAVA_HOME       N            java                      Java root directory.
 
-    echo "Special Files:"
-    printf "\t\$SERVICE_PATH/config/jvm.properties - file containing java.exe options (single line or 1 per line)\n"
-    echo ""
+Special Files:
+    \$SERVICE_PATH/config/jvm.properties       file containing java.exe options (single line or 1 per line)
+
+    \$SERVICE_PATH/config/arguments.txt        file containing application arguments (single line or 1 per line)
+                                              The string \$CONFIG_FILE in your arguments file will be replaced with
+                                              the path to your config file. NOTE: if not present and there is a config
+                                              file, the arguments to the application are: server \$CONFIG_FILE
+END_OF_HELP
 }
 
 status() {

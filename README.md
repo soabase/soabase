@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/soabase/soabase.svg?branch=master)](https://travis-ci.org/soabase/soabase)
+[![Maven Central](https://img.shields.io/maven-central/v/io.soabase/soabase.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.soabase%22%20AND%20a%3A%22soabase%22)
 
 soabase
 =======

@@ -15,9 +15,8 @@
  */
 package io.soabase.guice;
 
-import io.soabase.core.features.config.InternalFeatureRegistrations;
 import javax.ws.rs.core.Feature;
 
-public interface GuiceBundleFeature extends Feature, InternalFeatureRegistrations
+public interface GuiceBundleFeature extends Feature
 {
 }

@@ -137,12 +137,6 @@ public class GuiceBundle<T extends Configuration> implements ConfiguredBundle<T>
             private final AtomicBoolean firstTime = new AtomicBoolean(true);
 
             @Override
-            public void apply(FeatureContext context)
-            {
-                internalApply(context);
-            }
-
-            @Override
             public boolean configure(FeatureContext context)
             {
                 internalApply(context);

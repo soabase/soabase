@@ -1,11 +1,23 @@
 # Change Log
 
-## [soabase-0.10.1](https://github.com/soabase/soabase/tree/soabase-0.10.1) (2015-12-07)
-[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.10.0...soabase-0.10.1)
+## [soabase-0.10.3](https://github.com/soabase/soabase/tree/soabase-0.10.3) (2016-07-08)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.10.2...soabase-0.10.3)
+
+**Closed issues:**
+
+- soabase-guice has dependency on soabase-core [\#34](https://github.com/soabase/soabase/issues/34)
+- Launcher script needs to support arguments [\#33](https://github.com/soabase/soabase/issues/33)
+- Issue integrating soabase-guice with Dropwizard and Guice's JpaPersistModule  [\#32](https://github.com/soabase/soabase/issues/32)
+
+## [soabase-0.10.2](https://github.com/soabase/soabase/tree/soabase-0.10.2) (2015-12-07)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.10.1...soabase-0.10.2)
 
 **Implemented enhancements:**
 
 - Guice injections should be available on the Soabase's Jersey admin resources [\#31](https://github.com/soabase/soabase/issues/31)
+
+## [soabase-0.10.1](https://github.com/soabase/soabase/tree/soabase-0.10.1) (2015-12-07)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.10.0...soabase-0.10.1)
 
 ## [soabase-0.10.0](https://github.com/soabase/soabase/tree/soabase-0.10.0) (2015-12-01)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.9.1...soabase-0.10.0)

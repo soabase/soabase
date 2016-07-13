@@ -131,6 +131,12 @@
 
             <dependency>
                 <groupId>io.soabase</groupId>
+                <artifactId>soabase-guice</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.soabase</groupId>
                 <artifactId>soabase-zookeeper</artifactId>
                 <version>${project.version}</version>
             </dependency>

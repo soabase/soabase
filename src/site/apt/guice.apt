@@ -103,3 +103,8 @@ bootstrap.addBundle(new GuiceBundle<>(injectorProvider));
     Add the module to your injector and override the <<<configureServlets()>>> method. Guice's {{{https://github.com/google/guice/wiki/ServletModule}ServletModule}}
     documentation applies to JerseyGuiceModule. Additionally, any objects registered via SoaFeatures and the SoaFeatures instance itself are bound into the Guice
     injector.
+
+* Example
+
+    Example code for using the Guice integration is here: {{{https://github.com/soabase/soabase/blob/master/soabase-example/src/main/java/io/soabase/guice/example/}Soabase Guice Example}}
+

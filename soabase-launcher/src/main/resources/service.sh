@@ -189,9 +189,17 @@ stop() {
     fi
 }
 
+stopIf() {
+    if [ -f $PIDFILE ]; then
+        verboseMessage "Stopping Service"
+        kill `cat $PIDFILE`
+        rm $PIDFILE
+    fi
+}
+
 usage() {
 cat <<END_OF_HELP
-Usage: $(basename "$0") {help|start|run|stop|restart|status}
+Usage: $(basename "$0") {help|start|run|stop|restart|status|force-start}
 
 Environment variables:
     NAME            REQUIRED     DEFAULT                   DESCRIPTION
@@ -243,6 +251,11 @@ case "$1" in
   restart)
         initialize
         stop
+        start start
+        ;;
+  force-start)
+        initialize
+        stopIf
         start start
         ;;
   *)

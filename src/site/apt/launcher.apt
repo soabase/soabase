@@ -19,7 +19,9 @@ Soabase Launcher Script
 
     * stop - stops the application
 
-    * restart - restarts the application
+    * restart - if the application is running, restarts the application
+
+    * force-start - stops the application if running (or not) and then restarts it
 
     * status - displays the application's pid if it's running
 

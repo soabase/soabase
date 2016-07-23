@@ -29,7 +29,8 @@ The service.sh script supports these commands:
 * start - starts the application in the background and saves its pid
 * run - runs the application in the foreground and saves its pid
 * stop - stops the application
-* restart - restarts the application
+* restart - restarts the application if it's running
+* force-start - stops the application if running (or not) and then restarts it
 * status - displays the application's pid if it's running
 
 Installing

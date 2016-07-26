@@ -7,6 +7,7 @@
 
 - Code examples of using soabase guice? [\#37](https://github.com/soabase/soabase/issues/37)
 - Support for Google Guice 4.0 [\#36](https://github.com/soabase/soabase/issues/36)
+- Support for Dropwizard 1.0.0 [\#35](https://github.com/soabase/soabase/issues/35)
 
 ## [soabase-0.10.3](https://github.com/soabase/soabase/tree/soabase-0.10.3) (2016-07-08)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.10.2...soabase-0.10.3)

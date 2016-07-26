@@ -4,7 +4,7 @@
 
     <groupId>io.soabase</groupId>
     <artifactId>soabase</artifactId>
-    <version>0.10.4-SNAPSHOT</version>
+    <version>0.11.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -24,7 +24,7 @@
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jdk-version>1.7</jdk-version>
+        <jdk-version>1.8</jdk-version>
 
         <gpg.useagent>true</gpg.useagent>
 
@@ -41,13 +41,13 @@
         <maven-gpg-plugin-version>1.6</maven-gpg-plugin-version>
         <maven-install-plugin-version>2.5.2</maven-install-plugin-version>
 
-        <dropwizard-version>0.9.3</dropwizard-version>
+        <dropwizard-version>1.0.0</dropwizard-version>
         <curator-version>2.11.0</curator-version>
         <mybatis-version>3.4.1</mybatis-version>
         <hsqldb-version>2.3.4</hsqldb-version>
         <guice-version>4.1.0</guice-version>
-        <guice-bridge-version>2.4.0-b31</guice-bridge-version>  <!-- must match Dropwizard's HK2 version -->
-        <jackson-module-guice-version>2.6.7</jackson-module-guice-version>  <!-- must match Dropwizard's Jackson version -->
+        <guice-bridge-version>2.4.0-b34</guice-bridge-version>  <!-- must match Dropwizard's HK2 version -->
+        <jackson-module-guice-version>2.7.6</jackson-module-guice-version>  <!-- must match Dropwizard's Jackson version -->
     </properties>
 
     <name>Soabase</name>

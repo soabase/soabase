@@ -1,0 +1,4 @@
+io.soabase.core.features.discovery.DiscoveryFactory
+io.soabase.core.features.attributes.DynamicAttributesFactory
+io.soabase.core.features.discovery.DiscoveryHealthFactory
+io.soabase.core.features.discovery.deployment.DeploymentGroupFactory

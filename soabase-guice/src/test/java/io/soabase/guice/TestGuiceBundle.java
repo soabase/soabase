@@ -138,15 +138,22 @@ public class TestGuiceBundle
             @Override
             public Object call() throws Exception
             {
-                String[] args = {"server"};
-                mockApplication.run(args);
+                try
+                {
+                    String[] args = {"server"};
+                    mockApplication.run(args);
+                }
+                catch ( Throwable e )
+                {
+                    e.printStackTrace();
+                }
                 return null;
             }
         };
         Future future = Executors.newSingleThreadExecutor().submit(callable);
         try
         {
-            Assert.assertTrue(mockApplication.getStartedLatch().await(5, TimeUnit.SECONDS));
+            Assert.assertTrue(mockApplication.getStartedLatch().await(5000, TimeUnit.SECONDS));
             URI uri = new URI("http://localhost:8080/test");
             String str = CharStreams.toString(new InputStreamReader(uri.toURL().openStream()));
             Assert.assertEquals("success - guice - hk2", str);

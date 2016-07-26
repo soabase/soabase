@@ -346,7 +346,7 @@ public class SoaBundle<T extends Configuration> implements ConfiguredBundle<T>
         jerseyEnvironment.register(LoggingApis.class);
         jerseyEnvironment.register(binder);
         jerseyEnvironment.setUrlPattern(jerseyConfig.getUrlPattern());
-        jerseyEnvironment.register(new JacksonMessageBodyProvider(environment.getObjectMapper(), environment.getValidator()));
+        jerseyEnvironment.register(new JacksonMessageBodyProvider(environment.getObjectMapper()));
 
         checkCorsFilter(configuration, environment.admin());
         checkAdminGuiceFeature(environment, jerseyEnvironment);

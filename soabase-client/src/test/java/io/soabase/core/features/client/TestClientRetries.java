@@ -16,38 +16,31 @@
 package io.soabase.core.features.client;
 
 import org.eclipse.jetty.util.thread.ShutdownThread;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class TestClientRetries
 {
-    private static volatile MockApplication application;
+    private MockApplication application;
 
-    @BeforeClass
-    public static void setup() throws Exception
+    @Before
+    public void setupMethod() throws Exception
     {
         application = new MockApplication();
         application.run("server");
-    }
-
-    @AfterClass
-    public static void tearDown()
-    {
-        ShutdownThread.getInstance().run();
-        application = null;
-    }
-
-    @Before
-    public void setupMethod() throws InterruptedException
-    {
         application.getStartedLatch().await();
         application.getThrowInternalError().set(true);
         application.getCounter().set(0);
+    }
+
+    @After
+    public void tearDown()
+    {
+        ShutdownThread.getInstance().run();
     }
 
     @Test

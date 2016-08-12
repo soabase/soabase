@@ -114,37 +114,37 @@
             <dependency>
                 <groupId>io.soabase</groupId>
                 <artifactId>soabase-core</artifactId>
-                <version>${project.version}</version>
+                <version>0.11.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>io.soabase</groupId>
                 <artifactId>soabase-client</artifactId>
-                <version>${project.version}</version>
+                <version>0.11.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>io.soabase</groupId>
                 <artifactId>soabase-sql</artifactId>
-                <version>${project.version}</version>
+                <version>0.11.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>io.soabase</groupId>
                 <artifactId>soabase-guice</artifactId>
-                <version>${project.version}</version>
+                <version>0.11.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>io.soabase</groupId>
                 <artifactId>soabase-zookeeper</artifactId>
-                <version>${project.version}</version>
+                <version>0.11.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>io.soabase</groupId>
                 <artifactId>soabase-admin</artifactId>
-                <version>${project.version}</version>
+                <version>0.11.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>

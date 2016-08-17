@@ -1,5 +1,12 @@
 # Change Log
 
+## [soabase-0.11.2](https://github.com/soabase/soabase/tree/soabase-0.11.2) (2016-08-17)
+[Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.11.1...soabase-0.11.2)
+
+**Closed issues:**
+
+- Guice configuration empty in provider [\#39](https://github.com/soabase/soabase/issues/39)
+
 ## [soabase-0.11.1](https://github.com/soabase/soabase/tree/soabase-0.11.1) (2016-08-12)
 [Full Changelog](https://github.com/soabase/soabase/compare/soabase-0.11.0...soabase-0.11.1)
 

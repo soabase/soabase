@@ -16,12 +16,11 @@
 package io.soabase.guice;
 
 import com.google.common.base.Preconditions;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
+import java.util.List;
 
 /**
  * Version of {@link StandardInjectorProvider} that binds the configuration object
@@ -62,13 +61,9 @@ public class ConfigurationInjectorProvider<T extends Configuration> extends Stan
     }
 
     @Override
-    public Injector get(T configuration, Environment environment, Module additionalModule)
+    protected void internalAddModules(List<Module> localModules, T configuration, Environment environment)
     {
         Module configurationModule = binder -> {
-            if ( additionalModule != null )
-            {
-                binder.install(additionalModule);
-            }
             if ( configurationType != null )
             {
                 binder.bind(configurationType).toInstance(configuration);
@@ -79,6 +74,6 @@ public class ConfigurationInjectorProvider<T extends Configuration> extends Stan
                 binder.bind(clazz).toInstance(configuration);
             }
         };
-        return Guice.createInjector(configurationModule);
+        localModules.add(configurationModule);
     }
 }

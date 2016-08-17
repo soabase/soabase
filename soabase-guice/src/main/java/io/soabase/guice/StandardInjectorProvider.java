@@ -35,7 +35,7 @@ public class StandardInjectorProvider<T extends Configuration> implements Inject
     }
 
     @Override
-    public Injector get(T configuration, Environment environment, Module additionalModule)
+    public final Injector get(T configuration, Environment environment, Module additionalModule)
     {
         List<Module> localModules = Lists.newArrayList();
         Collections.addAll(localModules, modules);
@@ -43,6 +43,12 @@ public class StandardInjectorProvider<T extends Configuration> implements Inject
         {
             localModules.add(additionalModule);
         }
+        internalAddModules(localModules, configuration, environment);
         return Guice.createInjector(localModules);
+    }
+
+    protected void internalAddModules(List<Module> localModules, T configuration, Environment environment)
+    {
+        // NOP
     }
 }
